@@ -1,0 +1,15 @@
+{
+  "slicer_id": "BambuStudio",
+  "application_version": "02.08.02.61",
+  "instance_id": "0",
+  "source_file": "fatcat-consumer-example.3mf",
+  "parts": [],
+  "plate": {
+    "plater_id": "1",
+    "plater_name": "Fat Cat consumer example",
+    "locked": false,
+    "filament_map_mode": "Auto For Flush"
+  },
+  "component_inputs": {},
+  "resource_roles": []
+}

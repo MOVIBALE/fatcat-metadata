@@ -1,0 +1,9 @@
+# Keep text files consistent across platforms; leave binary files untouched.
+* text=auto eol=lf
+
+# These upstream snapshots are verified against their original byte hashes.
+licenses/third-party/** -text !eol
+compatibility/current-src/native-project-sources/profiles/** -text !eol
+
+# Keep the root license in the standard LF text form.
+/LICENSE text eol=lf

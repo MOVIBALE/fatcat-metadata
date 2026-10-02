@@ -1,0 +1,37 @@
+# Python bytecode and local environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# Build and package output
+build/
+build-*/
+dist/
+*.egg-info/
+*.whl
+*.tar.gz
+
+# Native build products
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.pyd
+
+# Generated example archives and editor/OS state
+*.3mf
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

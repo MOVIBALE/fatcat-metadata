@@ -1,0 +1,2535 @@
+{
+  "schema_version": 1,
+  "machine_profiles": [
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-1",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 1",
+      "source_machine_profile_name": "Anycubic Kobra 1 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-1-max",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 1 Max",
+      "source_machine_profile_name": "Anycubic Kobra 1 Max 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-1-plus",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 1 Plus",
+      "source_machine_profile_name": "Anycubic Kobra 1 Plus 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-2",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 2",
+      "source_machine_profile_name": "Anycubic Kobra 2 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-2-max",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 2 Max",
+      "source_machine_profile_name": "Anycubic Kobra 2 Max 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-2-neo",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 2 Neo",
+      "source_machine_profile_name": "Anycubic Kobra 2 Neo 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-2-plus",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 2 Plus",
+      "source_machine_profile_name": "Anycubic Kobra 2 Plus 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-2-pro",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 2 Pro",
+      "source_machine_profile_name": "Anycubic Kobra 2 Pro 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Anycubic Kobra 3",
+      "source_machine_profile_name": "Anycubic Kobra 3 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 3",
+      "source_machine_profile_name": "Anycubic Kobra 3 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Anycubic Kobra 3",
+      "source_machine_profile_name": "Anycubic Kobra 3 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Anycubic Kobra 3",
+      "source_machine_profile_name": "Anycubic Kobra 3 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3-max",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 3 Max",
+      "source_machine_profile_name": "Anycubic Kobra 3 Max 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3-max",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Anycubic Kobra 3 Max",
+      "source_machine_profile_name": "Anycubic Kobra 3 Max 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3-max",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Anycubic Kobra 3 Max",
+      "source_machine_profile_name": "Anycubic Kobra 3 Max 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3-v2",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Anycubic Kobra 3 V2",
+      "source_machine_profile_name": "Anycubic Kobra 3 V2 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3-v2",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 3 V2",
+      "source_machine_profile_name": "Anycubic Kobra 3 V2 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3-v2",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Anycubic Kobra 3 V2",
+      "source_machine_profile_name": "Anycubic Kobra 3 V2 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-3-v2",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Anycubic Kobra 3 V2",
+      "source_machine_profile_name": "Anycubic Kobra 3 V2 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-4",
+      "nozzle_uid": "nozzle:0.25mm",
+      "machine_display_name": "Anycubic Kobra 4",
+      "source_machine_profile_name": "Anycubic Kobra 4 0.25 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-4",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra 4",
+      "source_machine_profile_name": "Anycubic Kobra 4 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-4",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Anycubic Kobra 4",
+      "source_machine_profile_name": "Anycubic Kobra 4 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-4",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Anycubic Kobra 4",
+      "source_machine_profile_name": "Anycubic Kobra 4 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-s1",
+      "nozzle_uid": "nozzle:0.25mm",
+      "machine_display_name": "Anycubic Kobra S1",
+      "source_machine_profile_name": "Anycubic Kobra S1 0.25 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-s1",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra S1",
+      "source_machine_profile_name": "Anycubic Kobra S1 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-s1",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Anycubic Kobra S1",
+      "source_machine_profile_name": "Anycubic Kobra S1 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-s1",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Anycubic Kobra S1",
+      "source_machine_profile_name": "Anycubic Kobra S1 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-s1-max",
+      "nozzle_uid": "nozzle:0.25mm",
+      "machine_display_name": "Anycubic Kobra S1 Max",
+      "source_machine_profile_name": "Anycubic Kobra S1 Max 0.25 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-s1-max",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra S1 Max",
+      "source_machine_profile_name": "Anycubic Kobra S1 Max 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-s1-max",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Anycubic Kobra S1 Max",
+      "source_machine_profile_name": "Anycubic Kobra S1 Max 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-s1-max",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Anycubic Kobra S1 Max",
+      "source_machine_profile_name": "Anycubic Kobra S1 Max 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-x",
+      "nozzle_uid": "nozzle:0.25mm",
+      "machine_display_name": "Anycubic Kobra X",
+      "source_machine_profile_name": "Anycubic Kobra X 0.25 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-x",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Anycubic Kobra X",
+      "source_machine_profile_name": "Anycubic Kobra X 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-x",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Anycubic Kobra X",
+      "source_machine_profile_name": "Anycubic Kobra X 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "AnycubicSlicerNext",
+      "machine_uid": "anycubic:kobra-x",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Anycubic Kobra X",
+      "source_machine_profile_name": "Anycubic Kobra X 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a1",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab A1",
+      "source_machine_profile_name": "Bambu Lab A1 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a1",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab A1",
+      "source_machine_profile_name": "Bambu Lab A1 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a1",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab A1",
+      "source_machine_profile_name": "Bambu Lab A1 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a1",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab A1",
+      "source_machine_profile_name": "Bambu Lab A1 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a1-mini",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab A1 mini",
+      "source_machine_profile_name": "Bambu Lab A1 mini 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a1-mini",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab A1 mini",
+      "source_machine_profile_name": "Bambu Lab A1 mini 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a1-mini",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab A1 mini",
+      "source_machine_profile_name": "Bambu Lab A1 mini 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a1-mini",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab A1 mini",
+      "source_machine_profile_name": "Bambu Lab A1 mini 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a2l",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab A2L",
+      "source_machine_profile_name": "Bambu Lab A2L 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a2l",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab A2L",
+      "source_machine_profile_name": "Bambu Lab A2L 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a2l",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab A2L",
+      "source_machine_profile_name": "Bambu Lab A2L 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:a2l",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab A2L",
+      "source_machine_profile_name": "Bambu Lab A2L 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2c",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab H2C",
+      "source_machine_profile_name": "Bambu Lab H2C 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2c",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab H2C",
+      "source_machine_profile_name": "Bambu Lab H2C 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2c",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab H2C",
+      "source_machine_profile_name": "Bambu Lab H2C 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2c",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab H2C",
+      "source_machine_profile_name": "Bambu Lab H2C 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2d",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab H2D",
+      "source_machine_profile_name": "Bambu Lab H2D 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2d",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab H2D",
+      "source_machine_profile_name": "Bambu Lab H2D 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2d",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab H2D",
+      "source_machine_profile_name": "Bambu Lab H2D 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2d",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab H2D",
+      "source_machine_profile_name": "Bambu Lab H2D 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2d-pro",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab H2D Pro",
+      "source_machine_profile_name": "Bambu Lab H2D Pro 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2d-pro",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab H2D Pro",
+      "source_machine_profile_name": "Bambu Lab H2D Pro 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2d-pro",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab H2D Pro",
+      "source_machine_profile_name": "Bambu Lab H2D Pro 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2d-pro",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab H2D Pro",
+      "source_machine_profile_name": "Bambu Lab H2D Pro 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2s",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab H2S",
+      "source_machine_profile_name": "Bambu Lab H2S 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2s",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab H2S",
+      "source_machine_profile_name": "Bambu Lab H2S 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2s",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab H2S",
+      "source_machine_profile_name": "Bambu Lab H2S 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h2s",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab H2S",
+      "source_machine_profile_name": "Bambu Lab H2S 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p1p",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab P1P",
+      "source_machine_profile_name": "Bambu Lab P1P 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p1p",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab P1P",
+      "source_machine_profile_name": "Bambu Lab P1P 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p1p",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab P1P",
+      "source_machine_profile_name": "Bambu Lab P1P 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p1p",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab P1P",
+      "source_machine_profile_name": "Bambu Lab P1P 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p1s",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab P1S",
+      "source_machine_profile_name": "Bambu Lab P1S 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p1s",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab P1S",
+      "source_machine_profile_name": "Bambu Lab P1S 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p1s",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab P1S",
+      "source_machine_profile_name": "Bambu Lab P1S 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p1s",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab P1S",
+      "source_machine_profile_name": "Bambu Lab P1S 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p2s",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab P2S",
+      "source_machine_profile_name": "Bambu Lab P2S 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p2s",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab P2S",
+      "source_machine_profile_name": "Bambu Lab P2S 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p2s",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab P2S",
+      "source_machine_profile_name": "Bambu Lab P2S 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:p2s",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab P2S",
+      "source_machine_profile_name": "Bambu Lab P2S 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab X1",
+      "source_machine_profile_name": "Bambu Lab X1 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab X1",
+      "source_machine_profile_name": "Bambu Lab X1 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab X1",
+      "source_machine_profile_name": "Bambu Lab X1 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab X1",
+      "source_machine_profile_name": "Bambu Lab X1 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1-carbon",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab X1 Carbon",
+      "source_machine_profile_name": "Bambu Lab X1 Carbon 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1-carbon",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab X1 Carbon",
+      "source_machine_profile_name": "Bambu Lab X1 Carbon 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1-carbon",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab X1 Carbon",
+      "source_machine_profile_name": "Bambu Lab X1 Carbon 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1-carbon",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab X1 Carbon",
+      "source_machine_profile_name": "Bambu Lab X1 Carbon 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1e",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab X1E",
+      "source_machine_profile_name": "Bambu Lab X1E 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1e",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab X1E",
+      "source_machine_profile_name": "Bambu Lab X1E 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1e",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab X1E",
+      "source_machine_profile_name": "Bambu Lab X1E 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x1e",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab X1E",
+      "source_machine_profile_name": "Bambu Lab X1E 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x2d",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab X2D",
+      "source_machine_profile_name": "Bambu Lab X2D 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x2d",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab X2D",
+      "source_machine_profile_name": "Bambu Lab X2D 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x2d",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab X2D",
+      "source_machine_profile_name": "Bambu Lab X2D 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:x2d",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab X2D",
+      "source_machine_profile_name": "Bambu Lab X2D 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Elegoo Centauri",
+      "source_machine_profile_name": "Elegoo Centauri 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Elegoo Centauri",
+      "source_machine_profile_name": "Elegoo Centauri 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Elegoo Centauri",
+      "source_machine_profile_name": "Elegoo Centauri 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Elegoo Centauri",
+      "source_machine_profile_name": "Elegoo Centauri 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Elegoo Centauri Carbon",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Elegoo Centauri Carbon",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Elegoo Centauri Carbon",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Elegoo Centauri Carbon",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Elegoo Centauri Carbon 2",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Elegoo Centauri Carbon 2",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Elegoo Centauri Carbon 2",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "ElegooSlicer",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Elegoo Centauri Carbon 2",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:ad5x",
+      "nozzle_uid": "nozzle:0.25mm",
+      "machine_display_name": "Flashforge AD5X",
+      "source_machine_profile_name": "Flashforge AD5X 0.25 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:ad5x",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Flashforge AD5X",
+      "source_machine_profile_name": "Flashforge AD5X 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:creator-5",
+      "nozzle_uid": "nozzle:0.25mm",
+      "machine_display_name": "Flashforge Creator 5",
+      "source_machine_profile_name": "Flashforge Creator 5 0.25 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:creator-5",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Flashforge Creator 5",
+      "source_machine_profile_name": "Flashforge Creator 5 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:creator-5-pro",
+      "nozzle_uid": "nozzle:0.25mm",
+      "machine_display_name": "Flashforge Creator 5 Pro",
+      "source_machine_profile_name": "Flashforge Creator 5 Pro 0.25 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:creator-5-pro",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Flashforge Creator 5 Pro",
+      "source_machine_profile_name": "Flashforge Creator 5 Pro 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:guider-3-ultra",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Flashforge Guider 3 Ultra",
+      "source_machine_profile_name": "Flashforge Guider 3 Ultra 0.4 Nozzle",
+      "supported_build_plate_uids": []
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:guider4",
+      "nozzle_uid": "nozzle:0.25mm",
+      "machine_display_name": "Flashforge Guider4",
+      "source_machine_profile_name": "Flashforge Guider4 0.25 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:guider4",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Flashforge Guider4",
+      "source_machine_profile_name": "Flashforge Guider4 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:guider4-pro",
+      "nozzle_uid": "nozzle:0.25mm",
+      "machine_display_name": "Flashforge Guider4 Pro",
+      "source_machine_profile_name": "Flashforge Guider4 Pro 0.25 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "FlashStudio",
+      "machine_uid": "flashforge:guider4-pro",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Flashforge Guider4 Pro",
+      "source_machine_profile_name": "Flashforge Guider4 Pro 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:a1",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab A1",
+      "source_machine_profile_name": "Bambu Lab A1 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:a1",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab A1",
+      "source_machine_profile_name": "Bambu Lab A1 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:a1",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab A1",
+      "source_machine_profile_name": "Bambu Lab A1 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:a1",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab A1",
+      "source_machine_profile_name": "Bambu Lab A1 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:a1-mini",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab A1 mini",
+      "source_machine_profile_name": "Bambu Lab A1 mini 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:a1-mini",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab A1 mini",
+      "source_machine_profile_name": "Bambu Lab A1 mini 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:a1-mini",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab A1 mini",
+      "source_machine_profile_name": "Bambu Lab A1 mini 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:a1-mini",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab A1 mini",
+      "source_machine_profile_name": "Bambu Lab A1 mini 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2d",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab H2D",
+      "source_machine_profile_name": "Bambu Lab H2D 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2d",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab H2D",
+      "source_machine_profile_name": "Bambu Lab H2D 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2d",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab H2D",
+      "source_machine_profile_name": "Bambu Lab H2D 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2d",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab H2D",
+      "source_machine_profile_name": "Bambu Lab H2D 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2d-pro",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab H2D Pro",
+      "source_machine_profile_name": "Bambu Lab H2D Pro 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2d-pro",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab H2D Pro",
+      "source_machine_profile_name": "Bambu Lab H2D Pro 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2d-pro",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab H2D Pro",
+      "source_machine_profile_name": "Bambu Lab H2D Pro 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2d-pro",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab H2D Pro",
+      "source_machine_profile_name": "Bambu Lab H2D Pro 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2s",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab H2S",
+      "source_machine_profile_name": "Bambu Lab H2S 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2s",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab H2S",
+      "source_machine_profile_name": "Bambu Lab H2S 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2s",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab H2S",
+      "source_machine_profile_name": "Bambu Lab H2S 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:h2s",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab H2S",
+      "source_machine_profile_name": "Bambu Lab H2S 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p1p",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab P1P",
+      "source_machine_profile_name": "Bambu Lab P1P 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p1p",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab P1P",
+      "source_machine_profile_name": "Bambu Lab P1P 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p1p",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab P1P",
+      "source_machine_profile_name": "Bambu Lab P1P 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p1p",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab P1P",
+      "source_machine_profile_name": "Bambu Lab P1P 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p1s",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab P1S",
+      "source_machine_profile_name": "Bambu Lab P1S 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p1s",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab P1S",
+      "source_machine_profile_name": "Bambu Lab P1S 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p1s",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab P1S",
+      "source_machine_profile_name": "Bambu Lab P1S 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p1s",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab P1S",
+      "source_machine_profile_name": "Bambu Lab P1S 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p2s",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab P2S",
+      "source_machine_profile_name": "Bambu Lab P2S 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p2s",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab P2S",
+      "source_machine_profile_name": "Bambu Lab P2S 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p2s",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab P2S",
+      "source_machine_profile_name": "Bambu Lab P2S 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:p2s",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab P2S",
+      "source_machine_profile_name": "Bambu Lab P2S 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab X1",
+      "source_machine_profile_name": "Bambu Lab X1 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab X1",
+      "source_machine_profile_name": "Bambu Lab X1 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab X1",
+      "source_machine_profile_name": "Bambu Lab X1 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab X1",
+      "source_machine_profile_name": "Bambu Lab X1 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1-carbon",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab X1 Carbon",
+      "source_machine_profile_name": "Bambu Lab X1 Carbon 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1-carbon",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab X1 Carbon",
+      "source_machine_profile_name": "Bambu Lab X1 Carbon 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1-carbon",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab X1 Carbon",
+      "source_machine_profile_name": "Bambu Lab X1 Carbon 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1-carbon",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab X1 Carbon",
+      "source_machine_profile_name": "Bambu Lab X1 Carbon 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1e",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab X1E",
+      "source_machine_profile_name": "Bambu Lab X1E 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1e",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab X1E",
+      "source_machine_profile_name": "Bambu Lab X1E 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1e",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab X1E",
+      "source_machine_profile_name": "Bambu Lab X1E 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x1e",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab X1E",
+      "source_machine_profile_name": "Bambu Lab X1E 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x2d",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab X2D",
+      "source_machine_profile_name": "Bambu Lab X2D 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x2d",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab X2D",
+      "source_machine_profile_name": "Bambu Lab X2D 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x2d",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab X2D",
+      "source_machine_profile_name": "Bambu Lab X2D 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "bambu-lab:x2d",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab X2D",
+      "source_machine_profile_name": "Bambu Lab X2D 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Elegoo Centauri",
+      "source_machine_profile_name": "Elegoo Centauri 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Elegoo Centauri",
+      "source_machine_profile_name": "Elegoo Centauri 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Elegoo Centauri",
+      "source_machine_profile_name": "Elegoo Centauri 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Elegoo Centauri",
+      "source_machine_profile_name": "Elegoo Centauri 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Elegoo Centauri Carbon",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Elegoo Centauri Carbon",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Elegoo Centauri Carbon",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Elegoo Centauri Carbon",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Elegoo Centauri Carbon 2",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Elegoo Centauri Carbon 2",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Elegoo Centauri Carbon 2",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Elegoo Centauri Carbon 2",
+      "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "snapmaker:u1",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Snapmaker U1",
+      "source_machine_profile_name": "Snapmaker U1 (0.4 nozzle)",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "machine_uid": "snapmaker:u1",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Snapmaker U1",
+      "source_machine_profile_name": "Snapmaker U1 (0.6 nozzle)",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:textured-pei",
+        "plate:textured-cool",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "QIDIStudio",
+      "machine_uid": "qidi:q2",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Q2",
+      "source_machine_profile_name": "Q2 0.2 nozzle"
+    },
+    {
+      "slicer_id": "QIDIStudio",
+      "machine_uid": "qidi:q2",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Q2",
+      "source_machine_profile_name": "Q2 0.4 nozzle"
+    },
+    {
+      "slicer_id": "QIDIStudio",
+      "machine_uid": "qidi:q2c",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Q2C",
+      "source_machine_profile_name": "Q2C 0.2 nozzle"
+    },
+    {
+      "slicer_id": "QIDIStudio",
+      "machine_uid": "qidi:q2c",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Q2C",
+      "source_machine_profile_name": "Q2C 0.4 nozzle"
+    },
+    {
+      "slicer_id": "QIDIStudio",
+      "machine_uid": "qidi:x-max-4",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "X-Max 4",
+      "source_machine_profile_name": "X-Max 4 0.2 nozzle"
+    },
+    {
+      "slicer_id": "QIDIStudio",
+      "machine_uid": "qidi:x-max-4",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "X-Max 4",
+      "source_machine_profile_name": "X-Max 4 0.4 nozzle"
+    },
+    {
+      "slicer_id": "QIDIStudio",
+      "machine_uid": "qidi:x-plus-5",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "X-Plus 5",
+      "source_machine_profile_name": "X-Plus 5 0.4 nozzle"
+    },
+    {
+      "slicer_id": "SnapmakerOrca",
+      "machine_uid": "snapmaker:u1",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Snapmaker U1",
+      "source_machine_profile_name": "Snapmaker U1 (0.2 nozzle)",
+      "supported_build_plate_uids": [
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "SnapmakerOrca",
+      "machine_uid": "snapmaker:u1",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Snapmaker U1",
+      "source_machine_profile_name": "Snapmaker U1 (0.4 nozzle)",
+      "supported_build_plate_uids": [
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "SnapmakerOrca",
+      "machine_uid": "snapmaker:u1",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Snapmaker U1",
+      "source_machine_profile_name": "Snapmaker U1 (0.6 nozzle)",
+      "supported_build_plate_uids": [
+        "plate:textured-pei"
+      ]
+    },
+    {
+      "slicer_id": "SnapmakerOrca",
+      "machine_uid": "snapmaker:u1",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Snapmaker U1",
+      "source_machine_profile_name": "Snapmaker U1 (0.8 nozzle)",
+      "supported_build_plate_uids": [
+        "plate:textured-pei"
+      ]
+    }
+  ]
+}

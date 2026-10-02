@@ -1,0 +1,49 @@
+{
+  "slicer_id": "BambuStudio",
+  "application_version": "02.08.02.61",
+  "assembly_id": 5,
+  "instance_id": "0",
+  "identify_id": "1",
+  "source_file": "sample.stl",
+  "parts": [
+    {
+      "part_id": 2,
+      "name": "Sample",
+      "material_index": 0,
+      "source_object_id": 0,
+      "source_volume_id": 0,
+      "matrix": "1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1",
+      "source_offset_x": "0",
+      "source_offset_y": "0",
+      "source_offset_z": "0"
+    }
+  ],
+  "plate": {
+    "plater_id": "1",
+    "plater_name": "",
+    "locked": false,
+    "bed_type": "Textured PEI Plate",
+    "filament_map_mode": "Auto For Flush"
+  },
+  "component_inputs": {
+    "wipe_tower_placement": {
+      "schema_version": 1,
+      "enabled": false,
+      "available": false,
+      "adapted": false,
+      "requires_manual_adjustment": false,
+      "warning_code": null,
+      "reason": "disabled_by_user"
+    },
+    "layer_config_ranges": {
+      "model_index": 1,
+      "ranges": [
+        {
+          "min_z": 0.4,
+          "max_z": 1.2,
+          "infill_density_percent": 100
+        }
+      ]
+    }
+  }
+}

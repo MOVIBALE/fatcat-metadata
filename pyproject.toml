@@ -1,0 +1,86 @@
+[build-system]
+requires = [
+    "scikit-build-core>=0.10,<0.12",
+    "pybind11>=3.0,<4",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "fatcat-metadata"
+version = "0.1.0"
+description = "C++ metadata and project-settings composition for slicer 3MF projects"
+readme = "README.md"
+requires-python = ">=3.12,<3.15"
+license = "AGPL-3.0-only"
+license-files = [
+    "LICENSE",
+    "NOTICE.md",
+    "COPYRIGHT.md",
+    "licenses/third-party/**",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[tool.scikit-build]
+cmake.source-dir = "cpp"
+cmake.version = ">=3.18"
+cmake.args = ["-DFATCAT_BUILD_TESTS=OFF"]
+wheel.packages = []
+sdist.include = [
+    ".github/workflows/*.yml",
+    "compatibility/**/*.json",
+    "cpp/CMakeLists.txt",
+    "cpp/README.md",
+    "cpp/bindings/*.cpp",
+    "cpp/include/**/*.h",
+    "cpp/include/**/*.hpp",
+    "cpp/src/*.cpp",
+    "cpp/src/*.h",
+    "cpp/src/*.hpp",
+    "cpp/tests/*.cpp",
+    "cpp/tests/*.py",
+    "cpp/examples/*/CMakeLists.txt",
+    "cpp/examples/*/*.cpp",
+    "cpp/examples/*/*.json",
+    "cpp/examples/*/*.md",
+    "cpp/examples/*/*.py",
+    "docs/*.md",
+    "licenses/third-party/manifest.json",
+    "licenses/third-party/**/LICENSE*",
+    "python/*.py",
+    "scripts/*.py",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md",
+    "COPYRIGHT.md",
+    "pyproject.toml",
+]
+sdist.exclude = [
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/*.pyo",
+    "**/*.so",
+    "**/*.dylib",
+    "**/*.dll",
+    "**/*.pyd",
+    "**/*.o",
+    "**/*.obj",
+    "**/*.a",
+    "**/*.lib",
+    "**/*.3mf",
+    "**/*.whl",
+    "**/*.tar.gz",
+    "**/build/**",
+    "**/dist/**",
+    "**/.venv/**",
+    "**/venv/**",
+    "**/evidence/**",
+    "**/outputs/**",
+]

@@ -1,0 +1,1120 @@
+{
+  "build_plates": [
+    {
+      "build_plate_uid": "plate:textured-pei",
+      "display_name": "Textured PEI Plate",
+      "surface": "textured_pei"
+    },
+    {
+      "build_plate_uid": "plate:smooth-pei",
+      "display_name": "Smooth PEI Plate",
+      "surface": "smooth_pei"
+    },
+    {
+      "build_plate_uid": "plate:supertack",
+      "display_name": "Cool Plate (SuperTack)",
+      "surface": "supertack"
+    },
+    {
+      "build_plate_uid": "plate:cool",
+      "display_name": "Cool Plate",
+      "surface": "cool"
+    },
+    {
+      "build_plate_uid": "plate:engineering",
+      "display_name": "Engineering Plate",
+      "surface": "engineering"
+    },
+    {
+      "build_plate_uid": "plate:textured-cool",
+      "display_name": "Textured Cool Plate",
+      "surface": "textured_cool"
+    }
+  ],
+  "machines": [
+    {
+      "build_volume_mm": {
+        "x": "255",
+        "y": "255",
+        "z": "260"
+      },
+      "display_name": "Anycubic Kobra 3 V2",
+      "machine_uid": "anycubic:kobra-3-v2",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 3 V2",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "180",
+        "y": "180",
+        "z": "180"
+      },
+      "display_name": "Bambu Lab A1 mini",
+      "machine_uid": "bambu-lab:a1-mini",
+      "manufacturer": "Bambu Lab",
+      "model": "A1 mini",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "256"
+      },
+      "display_name": "Elegoo Centauri Carbon 2",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "manufacturer": "Elegoo",
+      "model": "Centauri Carbon 2",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "256"
+      },
+      "display_name": "Flashforge Creator 5",
+      "machine_uid": "flashforge:creator-5",
+      "manufacturer": "Flashforge",
+      "model": "Creator 5",
+      "physical_tool_count": 4,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.25mm",
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "245",
+        "y": "245",
+        "z": "240"
+      },
+      "display_name": "QIDI Q1 Pro",
+      "machine_uid": "qidi:q1-pro",
+      "manufacturer": "QIDI",
+      "model": "Q1 Pro",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "270",
+        "y": "270",
+        "z": "256"
+      },
+      "display_name": "QIDI Q2",
+      "machine_uid": "qidi:q2",
+      "manufacturer": "QIDI",
+      "model": "Q2",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "270",
+        "y": "270",
+        "z": "270.05"
+      },
+      "display_name": "Snapmaker U1",
+      "machine_uid": "snapmaker:u1",
+      "manufacturer": "Snapmaker",
+      "model": "U1",
+      "physical_tool_count": 4,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "256"
+      },
+      "display_name": "Bambu Lab A1",
+      "machine_uid": "bambu-lab:a1",
+      "manufacturer": "Bambu Lab",
+      "model": "A1",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "250"
+      },
+      "display_name": "Bambu Lab P1S",
+      "machine_uid": "bambu-lab:p1s",
+      "manufacturer": "Bambu Lab",
+      "model": "P1S",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "250"
+      },
+      "display_name": "Bambu Lab P1P",
+      "machine_uid": "bambu-lab:p1p",
+      "manufacturer": "Bambu Lab",
+      "model": "P1P",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "250"
+      },
+      "display_name": "Bambu Lab X1",
+      "machine_uid": "bambu-lab:x1",
+      "manufacturer": "Bambu Lab",
+      "model": "X1",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "250"
+      },
+      "display_name": "Bambu Lab X1 Carbon",
+      "machine_uid": "bambu-lab:x1-carbon",
+      "manufacturer": "Bambu Lab",
+      "model": "X1 Carbon",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "250"
+      },
+      "display_name": "Bambu Lab X1E",
+      "machine_uid": "bambu-lab:x1e",
+      "manufacturer": "Bambu Lab",
+      "model": "X1E",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "220",
+        "y": "220",
+        "z": "220"
+      },
+      "display_name": "Flashforge AD5X",
+      "machine_uid": "flashforge:ad5x",
+      "manufacturer": "Flashforge",
+      "model": "AD5X",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.25mm",
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "220",
+        "y": "220",
+        "z": "250"
+      },
+      "display_name": "Anycubic Kobra 1",
+      "machine_uid": "anycubic:kobra-1",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 1",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "400",
+        "y": "400",
+        "z": "450"
+      },
+      "display_name": "Anycubic Kobra 1 Max",
+      "machine_uid": "anycubic:kobra-1-max",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 1 Max",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "300",
+        "y": "300",
+        "z": "350"
+      },
+      "display_name": "Anycubic Kobra 1 Plus",
+      "machine_uid": "anycubic:kobra-1-plus",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 1 Plus",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "220",
+        "y": "220",
+        "z": "250"
+      },
+      "display_name": "Anycubic Kobra 2",
+      "machine_uid": "anycubic:kobra-2",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 2",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "426",
+        "y": "426",
+        "z": "500"
+      },
+      "display_name": "Anycubic Kobra 2 Max",
+      "machine_uid": "anycubic:kobra-2-max",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 2 Max",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "220",
+        "y": "220",
+        "z": "250"
+      },
+      "display_name": "Anycubic Kobra 2 Neo",
+      "machine_uid": "anycubic:kobra-2-neo",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 2 Neo",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "320",
+        "y": "320",
+        "z": "400"
+      },
+      "display_name": "Anycubic Kobra 2 Plus",
+      "machine_uid": "anycubic:kobra-2-plus",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 2 Plus",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "220",
+        "y": "220",
+        "z": "250"
+      },
+      "display_name": "Anycubic Kobra 2 Pro",
+      "machine_uid": "anycubic:kobra-2-pro",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 2 Pro",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "255",
+        "y": "255",
+        "z": "260"
+      },
+      "display_name": "Anycubic Kobra 3",
+      "machine_uid": "anycubic:kobra-3",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 3",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "426",
+        "y": "420",
+        "z": "501"
+      },
+      "display_name": "Anycubic Kobra 3 Max",
+      "machine_uid": "anycubic:kobra-3-max",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 3 Max",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "260",
+        "y": "260",
+        "z": "260"
+      },
+      "display_name": "Anycubic Kobra 4",
+      "machine_uid": "anycubic:kobra-4",
+      "manufacturer": "Anycubic",
+      "model": "Kobra 4",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.25mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "250",
+        "y": "250",
+        "z": "250"
+      },
+      "display_name": "Anycubic Kobra S1",
+      "machine_uid": "anycubic:kobra-s1",
+      "manufacturer": "Anycubic",
+      "model": "Kobra S1",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.25mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "350",
+        "y": "350",
+        "z": "350"
+      },
+      "display_name": "Anycubic Kobra S1 Max",
+      "machine_uid": "anycubic:kobra-s1-max",
+      "manufacturer": "Anycubic",
+      "model": "Kobra S1 Max",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.25mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "260",
+        "y": "260",
+        "z": "260"
+      },
+      "display_name": "Anycubic Kobra X",
+      "machine_uid": "anycubic:kobra-x",
+      "manufacturer": "Anycubic",
+      "model": "Kobra X",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.25mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "330",
+        "y": "320",
+        "z": "325"
+      },
+      "display_name": "Bambu Lab A2L",
+      "machine_uid": "bambu-lab:a2l",
+      "manufacturer": "Bambu Lab",
+      "model": "A2L",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "330",
+        "y": "320",
+        "z": "325"
+      },
+      "display_name": "Bambu Lab H2C",
+      "machine_uid": "bambu-lab:h2c",
+      "manufacturer": "Bambu Lab",
+      "model": "H2C",
+      "physical_tool_count": 2,
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:supertack",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "350",
+        "y": "320",
+        "z": "325"
+      },
+      "display_name": "Bambu Lab H2D",
+      "machine_uid": "bambu-lab:h2d",
+      "manufacturer": "Bambu Lab",
+      "model": "H2D",
+      "physical_tool_count": 2,
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "350",
+        "y": "320",
+        "z": "325"
+      },
+      "display_name": "Bambu Lab H2D Pro",
+      "machine_uid": "bambu-lab:h2d-pro",
+      "manufacturer": "Bambu Lab",
+      "model": "H2D Pro",
+      "physical_tool_count": 2,
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "340",
+        "y": "320",
+        "z": "340"
+      },
+      "display_name": "Bambu Lab H2S",
+      "machine_uid": "bambu-lab:h2s",
+      "manufacturer": "Bambu Lab",
+      "model": "H2S",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "256"
+      },
+      "display_name": "Bambu Lab P2S",
+      "machine_uid": "bambu-lab:p2s",
+      "manufacturer": "Bambu Lab",
+      "model": "P2S",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "261"
+      },
+      "display_name": "Bambu Lab X2D",
+      "machine_uid": "bambu-lab:x2d",
+      "manufacturer": "Bambu Lab",
+      "model": "X2D",
+      "physical_tool_count": 2,
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "256"
+      },
+      "display_name": "Elegoo Centauri",
+      "machine_uid": "elegoo:centauri",
+      "manufacturer": "Elegoo",
+      "model": "Centauri",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "256"
+      },
+      "display_name": "Elegoo Centauri Carbon",
+      "machine_uid": "elegoo:centauri-carbon",
+      "manufacturer": "Elegoo",
+      "model": "Centauri Carbon",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "256",
+        "y": "256",
+        "z": "256"
+      },
+      "display_name": "Flashforge Creator 5 Pro",
+      "machine_uid": "flashforge:creator-5-pro",
+      "manufacturer": "Flashforge",
+      "model": "Creator 5 Pro",
+      "physical_tool_count": 4,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.25mm",
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "300",
+        "y": "330",
+        "z": "600"
+      },
+      "display_name": "Flashforge Guider 3 Ultra",
+      "machine_uid": "flashforge:guider-3-ultra",
+      "manufacturer": "Flashforge",
+      "model": "Guider 3 Ultra",
+      "physical_tool_count": 2,
+      "supported_build_plate_uids": [],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "300",
+        "y": "300",
+        "z": "300"
+      },
+      "display_name": "Flashforge Guider4",
+      "machine_uid": "flashforge:guider4",
+      "manufacturer": "Flashforge",
+      "model": "Guider4",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.25mm",
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "300",
+        "y": "300",
+        "z": "300"
+      },
+      "display_name": "Flashforge Guider4 Pro",
+      "machine_uid": "flashforge:guider4-pro",
+      "manufacturer": "Flashforge",
+      "model": "Guider4 Pro",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:engineering",
+        "plate:smooth-pei",
+        "plate:supertack",
+        "plate:textured-cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.25mm",
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "270",
+        "y": "270",
+        "z": "256"
+      },
+      "display_name": "Q2C",
+      "machine_uid": "qidi:q2c",
+      "manufacturer": "QIDI",
+      "model": "Q2C",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "390",
+        "y": "390",
+        "z": "340"
+      },
+      "display_name": "X-Max 4",
+      "machine_uid": "qidi:x-max-4",
+      "manufacturer": "QIDI",
+      "model": "X-Max 4",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm"
+      ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "320",
+        "y": "320",
+        "z": "300"
+      },
+      "display_name": "X-Plus 5",
+      "machine_uid": "qidi:x-plus-5",
+      "manufacturer": "QIDI",
+      "model": "X-Plus 5",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.4mm"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "display_name": "PLA",
+      "material_type": "PLA",
+      "material_uid": "material:pla"
+    },
+    {
+      "display_name": "PETG",
+      "material_type": "PETG",
+      "material_uid": "material:petg"
+    }
+  ],
+  "nozzles": [
+    {
+      "diameter_mm": "0.4",
+      "nozzle_uid": "nozzle:0.4mm"
+    },
+    {
+      "diameter_mm": "0.2",
+      "nozzle_uid": "nozzle:0.2mm"
+    },
+    {
+      "diameter_mm": "0.6",
+      "nozzle_uid": "nozzle:0.6mm"
+    },
+    {
+      "diameter_mm": "0.8",
+      "nozzle_uid": "nozzle:0.8mm"
+    },
+    {
+      "diameter_mm": "0.25",
+      "nozzle_uid": "nozzle:0.25mm"
+    }
+  ],
+  "schema_version": 1
+}

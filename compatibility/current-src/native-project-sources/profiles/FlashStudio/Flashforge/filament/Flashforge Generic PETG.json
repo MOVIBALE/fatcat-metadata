@@ -1,0 +1,95 @@
+{
+    "additional_cooling_fan_speed": [
+        "50"
+    ],
+    "close_fan_the_first_x_layers": [
+        "1"
+    ],
+    "compatible_printers": [
+        "Flashforge Adventurer 5M 0.4 Nozzle",
+        "Flashforge Adventurer 5M 0.6 Nozzle",
+        "Flashforge Adventurer 5M 0.8 Nozzle",
+        "Flashforge Adventurer 5M Pro 0.4 Nozzle",
+        "Flashforge Adventurer 5M Pro 0.6 Nozzle",
+        "Flashforge Adventurer 5M Pro 0.8 Nozzle",
+        "Flashforge Guider 2s 0.4 nozzle"
+    ],
+    "enable_pressure_advance": [
+        "1"
+    ],
+    "fan_cooling_layer_time": [
+        "30"
+    ],
+    "fan_max_speed": [
+        "100"
+    ],
+    "fan_min_speed": [
+        "80"
+    ],
+    "filament_density": [
+        "1.27"
+    ],
+    "filament_diameter": [
+        "1.75"
+    ],
+    "filament_end_gcode": [
+        "; filament end gcode\n"
+    ],
+    "filament_flow_ratio": [
+        "1"
+    ],
+    "filament_id": "GFG99",
+    "filament_max_volumetric_speed": [
+        "12"
+    ],
+    "filament_start_gcode": [
+        "; filament start gcode \n;right_extruder_material:PETG"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "hot_plate_temp": [
+        "70"
+    ],
+    "hot_plate_temp_initial_layer": [
+        "70"
+    ],
+    "inherits": "fdm_filament_pet",
+    "instantiation": "false",
+    "name": "Flashforge Generic PETG",
+    "nozzle_temperature": [
+        "255"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "255"
+    ],
+    "nozzle_temperature_range_high": [
+        "260"
+    ],
+    "nozzle_temperature_range_low": [
+        "220"
+    ],
+    "overhang_fan_speed": [
+        "80"
+    ],
+    "overhang_fan_threshold": [
+        "25%"
+    ],
+    "pressure_advance": [
+        "0.046"
+    ],
+    "slow_down_layer_time": [
+        "8"
+    ],
+    "slow_down_min_speed": [
+        "30"
+    ],
+    "support_material_interface_fan_speed": [
+        "90"
+    ],
+    "temperature_vitrification": [
+        "70"
+    ],
+    "type": "filament"
+}

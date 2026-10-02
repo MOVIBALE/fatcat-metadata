@@ -1,0 +1,9 @@
+{
+  "slicer_id": "BambuStudio",
+  "application_version": "02.08.02.61",
+  "machine_uid": "bambu-lab:a1-mini",
+  "nozzle_uid": "nozzle:0.4mm",
+  "build_plate_uid": "plate:textured-pei",
+  "material_mode": "preserve_template",
+  "layer_height": "0.20"
+}

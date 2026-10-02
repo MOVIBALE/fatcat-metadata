@@ -1,0 +1,399 @@
+#include <array>
+#include <filesystem>
+#include <fstream>
+#include <optional>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <nlohmann/json.hpp>
+
+#include "fatcat/metadata_components.h"
+#include "fatcat/native_project_source.h"
+#include "fatcat/project_settings.h"
+#include "fatcat/source_material_slots.h"
+#include "fatcat/template_import.h"
+#include "fatcat/template_assembly.h"
+#include "fatcat/wipe_tower.h"
+
+namespace py = pybind11;
+
+namespace {
+
+struct PackagedTarget {
+    const char *slicer;
+    const char *file;
+    bool import_source;
+};
+
+constexpr std::array<PackagedTarget, 7> packaged_targets = {{
+    {"BambuStudio", "targets/bambu-studio-02.08.02.61.json", true},
+    {"OrcaSlicer", "targets/orca-slicer-2.4.2.json", true},
+    {"QIDIStudio", "targets/qidi-studio-02.07.02.60.json", true},
+    {"ElegooSlicer", "targets/elegoo-slicer-1.5.3.5.json", true},
+    {"AnycubicSlicerNext", "targets/anycubic-slicer-next-2.0.0.2.json", true},
+    {"FlashStudio", "targets/flash-studio-1.7.15.json", false},
+    {"SnapmakerOrca", "targets/snapmaker-orca-2.3.6.json", true},
+}};
+
+std::filesystem::path packaged_data_root(const char *relative_path) {
+    const auto module = py::module_::import("fatcat_metadata");
+    const auto module_file =
+        module.attr("__file__").cast<std::string>();
+    return std::filesystem::path(module_file).parent_path() /
+        "fatcat_metadata_data" / relative_path;
+}
+
+std::string read_packaged_translation(const char *relative_path) {
+    const std::filesystem::path path = packaged_data_root("translations") / relative_path;
+    std::ifstream stream(path, std::ios::binary);
+    if (!stream) {
+        throw std::runtime_error("packaged translation data is missing: " +
+                                 path.string());
+    }
+    std::ostringstream contents;
+    contents << stream.rdbuf();
+    return contents.str();
+}
+
+std::string read_packaged_target(const std::string &slicer) {
+    for (const auto &target : packaged_targets) {
+        if (slicer == target.slicer) return read_packaged_translation(target.file);
+    }
+    throw std::invalid_argument("unsupported metadata target: " + slicer);
+}
+
+std::string read_requested_target(const std::string &request_json) {
+    const auto request = nlohmann::json::parse(request_json);
+    const auto slicer = request.at("slicer_id").get<std::string>();
+    auto source = read_packaged_target(slicer);
+    if (request.contains("application_version")) {
+        const auto target = nlohmann::json::parse(source);
+        if (request.at("application_version") != target.at("target_contract").at("application_version")) {
+            throw std::invalid_argument("unsupported metadata target version for " + slicer);
+        }
+    }
+    return source;
+}
+
+std::string compose_builtin_from_package(const std::string &request_json) {
+    try {
+        const auto canonical = read_packaged_translation("canonical.json");
+        const auto target = read_requested_target(request_json);
+        return fatcat::compose_builtin_project_settings(
+            request_json, canonical, target,
+            packaged_data_root("native_project_sources"));
+    } catch (const std::exception &error) {
+        throw py::value_error(error.what());
+    }
+}
+
+std::array<std::string, 6> read_import_targets() {
+    std::array<std::string, 6> targets;
+    std::size_t index = 0;
+    for (const auto &target : packaged_targets) {
+        if (target.import_source) targets.at(index++) = read_packaged_translation(target.file);
+    }
+    return targets;
+}
+
+std::optional<std::string_view> optional_view(
+    const std::optional<std::string> &value) {
+    if (value.has_value()) {
+        return std::string_view(*value);
+    }
+    return std::nullopt;
+}
+
+}  // namespace
+
+PYBIND11_MODULE(fatcat_metadata, module) {
+    module.doc() =
+        "C++17 core for Fat Cat 3MF project and slicer metadata components.";
+    module.attr("__version__") = FATCAT_METADATA_VERSION;
+    module.attr("__fatcat_cpp_extension__") = true;
+    module.attr("__fatcat_project_settings__") = true;
+
+    module.def(
+        "metadata_target",
+        [](const std::string &slicer_id) {
+            const auto target = nlohmann::json::parse(read_packaged_target(slicer_id));
+            return target.at("target_contract").dump();
+        },
+        py::arg("slicer_id"),
+        "Read the installed target identity for a supported slicer.");
+
+    module.def(
+        "metadata_resource_specs",
+        [](const std::string &slicer_id) {
+            const auto target = nlohmann::json::parse(read_packaged_target(slicer_id));
+            return target.at("package_dialect").at("metadata_components").at("resources").dump();
+        },
+        py::arg("slicer_id"),
+        "Read target-owned resource paths and relationships.");
+
+    module.def(
+        "assemble_project_template",
+        [](const std::string &base_project_json,
+           const std::optional<std::string> &registry_machine_json,
+           const std::string &options_json) {
+            try {
+                return fatcat::assemble_project_template(
+                    base_project_json, optional_view(registry_machine_json), options_json);
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("base_project_json"), py::arg("registry_machine_json"),
+        py::arg("options_json"),
+        "Assemble selected source project and machine templates in C++.");
+
+    module.def(
+        "assemble_machine_registry_template",
+        [](const std::string &source_settings_json, const std::string &options_json) {
+            return fatcat::assemble_machine_registry_template(
+                source_settings_json, options_json);
+        },
+        py::arg("source_settings_json"), py::arg("options_json"),
+        "Compose a machine registry metadata template from source facts.");
+
+    module.def(
+        "source_material_settings_parts",
+        [](const std::string &request_json) {
+            try {
+                const auto target = read_requested_target(request_json);
+                return fatcat::source_material_settings_parts(target);
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("request_json"),
+        "Return the target-described project/model settings member paths.");
+
+    module.def(
+        "extract_source_material_slots",
+        [](const std::string &project_json,
+           const std::string &model_settings_xml,
+           const std::string &request_json) {
+            try {
+                const auto target = read_requested_target(request_json);
+                return fatcat::extract_source_material_slots(
+                    project_json, model_settings_xml, target);
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("project_json"), py::arg("model_settings_xml"),
+        py::arg("request_json"),
+        "Extract canonical source slot records for an explicit slicer/version.");
+
+    module.def(
+        "read_project_layout",
+        [](const std::string &project_json, const std::string &request_json) {
+            return fatcat::read_project_layout(project_json, read_requested_target(request_json));
+        },
+        py::arg("project_json"), py::arg("request_json"),
+        "Read numeric layout inputs from source project metadata.");
+
+    module.def(
+        "read_placement_warnings",
+        [](const std::optional<std::string> &placement_json) {
+            return fatcat::read_placement_warnings(optional_view(placement_json));
+        },
+        py::arg("placement_json"),
+        "Read placement warning codes from an optional metadata part.");
+
+    module.def(
+        "read_source_metadata",
+        [](const std::string &project_json, const std::string &model_settings_xml,
+           const std::string &request_json,
+           const std::optional<std::string> &source_model_xml,
+           const std::optional<std::string> &slice_info_xml,
+           const std::optional<std::string> &placement_json) {
+            return fatcat::read_source_metadata(
+                project_json, model_settings_xml, read_requested_target(request_json),
+                optional_view(source_model_xml), optional_view(slice_info_xml),
+                optional_view(placement_json));
+        },
+        py::arg("project_json"), py::arg("model_settings_xml"), py::arg("request_json"),
+        py::arg("source_model_xml") = py::none(), py::arg("slice_info_xml") = py::none(),
+        py::arg("placement_json") = py::none(),
+        "Read source slots, project, object and plate metadata without parsing geometry.");
+
+    module.def(
+        "serialize_layer_config_ranges", &fatcat::serialize_layer_config_ranges,
+        py::arg("data_json"), py::arg("fine_layer_height_mm"),
+        "Serialize caller-computed layer ranges without computing geometry.");
+
+    module.def(
+        "read_model_object_metadata", &fatcat::read_model_object_metadata,
+        py::arg("model_xml"),
+        "Read metadata attached to source model objects.");
+
+    module.def(
+        "validate_template_hardware", &fatcat::validate_template_hardware,
+        py::arg("template_json"), py::arg("expected_project_json"),
+        py::arg("source_slicer"), py::arg("selected_slicer"),
+        "Compare an imported source's hardware with the selected template.");
+
+    module.def(
+        "template_import_parts",
+        [](const std::string &request_json) {
+            try {
+                return fatcat::template_import_parts(
+                    read_requested_target(request_json));
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("request_json"),
+        "Return the target-described text member paths for template import.");
+
+    module.def(
+        "resolve_template_build_plate",
+        [](const std::string &request_json,
+           const std::string &default_build_plate_uid,
+           const std::optional<std::string> &model_plate_value,
+           const std::optional<std::string> &sidecar_bed_value,
+           const std::optional<std::string> &project_bed_value) {
+            try {
+                return fatcat::resolve_template_build_plate(
+                    read_requested_target(request_json), default_build_plate_uid,
+                    optional_view(model_plate_value), optional_view(sidecar_bed_value),
+                    optional_view(project_bed_value));
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("request_json"), py::arg("default_build_plate_uid"),
+        py::arg("model_plate_value"), py::arg("sidecar_bed_value"),
+        py::arg("project_bed_value"),
+        "Resolve an imported template's effective build plate from target bindings.");
+
+    module.def(
+        "detect_template_source",
+        [](const std::optional<std::string> &source_model_xml,
+           const std::optional<std::string> &slice_info_xml) {
+            try {
+                const auto targets = read_import_targets();
+                return fatcat::detect_template_source(
+                    optional_view(source_model_xml), optional_view(slice_info_xml),
+                    targets[0], targets[1], targets[2], targets[3], targets[4], targets[5]);
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("source_model_xml"), py::arg("slice_info_xml"),
+        "Identify a supported source slicer and its declared version.");
+
+    module.def(
+        "import_template_metadata",
+        [](const std::string &project_settings_json,
+           const std::optional<std::string> &source_model_xml,
+           const std::optional<std::string> &slice_info_xml,
+           const std::optional<std::string> &model_settings_xml,
+           const std::optional<std::string> &plate_sidecar_json,
+           const std::string &request_json, bool explicit_slicer_hint) {
+            try {
+                const auto selected = read_requested_target(request_json);
+                const auto targets = read_import_targets();
+                return fatcat::import_template_metadata(
+                    project_settings_json, optional_view(source_model_xml),
+                    optional_view(slice_info_xml), optional_view(model_settings_xml),
+                    optional_view(plate_sidecar_json), selected, targets[0], targets[1], targets[2],
+                    targets[3], targets[4], targets[5], explicit_slicer_hint);
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("project_settings_json"), py::arg("source_model_xml"),
+        py::arg("slice_info_xml"), py::arg("model_settings_xml"),
+        py::arg("plate_sidecar_json"), py::arg("request_json"),
+        py::arg("explicit_slicer_hint"),
+        "Interpret a supported user template without changing its settings.");
+
+    module.def(
+        "patch_wipe_tower",
+        [](const std::string &project_json, const std::string &settings_json,
+           const std::string &dialect_json) {
+            try {
+                return fatcat::patch_wipe_tower(project_json, settings_json,
+                                                dialect_json);
+            } catch (const fatcat::WipeTowerError &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("project_json"), py::arg("settings_json"),
+        py::arg("dialect_json"),
+        "Patch caller-computed wipe-tower settings in project JSON text.");
+
+    module.def(
+        "compose_project_settings",
+        [](const std::string &request_json) {
+            return compose_builtin_from_package(request_json);
+        },
+        py::arg("request_json"),
+        "Compose a selected Fat Cat built-in native source without project JSON.");
+
+    module.def(
+        "compose_project_settings",
+        [](const std::optional<std::string> &project_json,
+           const std::string &request_json) {
+            try {
+                if (!project_json.has_value()) {
+                    return compose_builtin_from_package(request_json);
+                }
+                const auto request = nlohmann::json::parse(request_json);
+                if (request.contains("project_source")) {
+                    throw fatcat::ProjectSettingsError(
+                        "project_source requires project_json=None or the one-argument built-in overload");
+                }
+                const auto canonical = read_packaged_translation("canonical.json");
+                const auto target = read_requested_target(request_json);
+                return fatcat::compose_project_settings(
+                    *project_json, request_json, canonical, target);
+            } catch (const fatcat::ProjectSettingsError &error) {
+                throw py::value_error(error.what());
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("project_json"), py::arg("request_json"),
+        "Compose project settings from explicit project JSON or a built-in source.");
+
+    module.def(
+        "native_project_source_catalog",
+        [](const std::string &slicer_id) {
+            try {
+                const auto target = nlohmann::json::parse(read_packaged_target(slicer_id));
+                const auto version = target.at("target_contract")
+                                         .at("application_version")
+                                         .get<std::string>();
+                return fatcat::native_project_source_catalog(
+                    slicer_id, version, packaged_data_root("native_project_sources"));
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("slicer_id"),
+        "Read the installed native machine identities and hardware facts.");
+
+    module.def(
+        "compose_model_metadata",
+        [](const std::string &project_json, const std::string &request_json) {
+            try {
+                const auto target = read_requested_target(request_json);
+                return fatcat::compose_model_metadata(project_json, request_json,
+                                                       target);
+            } catch (const fatcat::MetadataComponentsError &error) {
+                throw py::value_error(error.what());
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("project_json"), py::arg("request_json"),
+        "Generate metadata parts and package descriptions for the explicit slicer/version.");
+}

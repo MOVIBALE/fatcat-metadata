@@ -1,0 +1,12 @@
+{
+    "type": "filament",
+    "filament_id": "GFPLA+",
+    "setting_id": "GFSA04",
+    "from": "system",
+    "is_custom_defined": "0",
+    "instantiation": "true",
+    "version": "1.3.2506.20",
+    "inherits": "Anycubic PLA @Anycubic Kobra 2 Plus 0.4 nozzle",
+    "name": "Anycubic PLA+ @Anycubic Kobra 2 Plus 0.4 nozzle",
+    "filament_settings_id": ["Anycubic PLA+ @Anycubic Kobra 2 Plus 0.4 nozzle"]
+}

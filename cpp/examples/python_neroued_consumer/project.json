@@ -1,0 +1,16 @@
+{
+  "printer_settings_id": "Bambu Lab A1 mini 0.4 nozzle",
+  "printer_model": "Bambu Lab A1 mini",
+  "printer_variant": "0.4",
+  "nozzle_diameter": ["0.4"],
+  "curr_bed_type": "Textured PEI Plate",
+  "layer_height": "0.20",
+  "filament_settings_id": ["Bambu PLA Basic"],
+  "filament_type": ["PLA"],
+  "filament_vendor": ["Bambu Lab"],
+  "filament_compatible_printers": ["Bambu Lab A1 mini 0.4 nozzle"],
+  "filament_colour": ["#E63946"],
+  "filament_multi_colour": ["#E63946"],
+  "nozzle_temperature": ["220"],
+  "different_settings_to_system": ["", "", ""]
+}

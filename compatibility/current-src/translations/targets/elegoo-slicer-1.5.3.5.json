@@ -1,0 +1,1566 @@
+{
+  "build_plate_bindings": [
+    {
+      "build_plate_uid": "plate:cool",
+      "plate_value": "Cool Plate",
+      "project_value": "Cool Plate",
+      "sidecar_value": "cool_plate"
+    },
+    {
+      "bed_image_asset": "assets/build-plates/textured-pei.png",
+      "build_plate_uid": "plate:textured-pei",
+      "plate_value": "Textured PEI Plate",
+      "project_value": "Textured PEI Plate",
+      "sidecar_value": "textured_plate"
+    }
+  ],
+  "machine_bindings": [
+    {
+      "default_print_profile": "0.20mm Standard @Elegoo CC2 0.4 nozzle",
+      "machine_thumbnail_asset": "assets/machines/elegoo-centauri-carbon-2.png",
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_diameter": [
+        "0.4"
+      ],
+      "nozzle_uid": "nozzle:0.4mm",
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_model": "Elegoo Centauri Carbon 2",
+      "printer_variant": "0.4",
+      "source_profile_name": "Elegoo Centauri Carbon 2 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "source_version": "01.05.01.06",
+      "native_project_defaults": {
+        "prime_tower_brim_width": "3"
+      }
+    },
+    {
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.2mm",
+      "source_profile_name": "Elegoo Centauri 0.2 nozzle",
+      "printer_model": "Elegoo Centauri",
+      "nozzle_diameter": [
+        "0.2"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.2",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.10mm Standard @Elegoo C 0.2 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.4mm",
+      "source_profile_name": "Elegoo Centauri 0.4 nozzle",
+      "printer_model": "Elegoo Centauri",
+      "nozzle_diameter": [
+        "0.4"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.4",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.20mm Standard @Elegoo C 0.4 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.6mm",
+      "source_profile_name": "Elegoo Centauri 0.6 nozzle",
+      "printer_model": "Elegoo Centauri",
+      "nozzle_diameter": [
+        "0.6"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.6",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.30mm Standard @Elegoo C 0.6 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri",
+      "nozzle_uid": "nozzle:0.8mm",
+      "source_profile_name": "Elegoo Centauri 0.8 nozzle",
+      "printer_model": "Elegoo Centauri",
+      "nozzle_diameter": [
+        "0.8"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.8",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.40mm Standard @Elegoo C 0.8 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.2mm",
+      "source_profile_name": "Elegoo Centauri Carbon 0.2 nozzle",
+      "printer_model": "Elegoo Centauri Carbon",
+      "nozzle_diameter": [
+        "0.2"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.2",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.10mm Standard @Elegoo CC 0.2 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.4mm",
+      "source_profile_name": "Elegoo Centauri Carbon 0.4 nozzle",
+      "printer_model": "Elegoo Centauri Carbon",
+      "nozzle_diameter": [
+        "0.4"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.4",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.20mm Standard @Elegoo CC 0.4 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.6mm",
+      "source_profile_name": "Elegoo Centauri Carbon 0.6 nozzle",
+      "printer_model": "Elegoo Centauri Carbon",
+      "nozzle_diameter": [
+        "0.6"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.6",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.30mm Standard @Elegoo CC 0.6 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri-carbon",
+      "nozzle_uid": "nozzle:0.8mm",
+      "source_profile_name": "Elegoo Centauri Carbon 0.8 nozzle",
+      "printer_model": "Elegoo Centauri Carbon",
+      "nozzle_diameter": [
+        "0.8"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.8",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.40mm Standard @Elegoo CC 0.8 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.2mm",
+      "source_profile_name": "Elegoo Centauri Carbon 2 0.2 nozzle",
+      "printer_model": "Elegoo Centauri Carbon 2",
+      "nozzle_diameter": [
+        "0.2"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.2",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.10mm Standard @Elegoo CC2 0.2 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.6mm",
+      "source_profile_name": "Elegoo Centauri Carbon 2 0.6 nozzle",
+      "printer_model": "Elegoo Centauri Carbon 2",
+      "nozzle_diameter": [
+        "0.6"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.6",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.30mm Standard @Elegoo CC2 0.6 nozzle"
+    },
+    {
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "nozzle_uid": "nozzle:0.8mm",
+      "source_profile_name": "Elegoo Centauri Carbon 2 0.8 nozzle",
+      "printer_model": "Elegoo Centauri Carbon 2",
+      "nozzle_diameter": [
+        "0.8"
+      ],
+      "printable_area": [
+        "0x0",
+        "256x0",
+        "256x256",
+        "0x256"
+      ],
+      "printable_height": "256",
+      "printer_variant": "0.8",
+      "supported_build_plate_uids": [
+        "plate:cool",
+        "plate:textured-pei"
+      ],
+      "default_print_profile": "0.40mm Standard @Elegoo CC2 0.8 nozzle"
+    }
+  ],
+  "material_bindings": [
+    {
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "material_uid": "material:pla",
+      "native_material_type": "PLA",
+      "native_profile_id": "Elegoo PLA @ECC2",
+      "native_filament_id": "EPLAB00",
+      "native_vendor": "Elegoo",
+      "nozzle_uid": "nozzle:0.4mm",
+      "write_policy": "target_native_preset",
+      "material_profile_key": "material:pla::Elegoo PLA @ECC2"
+    },
+    {
+      "machine_uid": "elegoo:centauri-carbon-2",
+      "material_uid": "material:petg",
+      "native_material_type": "PETG",
+      "native_profile_id": "Elegoo PETG @ECC2",
+      "native_filament_id": "EPETGB00",
+      "native_vendor": "Elegoo",
+      "nozzle_uid": "nozzle:0.4mm",
+      "write_policy": "target_native_preset",
+      "material_profile_key": "material:petg::Elegoo PETG @ECC2"
+    }
+  ],
+  "package_dialect": {
+    "source_identity": {
+      "name": "Application",
+      "value": "ElegooSlicer-01.05.01.06"
+    },
+    "wipe_tower": {
+      "enabled_key": "enable_prime_tower",
+      "x_key": "wipe_tower_x",
+      "y_key": "wipe_tower_y",
+      "width_key": "prime_tower_width",
+      "rotation_key": "wipe_tower_rotation_angle",
+      "process_difference_key": "different_settings_to_system"
+    },
+    "filament_snapshot": {
+      "difference_list_key": "different_settings_to_system",
+      "filament_slot_offset": 1,
+      "trailing_entry_count": 1,
+      "preserved_parameter_keys": [],
+      "native_schema_defaults": {
+        "source": "https://raw.githubusercontent.com/elegooofficial/ElegooSlicer/v1.5.3.5/src/libslic3r/PrintConfig.cpp",
+        "values": {
+          "additional_cooling_fan_speed": [
+            "0"
+          ]
+        }
+      },
+      "array_rules": [
+        {
+          "selection": "default",
+          "group_size": 1,
+          "material_source_override": false,
+          "keys": [
+            "filament_colour",
+            "filament_multi_colour"
+          ]
+        },
+        {
+          "selection": "default",
+          "group_size": 1,
+          "material_source_override": true,
+          "keys": [
+            "bed_temperature",
+            "bed_temperature_initial_layer",
+            "cool_plate_temp",
+            "cool_plate_temp_initial_layer",
+            "eng_plate_temp",
+            "eng_plate_temp_initial_layer",
+            "filament_ids",
+            "filament_settings_id",
+            "filament_type",
+            "filament_vendor",
+            "hot_plate_temp",
+            "hot_plate_temp_initial_layer",
+            "nozzle_temperature",
+            "nozzle_temperature_initial_layer",
+            "textured_plate_temp",
+            "textured_plate_temp_initial_layer"
+          ]
+        }
+      ]
+    },
+    "namespaces": [
+      {
+        "prefix": "BambuStudio",
+        "uri": "http://schemas.bambulab.com/package/2021"
+      }
+    ],
+    "root_metadata": [
+      {
+        "name": "Application",
+        "value": "ElegooSlicer-1.5.3.5"
+      },
+      {
+        "name": "OrcaSlicer",
+        "value": "2.4.2"
+      },
+      {
+        "name": "BambuStudio:3mfVersion",
+        "value": "1"
+      }
+    ],
+    "root_metadata_merge_policy": "replace_by_name",
+    "settings_parts": {
+      "model_settings": "Metadata/model_settings.config",
+      "project_settings": "Metadata/project_settings.config",
+      "slice_info": "Metadata/slice_info.config",
+      "plate_sidecar": "Metadata/plate_1.json"
+    },
+    "slice_headers": [
+      {
+        "name": "X-BBL-Client-Type",
+        "value": "slicer"
+      },
+      {
+        "name": "X-BBL-Client-Version",
+        "value": "01.05.03.05"
+      },
+      {
+        "name": "X-BBL-Client-Name",
+        "value": "ElegooSlicer"
+      },
+      {
+        "name": "OrcaSlicer-Version",
+        "value": "2.4.2"
+      }
+    ],
+    "root_external_metadata_names": [
+      "BambuStudio:3mfVersion"
+    ],
+    "metadata_components": {
+      "required_model_fields": {
+        "plate_main": "thumbnail_file",
+        "plate_no_light": "thumbnail_no_light_file",
+        "top_preview": "top_file",
+        "pick_preview": "pick_file"
+      },
+      "settings_media_type": "text/xml",
+      "filament_map_mode": "Auto For Flush",
+      "build_item_properties": {},
+      "wipe_tower_placement": {
+        "path": "Metadata/lumina_wipe_tower_placement.json",
+        "media_type": "application/json"
+      },
+      "filament_sequence": {
+        "path": "Metadata/filament_sequence.json",
+        "media_type": "application/json",
+        "plate_key": "plate_1",
+        "sequence_key": "sequence",
+        "merge_sequence_keys": [
+          "nozzle_sequence",
+          "optimal_assignment"
+        ],
+        "min_objects": 2
+      },
+      "cut_information": {
+        "path": "Metadata/cut_information.xml",
+        "media_type": "text/xml",
+        "cut_id": "0",
+        "check_sum": "1",
+        "connectors_cnt": "0",
+        "min_objects": 2
+      },
+      "layer_config_ranges": {
+        "path": "Metadata/layer_config_ranges.xml",
+        "media_type": "text/xml",
+        "option_fields": {
+          "default_extruder_key": "extruder",
+          "default_extruder_value": "0",
+          "layer_height_key": "layer_height",
+          "infill_density_key": "sparse_infill_density",
+          "infill_density_suffix": "%"
+        }
+      },
+      "resources": [
+        {
+          "role": "plate_main",
+          "path": "Metadata/plate_1.png",
+          "media_type": "image/png",
+          "model_field": "thumbnail_file"
+        },
+        {
+          "role": "plate_no_light",
+          "path": "Metadata/plate_no_light_1.png",
+          "media_type": "image/png",
+          "model_field": "thumbnail_no_light_file"
+        },
+        {
+          "role": "top_preview",
+          "path": "Metadata/top_1.png",
+          "media_type": "image/png",
+          "model_field": "top_file"
+        },
+        {
+          "role": "pick_preview",
+          "path": "Metadata/pick_1.png",
+          "media_type": "image/png",
+          "model_field": "pick_file"
+        },
+        {
+          "role": "thumbnail_package",
+          "path": "Auxiliaries/.thumbnails/thumbnail_3mf.png",
+          "media_type": "image/png",
+          "relationship": {
+            "source": "",
+            "id": "cover-rel-1",
+            "type": "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail"
+          }
+        },
+        {
+          "role": "thumbnail_middle",
+          "path": "Auxiliaries/.thumbnails/thumbnail_middle.png",
+          "media_type": "image/png",
+          "relationship": {
+            "source": "",
+            "id": "cover-rel-2",
+            "type": "http://schemas.bambulab.com/package/2021/cover-thumbnail-middle"
+          }
+        },
+        {
+          "role": "thumbnail_small",
+          "path": "Auxiliaries/.thumbnails/thumbnail_small.png",
+          "media_type": "image/png",
+          "relationship": {
+            "source": "",
+            "id": "cover-rel-3",
+            "type": "http://schemas.bambulab.com/package/2021/cover-thumbnail-small"
+          }
+        }
+      ],
+      "model_relationships": {
+        "source": "3D/3dmodel.model",
+        "id_prefix": "bambuRel",
+        "type": "http://schemas.bambulab.com/package/2021/settings",
+        "part_roles": [
+          "layer_config_ranges"
+        ]
+      },
+      "content_types": [
+        {
+          "extension": "config",
+          "media_type": "text/xml"
+        },
+        {
+          "extension": "json",
+          "media_type": "application/json"
+        },
+        {
+          "extension": "xml",
+          "media_type": "text/xml"
+        },
+        {
+          "extension": "png",
+          "media_type": "image/png"
+        }
+      ]
+    }
+  },
+  "target_contract": {
+    "application_metadata": "ElegooSlicer-1.5.3.5",
+    "application_version": "1.5.3.5",
+    "client_header_version": "01.05.03.05",
+    "compat_pack_revision": "2026.09.10",
+    "dialect_revision": "elegoo-slicer/1.5.3.5/rev3",
+    "saved_project_format_version": "1.5.3.5",
+    "slicer_id": "ElegooSlicer",
+    "source_profile_version": "01.05.03.05",
+    "target_native_version_tags": {
+      "BambuStudio:3mfVersion": "1",
+      "OrcaSlicer": "2.4.2"
+    },
+    "writer_contract_version": "neroued-3mf/0.4.0/rev1"
+  },
+  "material_profiles": [
+    {
+      "material_profile_key": "material:pla::Elegoo PLA @ECC2",
+      "material_uid": "material:pla",
+      "native_profile_id": "Elegoo PLA @ECC2",
+      "native_material_type": "PLA",
+      "native_filament_id": "EPLAB00",
+      "native_vendor": "Elegoo",
+      "target_parameter_set_key": "parameters::material:pla::Elegoo PLA @ECC2"
+    },
+    {
+      "material_profile_key": "material:petg::Elegoo PETG @ECC2",
+      "material_uid": "material:petg",
+      "native_profile_id": "Elegoo PETG @ECC2",
+      "native_material_type": "PETG",
+      "native_filament_id": "EPETGB00",
+      "native_vendor": "Elegoo",
+      "target_parameter_set_key": "parameters::material:petg::Elegoo PETG @ECC2"
+    }
+  ],
+  "target_parameter_sets": [
+    {
+      "target_parameter_set_key": "parameters::material:pla::Elegoo PLA @ECC2",
+      "managed_parameter_keys": [
+        "activate_air_filtration",
+        "activate_chamber_temp_control",
+        "adaptive_pressure_advance",
+        "adaptive_pressure_advance_bridges",
+        "adaptive_pressure_advance_model",
+        "adaptive_pressure_advance_overhangs",
+        "additional_cooling_fan_speed",
+        "additional_cooling_fan_speed_unseal",
+        "additional_fan_full_speed_layer",
+        "bed_type",
+        "box_temperature",
+        "box_temperature_range_high",
+        "box_temperature_range_low",
+        "chamber_temperature",
+        "chamber_temperatures",
+        "circle_compensation_speed",
+        "close_additional_fan_first_x_layers",
+        "close_fan_the_first_x_layers",
+        "complete_print_exhaust_fan_speed",
+        "cool_plate_temp",
+        "cool_plate_temp_initial_layer",
+        "cooling_perimeter_transition_distance",
+        "cooling_slowdown_logic",
+        "counter_coef_1",
+        "counter_coef_2",
+        "counter_coef_3",
+        "counter_limit_max",
+        "counter_limit_min",
+        "diameter_limit",
+        "dont_slow_down_outer_wall",
+        "during_print_exhaust_fan_speed",
+        "enable_overhang_bridge_fan",
+        "enable_pressure_advance",
+        "eng_plate_temp",
+        "eng_plate_temp_initial_layer",
+        "fan_cooling_layer_time",
+        "fan_max_speed",
+        "fan_min_speed",
+        "filament_adaptive_volumetric_speed",
+        "filament_adhesiveness_category",
+        "filament_bridge_speed",
+        "filament_change_length",
+        "filament_cooling_before_tower",
+        "filament_cooling_final_speed",
+        "filament_cooling_initial_speed",
+        "filament_cooling_moves",
+        "filament_cost",
+        "filament_density",
+        "filament_deretraction_speed",
+        "filament_dev_ams_drying_ams_limitations",
+        "filament_dev_ams_drying_heat_distortion_temperature",
+        "filament_dev_ams_drying_temperature",
+        "filament_dev_ams_drying_time",
+        "filament_dev_chamber_drying_bed_temperature",
+        "filament_dev_chamber_drying_time",
+        "filament_dev_drying_cooling_temperature",
+        "filament_dev_drying_softening_temperature",
+        "filament_diameter",
+        "filament_enable_overhang_speed",
+        "filament_end_gcode",
+        "filament_extruder_compatibility",
+        "filament_extruder_variant",
+        "filament_flow_ratio",
+        "filament_flush_temp",
+        "filament_flush_temp_fast",
+        "filament_flush_volumetric_speed",
+        "filament_is_support",
+        "filament_load_time",
+        "filament_loading_speed",
+        "filament_loading_speed_start",
+        "filament_long_retractions_when_cut",
+        "filament_long_retractions_when_ec",
+        "filament_max_volumetric_speed",
+        "filament_metal_stickiness",
+        "filament_minimal_purge_on_wipe_tower",
+        "filament_multitool_ramming",
+        "filament_multitool_ramming_flow",
+        "filament_multitool_ramming_volume",
+        "filament_notes",
+        "filament_overhang_1_4_speed",
+        "filament_overhang_2_4_speed",
+        "filament_overhang_3_4_speed",
+        "filament_overhang_4_4_speed",
+        "filament_overhang_totally_speed",
+        "filament_pre_cooling_temperature",
+        "filament_pre_cooling_temperature_nc",
+        "filament_preheat_temperature_delta",
+        "filament_prime_volume",
+        "filament_prime_volume_nc",
+        "filament_printable",
+        "filament_ramming_parameters",
+        "filament_ramming_travel_time",
+        "filament_ramming_travel_time_nc",
+        "filament_ramming_volumetric_speed",
+        "filament_ramming_volumetric_speed_nc",
+        "filament_retract_before_wipe",
+        "filament_retract_length_nc",
+        "filament_retract_length_toolchange",
+        "filament_retract_lift_above",
+        "filament_retract_lift_below",
+        "filament_retract_lift_enforce",
+        "filament_retract_restart_extra",
+        "filament_retract_when_changing_layer",
+        "filament_retraction_distances_when_cut",
+        "filament_retraction_distances_when_ec",
+        "filament_retraction_length",
+        "filament_retraction_minimum_travel",
+        "filament_retraction_speed",
+        "filament_scarf_gap",
+        "filament_scarf_height",
+        "filament_scarf_length",
+        "filament_scarf_seam_type",
+        "filament_shrink",
+        "filament_shrinkage_compensation_z",
+        "filament_soluble",
+        "filament_stamping_distance",
+        "filament_stamping_loading_speed",
+        "filament_start_gcode",
+        "filament_toolchange_delay",
+        "filament_tower_interface_pre_extrusion_dist",
+        "filament_tower_interface_pre_extrusion_length",
+        "filament_tower_interface_print_temp",
+        "filament_tower_interface_purge_volume",
+        "filament_tower_ironing_area",
+        "filament_unload_time",
+        "filament_unloading_speed",
+        "filament_unloading_speed_start",
+        "filament_velocity_adaptation_factor",
+        "filament_wipe",
+        "filament_wipe_distance",
+        "filament_z_hop",
+        "filament_z_hop_types",
+        "full_fan_speed_layer",
+        "graphic_effect_plate_temp",
+        "graphic_effect_plate_temp_initial_layer",
+        "hole_coef_1",
+        "hole_coef_2",
+        "hole_coef_3",
+        "hole_limit_max",
+        "hole_limit_min",
+        "hot_plate_temp",
+        "hot_plate_temp_initial_layer",
+        "idle_temperature",
+        "impact_strength_z",
+        "long_retractions_when_ec",
+        "no_slow_down_for_cooling_on_outwalls",
+        "nozzle_temperature",
+        "nozzle_temperature_initial_layer",
+        "nozzle_temperature_range_high",
+        "nozzle_temperature_range_low",
+        "overhang_fan_speed",
+        "overhang_fan_threshold",
+        "override_process_overhang_speed",
+        "pellet_flow_coefficient",
+        "pre_start_fan_time",
+        "pressure_advance",
+        "reduce_fan_stop_start_freq",
+        "required_nozzle_HRC",
+        "retraction_distances_when_ec",
+        "slow_down_for_layer_cooling",
+        "slow_down_layer_time",
+        "slow_down_min_speed",
+        "supertack_plate_temp",
+        "supertack_plate_temp_initial_layer",
+        "support_material_interface_fan_speed",
+        "temperature_vitrification",
+        "textured_cool_plate_temp",
+        "textured_cool_plate_temp_initial_layer",
+        "textured_plate_temp",
+        "textured_plate_temp_initial_layer",
+        "volumetric_speed_coefficients"
+      ],
+      "target_parameters": {
+        "activate_air_filtration": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "chamber_temperatures": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "close_fan_the_first_x_layers": {
+          "cardinality": "per_slot",
+          "values": [
+            "1"
+          ]
+        },
+        "complete_print_exhaust_fan_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "cool_plate_temp": {
+          "cardinality": "per_slot",
+          "values": [
+            "35"
+          ]
+        },
+        "cool_plate_temp_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "35"
+          ]
+        },
+        "during_print_exhaust_fan_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "enable_pressure_advance": {
+          "cardinality": "per_slot",
+          "values": [
+            "1"
+          ]
+        },
+        "eng_plate_temp": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "eng_plate_temp_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "fan_cooling_layer_time": {
+          "cardinality": "per_slot",
+          "values": [
+            "80"
+          ]
+        },
+        "fan_max_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "100"
+          ]
+        },
+        "fan_min_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "50"
+          ]
+        },
+        "filament_cost": {
+          "cardinality": "per_slot",
+          "values": [
+            "20"
+          ]
+        },
+        "filament_density": {
+          "cardinality": "per_slot",
+          "values": [
+            "1.25"
+          ]
+        },
+        "filament_deretraction_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_diameter": {
+          "cardinality": "per_slot",
+          "values": [
+            "1.75"
+          ]
+        },
+        "filament_end_gcode": {
+          "cardinality": "per_slot",
+          "values": [
+            "; filament end gcode \n"
+          ]
+        },
+        "filament_flow_ratio": {
+          "cardinality": "per_slot",
+          "values": [
+            "0.98"
+          ]
+        },
+        "filament_is_support": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "filament_max_volumetric_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "21"
+          ]
+        },
+        "filament_minimal_purge_on_wipe_tower": {
+          "cardinality": "per_slot",
+          "values": [
+            "15"
+          ]
+        },
+        "filament_retract_before_wipe": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retract_restart_extra": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retract_when_changing_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retraction_length": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retraction_minimum_travel": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retraction_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_soluble": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "filament_start_gcode": {
+          "cardinality": "per_slot",
+          "values": [
+            "; filament start gcode\n{if  (bed_temperature[current_extruder] >55)||(bed_temperature_initial_layer[current_extruder] >55)}M106 P3 S200\n{elsif(bed_temperature[current_extruder] >50)||(bed_temperature_initial_layer[current_extruder] >50)}M106 P3 S150\n{elsif(bed_temperature[current_extruder] >45)||(bed_temperature_initial_layer[current_extruder] >45)}M106 P3 S50\n{endif}\n\n{if activate_air_filtration[current_extruder] && support_air_filtration}\nM106 P3 S{during_print_exhaust_fan_speed_num[current_extruder]} \n{endif}"
+          ]
+        },
+        "filament_wipe": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_wipe_distance": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_z_hop": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_z_hop_types": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "full_fan_speed_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "hot_plate_temp": {
+          "cardinality": "per_slot",
+          "values": [
+            "60"
+          ]
+        },
+        "hot_plate_temp_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "60"
+          ]
+        },
+        "nozzle_temperature": {
+          "cardinality": "per_slot",
+          "values": [
+            "210"
+          ]
+        },
+        "nozzle_temperature_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "210"
+          ]
+        },
+        "nozzle_temperature_range_high": {
+          "cardinality": "per_slot",
+          "values": [
+            "240"
+          ]
+        },
+        "nozzle_temperature_range_low": {
+          "cardinality": "per_slot",
+          "values": [
+            "190"
+          ]
+        },
+        "overhang_fan_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "100"
+          ]
+        },
+        "overhang_fan_threshold": {
+          "cardinality": "per_slot",
+          "values": [
+            "50%"
+          ]
+        },
+        "pressure_advance": {
+          "cardinality": "per_slot",
+          "values": [
+            "0.04"
+          ]
+        },
+        "reduce_fan_stop_start_freq": {
+          "cardinality": "per_slot",
+          "values": [
+            "1"
+          ]
+        },
+        "required_nozzle_HRC": {
+          "cardinality": "per_slot",
+          "values": [
+            "3"
+          ]
+        },
+        "slow_down_for_layer_cooling": {
+          "cardinality": "per_slot",
+          "values": [
+            "1"
+          ]
+        },
+        "slow_down_layer_time": {
+          "cardinality": "per_slot",
+          "values": [
+            "4"
+          ]
+        },
+        "slow_down_min_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "20"
+          ]
+        },
+        "temperature_vitrification": {
+          "cardinality": "per_slot",
+          "values": [
+            "45"
+          ]
+        },
+        "textured_plate_temp": {
+          "cardinality": "per_slot",
+          "values": [
+            "60"
+          ]
+        },
+        "textured_plate_temp_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "60"
+          ]
+        }
+      }
+    },
+    {
+      "target_parameter_set_key": "parameters::material:petg::Elegoo PETG @ECC2",
+      "managed_parameter_keys": [
+        "activate_air_filtration",
+        "activate_chamber_temp_control",
+        "adaptive_pressure_advance",
+        "adaptive_pressure_advance_bridges",
+        "adaptive_pressure_advance_model",
+        "adaptive_pressure_advance_overhangs",
+        "additional_cooling_fan_speed",
+        "additional_cooling_fan_speed_unseal",
+        "additional_fan_full_speed_layer",
+        "bed_type",
+        "box_temperature",
+        "box_temperature_range_high",
+        "box_temperature_range_low",
+        "chamber_temperature",
+        "chamber_temperatures",
+        "circle_compensation_speed",
+        "close_additional_fan_first_x_layers",
+        "close_fan_the_first_x_layers",
+        "complete_print_exhaust_fan_speed",
+        "cool_plate_temp",
+        "cool_plate_temp_initial_layer",
+        "cooling_perimeter_transition_distance",
+        "cooling_slowdown_logic",
+        "counter_coef_1",
+        "counter_coef_2",
+        "counter_coef_3",
+        "counter_limit_max",
+        "counter_limit_min",
+        "diameter_limit",
+        "dont_slow_down_outer_wall",
+        "during_print_exhaust_fan_speed",
+        "enable_overhang_bridge_fan",
+        "enable_pressure_advance",
+        "eng_plate_temp",
+        "eng_plate_temp_initial_layer",
+        "fan_cooling_layer_time",
+        "fan_max_speed",
+        "fan_min_speed",
+        "filament_adaptive_volumetric_speed",
+        "filament_adhesiveness_category",
+        "filament_bridge_speed",
+        "filament_change_length",
+        "filament_cooling_before_tower",
+        "filament_cooling_final_speed",
+        "filament_cooling_initial_speed",
+        "filament_cooling_moves",
+        "filament_cost",
+        "filament_density",
+        "filament_deretraction_speed",
+        "filament_dev_ams_drying_ams_limitations",
+        "filament_dev_ams_drying_heat_distortion_temperature",
+        "filament_dev_ams_drying_temperature",
+        "filament_dev_ams_drying_time",
+        "filament_dev_chamber_drying_bed_temperature",
+        "filament_dev_chamber_drying_time",
+        "filament_dev_drying_cooling_temperature",
+        "filament_dev_drying_softening_temperature",
+        "filament_diameter",
+        "filament_enable_overhang_speed",
+        "filament_end_gcode",
+        "filament_extruder_compatibility",
+        "filament_extruder_variant",
+        "filament_flow_ratio",
+        "filament_flush_temp",
+        "filament_flush_temp_fast",
+        "filament_flush_volumetric_speed",
+        "filament_is_support",
+        "filament_load_time",
+        "filament_loading_speed",
+        "filament_loading_speed_start",
+        "filament_long_retractions_when_cut",
+        "filament_long_retractions_when_ec",
+        "filament_max_volumetric_speed",
+        "filament_metal_stickiness",
+        "filament_minimal_purge_on_wipe_tower",
+        "filament_multitool_ramming",
+        "filament_multitool_ramming_flow",
+        "filament_multitool_ramming_volume",
+        "filament_notes",
+        "filament_overhang_1_4_speed",
+        "filament_overhang_2_4_speed",
+        "filament_overhang_3_4_speed",
+        "filament_overhang_4_4_speed",
+        "filament_overhang_totally_speed",
+        "filament_pre_cooling_temperature",
+        "filament_pre_cooling_temperature_nc",
+        "filament_preheat_temperature_delta",
+        "filament_prime_volume",
+        "filament_prime_volume_nc",
+        "filament_printable",
+        "filament_ramming_parameters",
+        "filament_ramming_travel_time",
+        "filament_ramming_travel_time_nc",
+        "filament_ramming_volumetric_speed",
+        "filament_ramming_volumetric_speed_nc",
+        "filament_retract_before_wipe",
+        "filament_retract_length_nc",
+        "filament_retract_length_toolchange",
+        "filament_retract_lift_above",
+        "filament_retract_lift_below",
+        "filament_retract_lift_enforce",
+        "filament_retract_restart_extra",
+        "filament_retract_when_changing_layer",
+        "filament_retraction_distances_when_cut",
+        "filament_retraction_distances_when_ec",
+        "filament_retraction_length",
+        "filament_retraction_minimum_travel",
+        "filament_retraction_speed",
+        "filament_scarf_gap",
+        "filament_scarf_height",
+        "filament_scarf_length",
+        "filament_scarf_seam_type",
+        "filament_shrink",
+        "filament_shrinkage_compensation_z",
+        "filament_soluble",
+        "filament_stamping_distance",
+        "filament_stamping_loading_speed",
+        "filament_start_gcode",
+        "filament_toolchange_delay",
+        "filament_tower_interface_pre_extrusion_dist",
+        "filament_tower_interface_pre_extrusion_length",
+        "filament_tower_interface_print_temp",
+        "filament_tower_interface_purge_volume",
+        "filament_tower_ironing_area",
+        "filament_unload_time",
+        "filament_unloading_speed",
+        "filament_unloading_speed_start",
+        "filament_velocity_adaptation_factor",
+        "filament_wipe",
+        "filament_wipe_distance",
+        "filament_z_hop",
+        "filament_z_hop_types",
+        "full_fan_speed_layer",
+        "graphic_effect_plate_temp",
+        "graphic_effect_plate_temp_initial_layer",
+        "hole_coef_1",
+        "hole_coef_2",
+        "hole_coef_3",
+        "hole_limit_max",
+        "hole_limit_min",
+        "hot_plate_temp",
+        "hot_plate_temp_initial_layer",
+        "idle_temperature",
+        "impact_strength_z",
+        "long_retractions_when_ec",
+        "no_slow_down_for_cooling_on_outwalls",
+        "nozzle_temperature",
+        "nozzle_temperature_initial_layer",
+        "nozzle_temperature_range_high",
+        "nozzle_temperature_range_low",
+        "overhang_fan_speed",
+        "overhang_fan_threshold",
+        "override_process_overhang_speed",
+        "pellet_flow_coefficient",
+        "pre_start_fan_time",
+        "pressure_advance",
+        "reduce_fan_stop_start_freq",
+        "required_nozzle_HRC",
+        "retraction_distances_when_ec",
+        "slow_down_for_layer_cooling",
+        "slow_down_layer_time",
+        "slow_down_min_speed",
+        "supertack_plate_temp",
+        "supertack_plate_temp_initial_layer",
+        "support_material_interface_fan_speed",
+        "temperature_vitrification",
+        "textured_cool_plate_temp",
+        "textured_cool_plate_temp_initial_layer",
+        "textured_plate_temp",
+        "textured_plate_temp_initial_layer",
+        "volumetric_speed_coefficients"
+      ],
+      "target_parameters": {
+        "activate_air_filtration": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "chamber_temperatures": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "close_fan_the_first_x_layers": {
+          "cardinality": "per_slot",
+          "values": [
+            "3"
+          ]
+        },
+        "complete_print_exhaust_fan_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "cool_plate_temp": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "cool_plate_temp_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "during_print_exhaust_fan_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "enable_pressure_advance": {
+          "cardinality": "per_slot",
+          "values": [
+            "1"
+          ]
+        },
+        "eng_plate_temp": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "eng_plate_temp_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "fan_cooling_layer_time": {
+          "cardinality": "per_slot",
+          "values": [
+            "30"
+          ]
+        },
+        "fan_max_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "40"
+          ]
+        },
+        "fan_min_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "10"
+          ]
+        },
+        "filament_cost": {
+          "cardinality": "per_slot",
+          "values": [
+            "30"
+          ]
+        },
+        "filament_density": {
+          "cardinality": "per_slot",
+          "values": [
+            "1.25"
+          ]
+        },
+        "filament_deretraction_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_diameter": {
+          "cardinality": "per_slot",
+          "values": [
+            "1.75"
+          ]
+        },
+        "filament_end_gcode": {
+          "cardinality": "per_slot",
+          "values": [
+            "; filament end gcode \n"
+          ]
+        },
+        "filament_flow_ratio": {
+          "cardinality": "per_slot",
+          "values": [
+            "0.98"
+          ]
+        },
+        "filament_is_support": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "filament_max_volumetric_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "11"
+          ]
+        },
+        "filament_minimal_purge_on_wipe_tower": {
+          "cardinality": "per_slot",
+          "values": [
+            "15"
+          ]
+        },
+        "filament_retract_before_wipe": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retract_restart_extra": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retract_when_changing_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retraction_length": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retraction_minimum_travel": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_retraction_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_soluble": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "filament_start_gcode": {
+          "cardinality": "per_slot",
+          "values": [
+            "; Filament start gcode\n"
+          ]
+        },
+        "filament_wipe": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_wipe_distance": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_z_hop": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "filament_z_hop_types": {
+          "cardinality": "per_slot",
+          "values": [
+            "nil"
+          ]
+        },
+        "full_fan_speed_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "0"
+          ]
+        },
+        "hot_plate_temp": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "hot_plate_temp_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "nozzle_temperature": {
+          "cardinality": "per_slot",
+          "values": [
+            "250"
+          ]
+        },
+        "nozzle_temperature_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "250"
+          ]
+        },
+        "nozzle_temperature_range_high": {
+          "cardinality": "per_slot",
+          "values": [
+            "270"
+          ]
+        },
+        "nozzle_temperature_range_low": {
+          "cardinality": "per_slot",
+          "values": [
+            "230"
+          ]
+        },
+        "overhang_fan_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "90"
+          ]
+        },
+        "overhang_fan_threshold": {
+          "cardinality": "per_slot",
+          "values": [
+            "50%"
+          ]
+        },
+        "pressure_advance": {
+          "cardinality": "per_slot",
+          "values": [
+            "0.05"
+          ]
+        },
+        "reduce_fan_stop_start_freq": {
+          "cardinality": "per_slot",
+          "values": [
+            "1"
+          ]
+        },
+        "required_nozzle_HRC": {
+          "cardinality": "per_slot",
+          "values": [
+            "3"
+          ]
+        },
+        "slow_down_for_layer_cooling": {
+          "cardinality": "per_slot",
+          "values": [
+            "1"
+          ]
+        },
+        "slow_down_layer_time": {
+          "cardinality": "per_slot",
+          "values": [
+            "12"
+          ]
+        },
+        "slow_down_min_speed": {
+          "cardinality": "per_slot",
+          "values": [
+            "10"
+          ]
+        },
+        "temperature_vitrification": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "textured_plate_temp": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        },
+        "textured_plate_temp_initial_layer": {
+          "cardinality": "per_slot",
+          "values": [
+            "70"
+          ]
+        }
+      }
+    }
+  ]
+}

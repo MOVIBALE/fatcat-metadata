@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "slicer_id": "FlashStudio",
+      "application_version": "1.7.15",
+      "machine_uid": "flashforge:guider-3-ultra",
+      "nozzle_uid": "nozzle:0.4mm",
+      "source_machine_profile_name": "Flashforge Guider 3 Ultra 0.4 Nozzle",
+      "reason": "build plate: source map has no machine-specific plate selection"
+    },
+    {
+      "slicer_id": "OrcaSlicer",
+      "application_version": "2.4.2",
+      "machine_uid": "snapmaker:u1",
+      "nozzle_uid": "nozzle:0.4mm",
+      "source_machine_profile_name": "Snapmaker U1 (0.4 nozzle)",
+      "reason": "process: no unique exact native preset file"
+    }
+  ]
+}
