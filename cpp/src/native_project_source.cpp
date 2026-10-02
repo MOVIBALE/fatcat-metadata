@@ -195,9 +195,10 @@ bool ignored_native_profile_key(const std::string &key, const json &snapshot) {
     if (!ignored->is_array()) {
         invalid("filament snapshot ignored_native_profile_keys must be an array");
     }
-    return std::any_of(ignored->begin(), ignored->end(), [&](const auto &value) {
-        return value.is_string() && value.template get<std::string>() == key;
-    });
+    for (const auto &value : *ignored) {
+        if (value.is_string() && value.get<std::string>() == key) return true;
+    }
+    return false;
 }
 
 const json *native_schema_default(const json &snapshot, const std::string &key) {

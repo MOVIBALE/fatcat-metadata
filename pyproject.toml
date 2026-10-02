@@ -16,7 +16,8 @@ license-files = [
     "LICENSE",
     "NOTICE.md",
     "COPYRIGHT.md",
-    "licenses/third-party/**",
+    "licenses/third-party/*/LICENSE*",
+    "licenses/third-party/*/*/LICENSE*",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
