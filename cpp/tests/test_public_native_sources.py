@@ -54,6 +54,18 @@ class PublicNativeSourceTests(unittest.TestCase):
         self.assertEqual(len(rows), 1, (slicer, machine_uid, NOZZLE_UID))
         return rows[0]
 
+    def _orca_builtin_request(self, material):
+        return {
+            "project_source": "fatcat_native",
+            "slicer_id": "OrcaSlicer",
+            "application_version": "2.4.2",
+            "machine_uid": "bambu-lab:p1s",
+            "nozzle_uid": NOZZLE_UID,
+            "build_plate_uid": "plate:textured-pei",
+            "source_materials": [material],
+            "process_settings": {"wall_loops": "1"},
+        }
+
     def test_seven_targets_compose_from_exact_packaged_sources(self):
         self.assertEqual(self.source_index["schema_version"], 1)
         for slicer, version, machine_uid, expected_plate_uid in TARGETS:
@@ -179,6 +191,120 @@ class PublicNativeSourceTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(ValueError, "no unique native default process"):
             fatcat.compose_project_settings(json.dumps(request))
+
+    def test_native_petg_name_selects_real_profile_and_specialty_types_do_not_fall_back(self):
+        basic_request = self._orca_builtin_request({
+            "name": "Bambu PETG Basic @BBL X1C",
+            "colour": "#345678",
+        })
+        basic_result = json.loads(fatcat.compose_project_settings(json.dumps(basic_request)))
+        basic_project = json.loads(basic_result["project_settings_json"])
+        self.assertEqual(
+            basic_project["filament_settings_id"], ["Bambu PETG Basic @BBL X1C"]
+        )
+
+        for name, material_type in (
+            ("PETG HF", "PETG HF"),
+            ("PETG-CF", "PETG-CF"),
+            ("PETG Translucent", "PETG Translucent"),
+        ):
+            with self.subTest(material_type=material_type):
+                request = self._orca_builtin_request({"name": name, "colour": "#345678"})
+                with self.assertRaisesRegex(
+                    ValueError,
+                    rf"no available native filament profile matches source material slot 0 type '{material_type.upper()}'",
+                ):
+                    fatcat.compose_project_settings(json.dumps(request))
+
+        explicit_request = self._orca_builtin_request({
+            "name": "PETG HF",
+            "colour": "#345678",
+            "material_type": "petg basic",
+        })
+        explicit_result = json.loads(
+            fatcat.compose_project_settings(json.dumps(explicit_request))
+        )
+        explicit_project = json.loads(explicit_result["project_settings_json"])
+        self.assertEqual(
+            explicit_project["filament_settings_id"], ["Bambu PETG Basic @BBL X1C"]
+        )
+
+    def test_untyped_native_material_name_uses_native_default_profile(self):
+        slicer = "AnycubicSlicerNext"
+        version = "2.0.0.2"
+        machine_uid = "anycubic:kobra-2"
+        source = self._source(slicer, version, machine_uid)
+        defaults = source["default_filament_profile_names"]
+        materials = [
+            {
+                "name": defaults[0],
+                "colour": "#010203",
+                "material_type": "PLA",
+            },
+            {"name": "Red", "colour": "#ABCDEF"},
+        ]
+        request = {
+            "project_source": "fatcat_native",
+            "slicer_id": slicer,
+            "application_version": version,
+            "machine_uid": machine_uid,
+            "nozzle_uid": NOZZLE_UID,
+            "build_plate_uid": "plate:cool",
+            "source_materials": materials,
+        }
+        result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+        project = json.loads(result["project_settings_json"])
+
+        self.assertEqual(
+            project["filament_settings_id"], defaults
+        )
+
+    def test_orca_builtin_process_keeps_one_wall_fix_and_template_override(self):
+        request = self._orca_builtin_request({
+            "name": "Bambu PLA Basic @BBL X1C",
+            "colour": "#345678",
+            "material_type": "PLA Basic",
+        })
+        builtin_result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+        builtin_project = json.loads(builtin_result["project_settings_json"])
+        self.assertEqual(builtin_project["wall_loops"], "1")
+        self.assertEqual(builtin_project["precise_outer_wall"], "0")
+        self.assertIn(
+            "precise_outer_wall",
+            builtin_project["different_settings_to_system"][0].split(";"),
+        )
+
+        explicit_request = self._orca_builtin_request({
+            "name": "Bambu PLA Basic @BBL X1C",
+            "colour": "#345678",
+            "material_type": "PLA Basic",
+        })
+        explicit_request["process_settings"]["precise_outer_wall"] = "1"
+        explicit_result = json.loads(
+            fatcat.compose_project_settings(json.dumps(explicit_request))
+        )
+        explicit_project = json.loads(explicit_result["project_settings_json"])
+        self.assertEqual(explicit_project["precise_outer_wall"], "1")
+        self.assertIn(
+            "precise_outer_wall",
+            explicit_project["different_settings_to_system"][0].split(";"),
+        )
+
+        builtin_project["precise_outer_wall"] = "1"
+        template_request = {
+            "slicer_id": "OrcaSlicer",
+            "application_version": "2.4.2",
+            "hardware_mode": "preserve_source",
+            "material_mode": "preserve_template",
+            "preserve_source_material_settings": True,
+            "source_materials": request["source_materials"],
+            "process_settings": {"wall_loops": "1"},
+        }
+        template_result = json.loads(fatcat.compose_project_settings(
+            json.dumps(builtin_project), json.dumps(template_request)
+        ))
+        template_project = json.loads(template_result["project_settings_json"])
+        self.assertEqual(template_project["precise_outer_wall"], "1")
 
 
 if __name__ == "__main__":

@@ -16,6 +16,7 @@
 
 #include "filament_projection.h"
 #include "fatcat/project_settings.h"
+#include "fatcat/source_project_settings.h"
 
 namespace fatcat {
 namespace {
@@ -530,21 +531,6 @@ std::string material_family(const std::string &value) {
     return normalized;
 }
 
-std::string requested_material_type(const json &material) {
-    if (!material.is_object()) invalid("each source_materials slot must be an object");
-    const auto type = material.find("material_type");
-    if (type != material.end() && !type->is_null()) {
-        if (!type->is_string()) invalid("source_materials.material_type must be text");
-        return normalized_text(type->get<std::string>());
-    }
-    const auto name = material.find("name");
-    if (name == material.end() || !name->is_string()) return {};
-    const auto normalized_name = normalized_text(name->get<std::string>());
-    if (normalized_name.find("PETG") != std::string::npos) return "PETG";
-    if (normalized_name.find("PLA") != std::string::npos) return "PLA";
-    return {};
-}
-
 std::string native_profile_material_type(const json &profile,
                                          const std::string &profile_name) {
     const auto value = profile.find("filament_type");
@@ -709,7 +695,8 @@ std::vector<SelectedMaterialProfile> select_material_profiles(
         }
     } else if (explicit_names == request.end()) {
         for (std::size_t slot = 0; slot < material_count; ++slot) {
-            const auto requested_type = requested_material_type(materials.at(slot));
+            const auto requested_type = normalized_text(
+                detail::requested_material_type(materials.at(slot)));
             if (requested_type.empty()) {
                 const auto native_default = default_for_slot(slot);
                 if (native_default.empty()) {
@@ -798,7 +785,8 @@ std::vector<SelectedMaterialProfile> select_material_profiles(
             invalid("native filament profile '" + name + "' does not provide a filament_type; "
                     "select a source with an explicit material type");
         }
-        const auto requested_type = requested_material_type(materials.at(slot));
+        const auto requested_type = normalized_text(
+            detail::requested_material_type(materials.at(slot)));
         if (!requested_type.empty() && !native_type_matches_request(
                 requested_type, native_type, name,
                 materials.at(slot).value("name", std::string()))) {
@@ -979,6 +967,17 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     }
 
     json request = input_request;
+    if (slicer_id == "OrcaSlicer") {
+        auto process_settings = request.value("process_settings", json::object());
+        if (!process_settings.is_object()) {
+            invalid("request.process_settings must be an object");
+        }
+        if (!request.contains("precise_outer_wall") &&
+            !process_settings.contains("precise_outer_wall")) {
+            process_settings["precise_outer_wall"] = "0";
+        }
+        request["process_settings"] = std::move(process_settings);
+    }
     request.erase("project_source");
     request.erase("native_print_profile_name");
     request.erase("native_filament_profile_names");

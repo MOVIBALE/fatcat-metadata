@@ -1,8 +1,12 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+#include <string>
 
 namespace fatcat::detail {
+
+// Resolve an explicit material_type first, then infer a supported preset type from the name.
+std::string requested_material_type(const nlohmann::json &material);
 
 // Material identity for a machine-only source comes from its actual default preset.
 nlohmann::json prepare_source_identity(const nlohmann::json &project,

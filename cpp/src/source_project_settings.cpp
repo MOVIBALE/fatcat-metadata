@@ -226,23 +226,6 @@ struct MaterialSelection {
     bool allow_petg_fallback = true;
 };
 
-std::string requested_material_type(const json &material) {
-    const auto raw_type = material.find("material_type");
-    // Missing historical facts retain the old product compatibility choice.
-    // An explicit unknown type is never interpreted as PLA.
-    const auto name = text(material.value("name", json()));
-    if (raw_type != material.end() && !raw_type->is_null()) return stripped(text(*raw_type));
-    const auto normalized = upper(name);
-    if (normalized.find("PETG") == std::string::npos) return "PLA Basic";
-    std::string compact;
-    for (unsigned char c : normalized) if (std::isalnum(c)) compact += static_cast<char>(c);
-    if (compact.find("PETGCF") != std::string::npos) return "PETG-CF";
-    if (compact.find("PETGHF") != std::string::npos) return "PETG HF";
-    if (normalized.find("TRANSLUCENT") != std::string::npos || normalized.find("TRANSPARENT") != std::string::npos ||
-        name.find("透明") != std::string::npos) return "PETG Translucent";
-    return "PETG Basic";
-}
-
 MaterialSelection material_selection(const json &material, const json &source) {
     const auto raw_type = material.find("material_type");
     const bool explicit_type = raw_type != material.end() && !raw_type->is_null();
@@ -574,6 +557,33 @@ void preserve_selected_slots(json &project, const json &source, const json &requ
 
 }  // namespace
 
+std::string requested_material_type(const nlohmann::json &material) {
+    if (!material.is_object()) {
+        throw ProjectSettingsError("each source_materials slot must be an object");
+    }
+    const auto raw_type = material.find("material_type");
+    // Leave unknown names unresolved so native callers can use their source
+    // default. An explicit unknown type is never interpreted as PLA.
+    const auto name = text(material.value("name", json()));
+    if (raw_type != material.end() && !raw_type->is_null()) {
+        if (!raw_type->is_string()) {
+            throw ProjectSettingsError("source_materials.material_type must be text");
+        }
+        return stripped(text(*raw_type));
+    }
+    const auto normalized = upper(name);
+    if (normalized.find("PETG") == std::string::npos) {
+        return normalized.find("PLA") == std::string::npos ? "" : "PLA Basic";
+    }
+    std::string compact;
+    for (unsigned char c : normalized) if (std::isalnum(c)) compact += static_cast<char>(c);
+    if (compact.find("PETGCF") != std::string::npos) return "PETG-CF";
+    if (compact.find("PETGHF") != std::string::npos) return "PETG HF";
+    if (normalized.find("TRANSLUCENT") != std::string::npos || normalized.find("TRANSPARENT") != std::string::npos ||
+        name.find("透明") != std::string::npos) return "PETG Translucent";
+    return "PETG Basic";
+}
+
 json prepare_source_identity(const json &base, const json &request) {
     json project = base;
     if (project.contains("filament_settings_id") || request.contains("merge_sources")) return project;
@@ -844,7 +854,10 @@ json native_source_request(const json &project, const json &request, const json 
     json uids = json::array();
     std::set<std::string> managed_keys;
     for (const auto &material : selections) {
-        const auto selected = requested_material_type(material);
+        const auto requested = requested_material_type(material);
+        // Legacy source-to-native compatibility treats untyped material names
+        // as PLA, while built-in native selection uses the source's own default.
+        const auto selected = requested.empty() ? "PLA Basic" : requested;
         const auto kind = upper(selected);
         const auto uid = kind == "PLA" || kind == "PLA BASIC" ? "material:pla" :
                          kind == "PETG" || kind == "PETG BASIC" ? "material:petg" : "";
