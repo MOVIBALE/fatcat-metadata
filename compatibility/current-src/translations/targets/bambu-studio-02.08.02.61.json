@@ -2374,6 +2374,9 @@
           ],
           "first_x_layer_fan_speed": [
             "0"
+          ],
+          "pre_start_fan_time": [
+            "0"
           ]
         }
       },

@@ -277,12 +277,16 @@ json compose_material_settings(const std::vector<json> &profiles,
         variant_groups.reserve(profiles.size());
         for (std::size_t slot = 0; slot < profiles.size(); ++slot) {
             const auto found = profiles[slot].find("filament_extruder_variant");
-            if (found == profiles[slot].end() || !found->is_array() || found->empty()) {
+            const json *resolved_variants = found == profiles[slot].end()
+                ? native_schema_default(snapshot, "filament_extruder_variant")
+                : &*found;
+            if (resolved_variants == nullptr || !resolved_variants->is_array() ||
+                resolved_variants->empty()) {
                 invalid("native material profile '" + profile_names[slot] +
                         "' has no resolved filament_extruder_variant list");
             }
             std::vector<std::string> variants;
-            for (const auto &variant : *found) {
+            for (const auto &variant : *resolved_variants) {
                 if (!variant.is_string() || variant.get<std::string>().empty()) {
                     invalid("native material profile '" + profile_names[slot] +
                             "' has an invalid filament_extruder_variant entry");
@@ -296,6 +300,14 @@ json compose_material_settings(const std::vector<json> &profiles,
     std::set<std::string> keys;
     for (const auto &profile : profiles) {
         for (const auto &[key, ignored] : profile.items()) {
+            if (!structural_profile_key(key) && !ignored_native_profile_key(key, snapshot)) {
+                keys.insert(key);
+            }
+        }
+    }
+    if (const auto defaults = snapshot.find("native_schema_defaults");
+        defaults != snapshot.end() && defaults->contains("values")) {
+        for (const auto &[key, value] : defaults->at("values").items()) {
             if (!structural_profile_key(key) && !ignored_native_profile_key(key, snapshot)) {
                 keys.insert(key);
             }
@@ -325,7 +337,12 @@ json compose_material_settings(const std::vector<json> &profiles,
                             profile_names[slot] + "'; select profiles with a shared value");
                 }
             }
-            if (selected == nullptr) continue;
+            if (selected == nullptr) {
+                if (const auto *default_value = native_schema_default(snapshot, key)) {
+                    combined[key] = *default_value;
+                }
+                continue;
+            }
             if (missing) {
                 const auto *default_value = native_schema_default(snapshot, key);
                 if (default_value == nullptr || *selected != *default_value) {
