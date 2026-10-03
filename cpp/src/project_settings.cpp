@@ -1706,6 +1706,13 @@ std::size_t merge_group_width(const json &project, const std::string &key,
             " does not match the target's declared slot shape");
 }
 
+json merge_transition_defaults(const json &request, const json &machine) {
+    if (!request.contains("merge_default_project")) return json();
+    const auto &defaults = merge_required_object(request, "merge_default_project", "request");
+    validate_source_hardware(defaults, machine);
+    return defaults;
+}
+
 MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
                                                const json &dialect,
                                                const json &defaults = json()) {
@@ -2194,12 +2201,6 @@ json compose_preserved_source(json project, const json &request, const json &tar
                 }
             }
         }
-        if (request.contains("merge_default_project")) {
-            const auto &defaults = merge_required_object(request, "merge_default_project", "request");
-            for (const auto *key : {"printer_model", "nozzle_diameter"}) {
-                if (project.at(key) != defaults.at(key)) invalid("merged transition defaults hardware differs from source");
-            }
-        }
         const json machine = {{"printer_model", required_member(project, "printer_model", "source project")},
                               {"nozzle_diameter", required_member(project, "nozzle_diameter", "source project")}};
         project = detail::prepare_source_merge_project(project, filament_snapshot);
@@ -2213,7 +2214,8 @@ json compose_preserved_source(json project, const json &request, const json &tar
         const json merge_dialect = detail::source_merge_dialect(dialect, project);
         const auto inputs = collect_merge_project_inputs(project, merge_request, merge_dialect,
                                                          machine, plate);
-        auto merged = compose_merged_slot_arrays(inputs, merge_dialect, request.value("merge_default_project", json()));
+        auto merged = compose_merged_slot_arrays(inputs, merge_dialect,
+            merge_transition_defaults(request, machine));
         project = std::move(merged.project);
         logical_slots = std::move(merged.logical_slots);
         mappings = source_slot_mappings(inputs);
@@ -2316,9 +2318,22 @@ std::string compose_project_settings(std::string_view base_project_json,
     json mappings = json::array();
     std::size_t slot_count = 0;
     if (merging_sources) {
+        // Hardware binding does not change the already-composed material shape.
+        // Derive the merge plan from actual source fields, as preserve_source does.
+        const auto &snapshot = required_member(dialect, "filament_snapshot", "package dialect");
+        project = detail::prepare_source_merge_project(project, snapshot);
+        json merge_request = request;
+        for (auto &source : merge_request.at("merge_sources")) {
+            if (source.contains("project_settings")) {
+                source["project_settings"] = detail::prepare_source_merge_project(
+                    source.at("project_settings"), snapshot);
+            }
+        }
+        const json merge_dialect = detail::source_merge_dialect(dialect, project);
         const auto inputs = collect_merge_project_inputs(
-            project, request, dialect, machine, plate);
-        auto merged = compose_merged_slot_arrays(inputs, dialect);
+            project, merge_request, merge_dialect, machine, plate);
+        auto merged = compose_merged_slot_arrays(inputs, merge_dialect,
+            merge_transition_defaults(request, machine));
         project = std::move(merged.project);
         if (!project.contains("curr_bed_type")) {
             project["curr_bed_type"] = required_string(
