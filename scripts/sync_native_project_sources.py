@@ -547,7 +547,7 @@ def _write_tree(stage: Path, rows: list[dict[str, Any]], roots: dict[str, Path],
     return reports
 
 
-def sync(application_roots: dict[str, Path]) -> int:
+def sync(application_roots: dict[str, Path], *, dry_run: bool = False) -> int:
     source_map = _load_json(SOURCE_MAP_PATH)
     rows = source_map.get("machine_profiles")
     if source_map.get("schema_version") != 1 or not isinstance(rows, list):
@@ -580,12 +580,21 @@ def sync(application_roots: dict[str, Path]) -> int:
                 "the generated native source index was left unchanged"
             )
 
-    OUTPUT_DIR.parent.mkdir(parents=True, exist_ok=True)
-    stage_parent = OUTPUT_DIR.parent
+    if not dry_run:
+        OUTPUT_DIR.parent.mkdir(parents=True, exist_ok=True)
+    stage_parent = None if dry_run else OUTPUT_DIR.parent
     with tempfile.TemporaryDirectory(prefix=".native-project-sources-", dir=stage_parent) as temp_dir:
         stage = Path(temp_dir) / "package"
         stage.mkdir()
         reports = _write_tree(stage, rows, application_roots, targets)
+        staged_index = _load_json(stage / "source-index.json")
+        profile_count = len(staged_index["profile_files"])
+        if dry_run:
+            print(f"Would import {len(rows)} identities and {profile_count} native profile files.")
+            print(f"Unavailable exact combinations: {len(reports)}; repository files unchanged.")
+            for item in reports:
+                print(f"- {item['slicer_id']} {item['machine_uid']} {item['nozzle_uid']}: {item['reason']}")
+            return 0
         old_files: set[str] = set()
         old_index = OUTPUT_DIR / "source-index.json"
         if old_index.is_file():
@@ -595,8 +604,9 @@ def sync(application_roots: dict[str, Path]) -> int:
                 old_files = set()
 
         # Reconcile only files named by our previous generated index.
+        new_files = set(staged_index["profile_files"])
         for path in sorted(old_files):
-            if path not in set(_load_json(stage / "source-index.json")["profile_files"]):
+            if path not in new_files:
                 previous = OUTPUT_DIR / path
                 if previous.is_file() and previous.resolve().is_relative_to(OUTPUT_DIR.resolve()):
                     previous.unlink()
@@ -612,7 +622,7 @@ def sync(application_roots: dict[str, Path]) -> int:
         shutil.copyfile(stage / "source-index.json", OUTPUT_DIR / "source-index.json")
 
     print(f"Imported {len(rows)} exact machine/nozzle identities.")
-    print(f"Packaged {len(_load_json(OUTPUT_DIR / 'source-index.json')['profile_files'])} shared native profile files.")
+    print(f"Packaged {profile_count} shared native profile files.")
     if reports:
         print(f"Unavailable exact combinations: {len(reports)}")
         for item in reports:
@@ -627,6 +637,8 @@ def sync(application_roots: dict[str, Path]) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dry-run", action="store_true",
+                        help="validate and preview in a temporary directory without changing repository files")
     parser.add_argument(
         "--application-root",
         action="append",
@@ -636,7 +648,7 @@ def main() -> int:
     )
     args = parser.parse_args()
     try:
-        return sync(_application_roots(args.application_root))
+        return sync(_application_roots(args.application_root), dry_run=args.dry_run)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"native source sync failed: {error}", file=sys.stderr)
         return 2

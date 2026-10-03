@@ -5,8 +5,8 @@ composer and the public Neroued 0.4.0 writer API:
 
 1. `builtin_project_request.json` selects the exact FatCat-bundled Bambu Studio
    02.08.02.61 A1 mini 0.4 mm source and textured PEI plate. The one-argument
-   `compose_project_settings` entry resolves its native machine, process, and
-   material profile inheritance and returns the effective project settings.
+   `compose_project_settings` dictionary entry resolves its native machine, process, and
+   material profile inheritance and returns `project_settings` as a dictionary.
 2. The generator centers the cube on the selected project's rectangular
    `printable_area`, including its native origin offset, and places its bottom
    at Z=0. It validates the cube against that area and `printable_height`.
@@ -15,7 +15,7 @@ composer and the public Neroued 0.4.0 writer API:
    the part, `add_component_object` returns the real assembly ID, and the
    placement is assigned to its build item. All material groups remain in the
    root model resources.
-3. `compose_model_metadata` builds the package metadata description and
+3. `compose_model_metadata` consumes that final dictionary and builds the package metadata description and
    `fatcat_metadata_neroued` applies it before neroued writes the 3MF once.
 
 The default example uses the bundled native source without `project.json`. It

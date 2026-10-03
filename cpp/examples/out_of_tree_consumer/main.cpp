@@ -28,10 +28,8 @@ json read_json(const std::string &path) {
 
 int main(int argc, char **argv) {
     try {
-        const std::string root = FATCAT_FIXTURE_ROOT;
         const std::filesystem::path data_root = argc > 1 ? argv[1] : FATCAT_PUBLIC_DATA_ROOT;
-        json request = read_json(
-            root + "/cpp/examples/out_of_tree_consumer/request.json");
+        json request = read_json(FATCAT_EXAMPLE_REQUEST);
         json selection = {{"project_source", "fatcat_native"},
             {"slicer_id", "BambuStudio"}, {"application_version", "02.08.02.61"},
             {"machine_uid", "bambu-lab:a1"}, {"nozzle_uid", "nozzle:0.4mm"},

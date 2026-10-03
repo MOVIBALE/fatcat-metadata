@@ -189,19 +189,13 @@ def main() -> None:
     request_path = args.project_request_json or (
         _BUILTIN_REQUEST if args.project_json is None else _CUSTOM_REQUEST
     )
-    project_request_json, project_request = _load_json(request_path)
+    _, project_request = _load_json(request_path)
     if args.project_json is None:
-        project_result_json = fatcat_metadata.compose_project_settings(
-            project_request_json
-        )
+        project_result = fatcat_metadata.compose_project_settings(project_request)
     else:
-        project_json, _ = _load_json(args.project_json)
-        project_result_json = fatcat_metadata.compose_project_settings(
-            project_json, project_request_json
-        )
-    project_result = json.loads(project_result_json)
-    final_project_json = project_result["project_settings_json"]
-    final_project = json.loads(final_project_json)
+        _, source_project = _load_json(args.project_json)
+        project_result = fatcat_metadata.compose_project_settings(source_project, project_request)
+    final_project = project_result["project_settings"]
     placement = _cube_placement(final_project, tuple(args.bed_center) if args.bed_center else None)
     builder, object_id, assembly_id = _create_builder(
         placement, _cube_material(project_request, final_project), args.production)
@@ -222,12 +216,7 @@ def main() -> None:
         _model_part_request(object_id)
     ]
 
-    description = json.loads(
-        fatcat_metadata.compose_model_metadata(
-            final_project_json,
-            json.dumps(model_request),
-        )
-    )
+    description = fatcat_metadata.compose_model_metadata(final_project, model_request)
     fatcat_metadata_neroued.apply_root_model_metadata(
         builder, description["root_model"]
     )

@@ -3,9 +3,11 @@
 The native source updater is `scripts/sync_native_project_sources.py`. It reads
 the profile files installed by each supported macOS slicer release and checks
 the exact `CFBundleShortVersionString` in its app bundle before it writes any
-profile snapshot. Run it only from a clean working tree after backing up or
-committing changes: there is no dry-run option, and a successful run replaces
-the generated source index and profile files.
+profile snapshot. Use `--dry-run` with the same application roots to validate and preview the
+update without changing repository files. A normal successful run replaces the
+generated source index and profile files; use a clean working tree and preserve
+local changes before applying it. These refresh tools require macOS app bundles;
+consuming the installed SDK works on Linux, macOS and Windows.
 
 ## Refresh the pinned application snapshots
 
@@ -78,6 +80,7 @@ do not derive a new machine from a similar printer profile. After reviewing the
 source index, run:
 
 ```bash
+python3 scripts/sync_native_machine_bindings.py --dry-run
 python3 scripts/sync_native_machine_bindings.py
 ```
 

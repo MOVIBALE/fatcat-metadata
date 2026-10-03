@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <map>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -611,6 +612,58 @@ bool material_supports_plate(const json &profile, const json &plate) {
     });
 }
 
+template <typename Predicate>
+std::optional<std::string> unique_profile_name(const std::vector<std::string> &names,
+                                              Predicate matches) {
+    std::optional<std::string> result;
+    for (const auto &name : names) {
+        if (!matches(name)) continue;
+        if (result) return std::nullopt;
+        result = name;
+    }
+    return result;
+}
+
+// Rank only already-compatible candidates; this never invents a preset.
+std::optional<std::string> preferred_material_profile(
+    const std::vector<std::string> &names, const std::string &requested_name,
+    const std::string &requested_type, const std::string &native_default) {
+    const auto exact = unique_profile_name(names, [&](const std::string &name) {
+        return !requested_name.empty() && normalized_text(requested_name) == normalized_text(name);
+    });
+    if (exact) return exact;
+    if (std::find(names.begin(), names.end(), native_default) != names.end()) return native_default;
+
+    const auto default_alias = unique_profile_name(names, [&](const std::string &name) {
+        return !native_default.empty() &&
+            compact_text(normalized_text(name.substr(0, name.find('@')))) ==
+            compact_text(normalized_text(native_default));
+    });
+    if (default_alias) return default_alias;
+
+    const auto family = material_family(requested_type);
+    if (requested_type == family || requested_type == family + " BASIC") {
+        const auto basic = unique_profile_name(names, [&](const std::string &name) {
+            return compact_text(normalized_text(name)).find(compact_text(family + " BASIC")) != std::string::npos;
+        });
+        if (basic) return basic;
+        const auto generic = unique_profile_name(names, [&](const std::string &name) {
+            return compact_text(normalized_text(name.substr(0, name.find('@')))) ==
+                   compact_text(normalized_text("Generic " + family));
+        });
+        if (generic) return generic;
+    }
+    const auto requested_key = compact_text(requested_type);
+    if (!requested_key.empty() && requested_type != family) {
+        const auto variant = unique_profile_name(names, [&](const std::string &name) {
+            return compact_text(normalized_text(name)).find(requested_key) != std::string::npos;
+        });
+        if (variant) return variant;
+    }
+    if (names.size() == 1) return names.front();
+    return std::nullopt;
+}
+
 std::vector<SelectedMaterialProfile> select_material_profiles(
     const json &request, const json &target, const json &source, const json &index,
     const std::filesystem::path &data_root, const std::string &machine_uid,
@@ -770,85 +823,22 @@ std::vector<SelectedMaterialProfile> select_material_profiles(
                         "'; select a compatible native_filament_profile_names entry");
             }
 
-            std::vector<std::string> exact_name_matches;
-            const auto requested_name = materials.at(slot).value("name", std::string());
+            const auto preferred = preferred_material_profile(
+                matching_names, materials.at(slot).value("name", std::string()),
+                requested_type, default_for_slot(slot));
+            if (preferred) {
+                requested_names.push_back(*preferred);
+                continue;
+            }
+            if (allow_retained) return {};
+            std::string choices;
             for (const auto &name : matching_names) {
-                if (!requested_name.empty() &&
-                    normalized_text(requested_name) == normalized_text(name)) {
-                    exact_name_matches.push_back(name);
-                }
+                if (!choices.empty()) choices += ", ";
+                choices += name;
             }
-            if (exact_name_matches.size() == 1) {
-                requested_names.push_back(exact_name_matches.front());
-                continue;
-            }
-
-            const auto requested_key = compact_text(requested_type);
-            const auto family = material_family(requested_type);
-            const auto native_default = default_for_slot(slot);
-            if (std::find(matching_names.begin(), matching_names.end(), native_default) != matching_names.end()) {
-                requested_names.push_back(native_default);
-                continue;
-            }
-            std::vector<std::string> default_aliases;
-            for (const auto &name : matching_names) {
-                if (!native_default.empty() && compact_text(normalized_text(name.substr(0, name.find('@')))) == compact_text(normalized_text(native_default))) {
-                    default_aliases.push_back(name);
-                }
-            }
-            if (default_aliases.size() == 1) {
-                requested_names.push_back(default_aliases.front());
-                continue;
-            }
-            if (requested_type == family || requested_type == family + " BASIC") {
-                std::vector<std::string> basic_matches;
-                for (const auto &name : matching_names) {
-                    if (compact_text(normalized_text(name)).find(compact_text(family + " BASIC")) != std::string::npos) {
-                        basic_matches.push_back(name);
-                    }
-                }
-                if (basic_matches.size() == 1) {
-                    requested_names.push_back(basic_matches.front());
-                    continue;
-                }
-                std::vector<std::string> generic_matches;
-                for (const auto &name : matching_names) {
-                    if (compact_text(normalized_text(name.substr(0, name.find('@')))) == compact_text(normalized_text("Generic " + family))) {
-                        generic_matches.push_back(name);
-                    }
-                }
-                if (generic_matches.size() == 1) {
-                    requested_names.push_back(generic_matches.front());
-                    continue;
-                }
-            }
-            const bool specific_type = !requested_key.empty() && requested_type != family;
-            if (specific_type) {
-                std::vector<std::string> variant_matches;
-                for (const auto &name : matching_names) {
-                    if (compact_text(normalized_text(name)).find(requested_key) != std::string::npos) {
-                        variant_matches.push_back(name);
-                    }
-                }
-                if (variant_matches.size() == 1) {
-                    requested_names.push_back(variant_matches.front());
-                    continue;
-                }
-            }
-
-            if (matching_names.size() == 1) {
-                requested_names.push_back(matching_names.front());
-            } else {
-                if (allow_retained) return {};
-                std::string choices;
-                for (const auto &name : matching_names) {
-                    if (!choices.empty()) choices += ", ";
-                    choices += name;
-                }
-                invalid("source material slot " + std::to_string(slot) + " type '" +
-                        requested_type + "' matches multiple native profiles (" + choices +
-                        "); select native_filament_profile_names explicitly");
-            }
+            invalid("source material slot " + std::to_string(slot) + " type '" +
+                    requested_type + "' matches multiple native profiles (" + choices +
+                    "); select native_filament_profile_names explicitly");
         }
     }
 

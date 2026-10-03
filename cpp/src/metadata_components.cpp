@@ -16,6 +16,8 @@
 #include <vector>
 
 #include <nlohmann/json.hpp>
+
+#include "json_object.h"
 #include <tinyxml2.h>
 
 #include "fatcat/wipe_tower.h"
@@ -27,46 +29,6 @@ using json = nlohmann::json;
 
 [[noreturn]] void invalid(std::string message) {
     throw MetadataComponentsError(std::move(message));
-}
-
-json parse_json(std::string_view text, std::string_view name) {
-    bool duplicate_key = false;
-    std::string duplicate_name;
-    std::vector<std::set<std::string>> object_keys;
-    const json::parser_callback_t callback =
-        [&](int, json::parse_event_t event, json &parsed) {
-            if (event == json::parse_event_t::object_start) {
-                object_keys.emplace_back();
-            } else if (event == json::parse_event_t::object_end) {
-                if (!object_keys.empty()) {
-                    object_keys.pop_back();
-                }
-            } else if (event == json::parse_event_t::key &&
-                       !object_keys.empty()) {
-                const auto key = parsed.get<std::string>();
-                if (!object_keys.back().insert(key).second) {
-                    duplicate_key = true;
-                    duplicate_name = key;
-                    return false;
-                }
-            }
-            return true;
-        };
-    try {
-        json parsed = json::parse(text, callback, true, false);
-        if (duplicate_key) {
-            invalid("duplicate JSON field in " + std::string(name) + ": " +
-                    duplicate_name);
-        }
-        if (!parsed.is_object()) {
-            invalid(std::string(name) + " must be a JSON object");
-        }
-        return parsed;
-    } catch (const MetadataComponentsError &) {
-        throw;
-    } catch (const json::exception &error) {
-        invalid("invalid " + std::string(name) + " JSON: " + error.what());
-    }
 }
 
 const json &required_member(const json &object, std::string_view key,
@@ -1519,11 +1481,51 @@ json validated_target_root(const json &dialect) {
             {"merge_policy", merge_policy}};
 }
 
+std::pair<std::string, std::string> resolve_metadata_bed(const json &project, const json &plate) {
+    const std::string project_bed = optional_text(project, "curr_bed_type", "project settings");
+    const std::string requested_bed = optional_text(plate, "bed_type", "request.plate");
+    if (project_bed.empty() && requested_bed.empty()) {
+        invalid("project settings or request.plate must provide bed_type");
+    }
+    if (!project_bed.empty() && !requested_bed.empty() && project_bed != requested_bed) {
+        invalid("project and model metadata bed_type values conflict");
+    }
+    const std::string bed_type = project_bed.empty() ? requested_bed : project_bed;
+    const std::string bed_type_field = project_bed.empty()
+                                           ? "request.plate.bed_type"
+                                           : "project.curr_bed_type";
+    return {bed_type, bed_type_field};
+}
+
+void validate_merged_source_identity(const std::vector<ModelInput> &models,
+                                     const json &dialect, const json &root) {
+    const json &source_identity = dialect.contains("merged_source_identity")
+        ? required_object(dialect, "merged_source_identity", "package dialect")
+        : required_object(dialect, "source_identity", "package dialect");
+    const std::string identity_name = required_text(
+        source_identity, "name", "package dialect.source_identity");
+    const std::string identity_value = required_text(
+        source_identity, "value", "package dialect.source_identity");
+    const auto current_identity = std::find_if(
+        root.at("metadata").begin(), root.at("metadata").end(),
+        [&](const json &item) { return item.at("name") == identity_name; });
+    for (const auto &model : models) {
+        const auto found = model.source_root_metadata.find(identity_name);
+        if (found == model.source_root_metadata.end() ||
+            (found->get<std::string>() != identity_value &&
+             (current_identity == root.at("metadata").end() ||
+              *found != current_identity->at("value")))) {
+            invalid(model.context + " source identity does not match target " +
+                    identity_name + "=" + identity_value);
+        }
+    }
+}
+
 }  // namespace
 
 std::string serialize_layer_config_ranges(std::string_view data_json,
                                           double fine_layer_height_mm) {
-    const json input = parse_json(data_json, "layer range data");
+    const json input = detail::parse_json_object<MetadataComponentsError>(data_json, "layer range data");
     const json project = {{"layer_height", fine_layer_height_mm}};
     const json plan = {{"option_fields", {
         {"default_extruder_key", "extruder"}, {"default_extruder_value", "0"},
@@ -1535,9 +1537,9 @@ std::string serialize_layer_config_ranges(std::string_view data_json,
 std::string compose_model_metadata(std::string_view project_json,
                                    std::string_view request_json,
                                    std::string_view target_json) {
-    const json project = parse_json(project_json, "project settings");
-    const json request = parse_json(request_json, "metadata request");
-    const json target = parse_json(target_json, "target data");
+    const json project = detail::parse_json_object<MetadataComponentsError>(project_json, "project settings");
+    const json request = detail::parse_json_object<MetadataComponentsError>(request_json, "metadata request");
+    const json target = detail::parse_json_object<MetadataComponentsError>(target_json, "target data");
     const json &slot_values = required_array(project, "filament_settings_id",
                                              "project settings");
     const std::size_t slot_count = slot_values.size();
@@ -1603,41 +1605,9 @@ std::string compose_model_metadata(std::string_view project_json,
     const json model_resources = build_model_resource_paths(resource_plan);
     const json content_types = validate_content_types(component_plan);
     const json &plate = required_object(request, "plate", "request");
-    const std::string project_bed = optional_text(project, "curr_bed_type", "project settings");
-    const std::string requested_bed = optional_text(plate, "bed_type", "request.plate");
-    if (project_bed.empty() && requested_bed.empty()) {
-        invalid("project settings or request.plate must provide bed_type");
-    }
-    if (!project_bed.empty() && !requested_bed.empty() && project_bed != requested_bed) {
-        invalid("project and model metadata bed_type values conflict");
-    }
-    const std::string bed_type = project_bed.empty() ? requested_bed : project_bed;
-    const std::string bed_type_field = project_bed.empty()
-                                           ? "request.plate.bed_type"
-                                           : "project.curr_bed_type";
+    const auto [bed_type, bed_type_field] = resolve_metadata_bed(project, plate);
     const json root = validated_target_root(dialect);
-    if (multi_model) {
-        const json &source_identity = dialect.contains("merged_source_identity")
-            ? required_object(dialect, "merged_source_identity", "package dialect")
-            : required_object(dialect, "source_identity", "package dialect");
-        const std::string identity_name = required_text(
-            source_identity, "name", "package dialect.source_identity");
-        const std::string identity_value = required_text(
-            source_identity, "value", "package dialect.source_identity");
-        const auto current_identity = std::find_if(
-            root.at("metadata").begin(), root.at("metadata").end(),
-            [&](const json &item) { return item.at("name") == identity_name; });
-        for (const auto &model : models) {
-            const auto found = model.source_root_metadata.find(identity_name);
-            if (found == model.source_root_metadata.end() ||
-                (found->get<std::string>() != identity_value &&
-                 (current_identity == root.at("metadata").end() ||
-                  *found != current_identity->at("value")))) {
-                invalid(model.context + " source identity does not match target " +
-                        identity_name + "=" + identity_value);
-            }
-        }
-    }
+    if (multi_model) validate_merged_source_identity(models, dialect, root);
     const std::string model_xml = multi_model
                                       ? build_merged_model_settings(
                                             models, bed_type, model_resources, slot_count,

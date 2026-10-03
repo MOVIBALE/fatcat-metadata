@@ -44,3 +44,33 @@ cmake --build build-consumer --parallel
 Applications can pass their public packaged data root as the executable's first
 argument. The public root APIs are declared in `fatcat/native_project_source.h`;
 the existing explicit canonical/target JSON signatures remain supported.
+
+## Install a standalone SDK
+
+The C++ installation is opt-in so Python wheels do not carry static libraries
+or CMake development files:
+
+```bash
+cmake -S cpp -B build-sdk -DFATCAT_BUILD_PYTHON=OFF \
+  -DFATCAT_BUILD_TESTS=OFF -DFATCAT_INSTALL_CPP=ON
+cmake --build build-sdk --config Release --parallel
+cmake --install build-sdk --config Release --prefix /tmp/fatcat-sdk
+```
+
+Consumers use `find_package(FatCatMetadata 0.1.0 CONFIG REQUIRED)` and link
+`FatCatMetadata::Core`. `FatCatMetadata_DATA_DIR` locates the installed public
+data root and follows the installation prefix when it is moved. If a matching
+system JSON or TinyXML2 dependency was used to build the SDK, that dependency
+must also be available to the consumer; bundled dependencies are installed.
+
+The same consumer example exercises this installed contract:
+
+```bash
+cmake -S cpp/examples/out_of_tree_consumer -B build-installed-consumer \
+  -DFATCAT_CONSUME_INSTALLED=ON -DCMAKE_PREFIX_PATH=/tmp/fatcat-sdk
+cmake --build build-installed-consumer --config Release --parallel
+ctest --test-dir build-installed-consumer -C Release --output-on-failure
+```
+
+The consumer's `main.cpp`, `request.json` and `CMakeLists.txt` can be copied to
+another directory for installed use; no Fat Cat source directory is required.

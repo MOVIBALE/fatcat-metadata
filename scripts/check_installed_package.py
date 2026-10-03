@@ -31,6 +31,8 @@ def main() -> int:
     ).resolve()
     module_path = Path(fatcat_metadata.__file__).resolve()
     module_root = module_path.parent
+    if not (module_root / "fatcat_metadata-stubs/__init__.pyi").is_file():
+        raise SystemExit("Python interface type hints were not packaged")
     if module_path.is_relative_to(source_root):
         raise SystemExit(f"import resolved inside source checkout: {module_path}")
     if Path.cwd().resolve().is_relative_to(source_root):
