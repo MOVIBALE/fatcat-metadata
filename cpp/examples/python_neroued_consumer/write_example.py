@@ -5,13 +5,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import uuid
 from pathlib import Path
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 import fatcat_metadata
 import fatcat_metadata_neroued
-import neroued_3mf as n3mf
+
+if TYPE_CHECKING:
+    import neroued_3mf as n3mf
 
 
 _EXAMPLE_DIR = Path(__file__).resolve().parent
@@ -30,6 +33,8 @@ _CUBE_VERTICES = (
 
 
 def _cube_mesh() -> n3mf.Mesh:
+    import neroued_3mf as n3mf
+
     triangles = (
         (0, 2, 1), (0, 3, 2),
         (4, 5, 6), (4, 6, 7),
@@ -78,7 +83,48 @@ def _model_part_request(object_id: int) -> dict[str, Any]:
     }
 
 
-def _create_builder() -> tuple[n3mf.DocumentBuilder, int]:
+def _cube_placement(project: dict[str, Any],
+                    bed_center: tuple[float, float] | None = None) -> tuple[float, float, float]:
+    """Center this example on the selected printable rectangle, without editing it."""
+    area = project.get("printable_area")
+    bounds = None
+    if area:
+        try:
+            points = [tuple(float(value) for value in point.split("x")) for point in area]
+        except (AttributeError, TypeError, ValueError) as error:
+            raise ValueError("printable area must describe a finite rectangle") from error
+        if len(points) != 4 or any(len(point) != 2 or not all(map(math.isfinite, point)) for point in points):
+            raise ValueError("printable area must describe a finite rectangle")
+        lower = tuple(min(point[axis] for point in points) for axis in range(2))
+        upper = tuple(max(point[axis] for point in points) for axis in range(2))
+        if set(points) != {(lower[0], lower[1]), (lower[0], upper[1]),
+                           (upper[0], lower[1]), (upper[0], upper[1])} or any(
+                               lower[axis] >= upper[axis] for axis in range(2)):
+            raise ValueError("this cube example requires a rectangular printable area")
+        bounds = lower, upper
+        if bed_center is None:
+            bed_center = tuple((lower[axis] + upper[axis]) / 2 for axis in range(2))
+    if bed_center is None:
+        raise ValueError("project has no printable area; supply generator --bed-center X Y")
+    if len(bed_center) != 2 or not all(map(math.isfinite, bed_center)):
+        raise ValueError("bed center must contain two finite coordinates")
+    minimum = tuple(min(vertex[axis] for vertex in _CUBE_VERTICES) for axis in range(3))
+    maximum = tuple(max(vertex[axis] for vertex in _CUBE_VERTICES) for axis in range(3))
+    translation = tuple(bed_center[axis] - (minimum[axis] + maximum[axis]) / 2
+                        for axis in range(2)) + (-minimum[2],)
+    if bounds and any(minimum[axis] + translation[axis] <= bounds[0][axis] or
+                      maximum[axis] + translation[axis] >= bounds[1][axis] for axis in range(2)):
+        raise ValueError("cube placement exceeds the selected printable area")
+    if "printable_height" in project:
+        height = float(project["printable_height"])
+        if not math.isfinite(height) or maximum[2] + translation[2] > height:
+            raise ValueError("cube exceeds the selected printable height")
+    return translation
+
+
+def _create_builder(placement: tuple[float, float, float]) -> tuple[n3mf.DocumentBuilder, int]:
+    import neroued_3mf as n3mf
+
     builder = n3mf.DocumentBuilder()
     builder.set_unit(n3mf.Unit.Millimeter)
     builder.set_language("en-US")
@@ -92,7 +138,7 @@ def _create_builder() -> tuple[n3mf.DocumentBuilder, int]:
     builder.set_object_uuid(object_id, str(uuid.uuid4()))
     builder.set_component_transform(object_id, n3mf.Transform.identity())
 
-    builder.enable_production(n3mf.Transform.identity())
+    builder.enable_production(n3mf.Transform.translation(*placement))
     builder.set_production_merge_objects(True)
     builder.add_build_item(
         object_id,
@@ -102,6 +148,8 @@ def _create_builder() -> tuple[n3mf.DocumentBuilder, int]:
 
 
 def main() -> None:
+    import neroued_3mf as n3mf
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--project-json",
@@ -116,6 +164,8 @@ def main() -> None:
         help="target and source selection request JSON; defaults for the selected source mode",
     )
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--bed-center", type=float, nargs=2, metavar=("X", "Y"),
+                        help="generator placement center; required if the custom project has no printable area")
     args = parser.parse_args()
 
     request_path = args.project_request_json or (
@@ -134,7 +184,8 @@ def main() -> None:
     project_result = json.loads(project_result_json)
     final_project_json = project_result["project_settings_json"]
     final_project = json.loads(final_project_json)
-    builder, object_id = _create_builder()
+    placement = _cube_placement(final_project, tuple(args.bed_center) if args.bed_center else None)
+    builder, object_id = _create_builder(placement)
 
     _, model_request = _load_json(_EXAMPLE_DIR / "request.json")
     model_request["slicer_id"] = project_request["slicer_id"]
