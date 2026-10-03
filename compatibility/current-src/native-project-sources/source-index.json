@@ -6343,6 +6343,14 @@
             "reason": "no unique exact native preset file"
           }
         ]
+      },
+      "compatibility_project": {
+        "path": "compatibility-projects/orca-2.2.4-snapmaker-u1-0.4.json",
+        "source_slicer_id": "OrcaSlicer",
+        "source_application_version": "2.2.4",
+        "source_profile_name": "0.08 Extra Fine @Snapmaker U1 (0.4 nozzle)",
+        "license_file": "licenses/third-party/slicer-profiles/orcaslicer/LICENSE.txt",
+        "source_sha256": "9b162c8f6b7119d47df1f6a21b76ee6681adda13714764e91579d5f170b0ca12"
       }
     },
     {
@@ -9310,5 +9318,8 @@
     "profiles/SnapmakerOrca/Snapmaker/process/fdm_process_U1_0.40_nozzle_0.8.json": {
       "inherits:fdm_process_U1_common": "profiles/SnapmakerOrca/Snapmaker/process/fdm_process_U1_common.json"
     }
-  }
+  },
+  "compatibility_project_files": [
+    "compatibility-projects/orca-2.2.4-snapmaker-u1-0.4.json"
+  ]
 }

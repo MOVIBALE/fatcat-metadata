@@ -12,6 +12,13 @@ license path, and source URL. Fat Cat translation contracts and compatibility
 metadata are maintained separately; the upstream profiles remain under their
 respective upstream terms.
 
+One retained complete project at
+`native-project-sources/compatibility-projects/orca-2.2.4-snapmaker-u1-0.4.json`
+records an OrcaSlicer 2.2.4 U1 process. It is compatibility data, not a 2.4.2
+native profile snapshot. It retains its recorded process provenance and uses
+the included OrcaSlicer AGPL-3.0 license text. The file was retained verbatim;
+its content hash is recorded in the source descriptor.
+
 | Application snapshot | Upstream repository | Included license text |
 | --- | --- | --- |
 | Bambu Studio 02.08.02.61 | [bambulab/BambuStudio](https://github.com/bambulab/BambuStudio) | [AGPL-3.0](licenses/third-party/slicer-profiles/bambu-studio/LICENSE) |

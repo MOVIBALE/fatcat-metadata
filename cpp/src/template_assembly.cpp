@@ -79,12 +79,6 @@ std::string trim(std::string value) {
     return first < last ? std::string(first, last) : std::string();
 }
 
-std::string lowercase(std::string value) {
-    std::transform(value.begin(), value.end(), value.begin(),
-                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-    return value;
-}
-
 std::string option(const json &options, const char *key) {
     return text_or_empty(options.value(key, json()));
 }
@@ -246,13 +240,6 @@ void mark_purge_chute_flush(json &project) {
     *found = std::move(normalized);
 }
 
-bool is_snapmaker_u1(const json &options) {
-    const auto slicer = trim(option(options, "slicer_id"));
-    return lowercase(option(options, "device_brand")) == "snapmaker" &&
-           lowercase(option(options, "device_display_name")) == "snapmaker u1" &&
-           (slicer == "OrcaSlicer" || slicer == "SnapmakerOrca");
-}
-
 json merge_templates(json project, const json &machine, const json &options,
                       const std::string &kind) {
     const bool flash = trim(option(options, "slicer_id")) == "FlashStudio";
@@ -266,9 +253,6 @@ json merge_templates(json project, const json &machine, const json &options,
             }
         }
         merge_difference_index(project, machine);
-        align_default_filament(project, machine);
-    } else if (is_snapmaker_u1(options)) {
-        copy_keys(project, machine, project_profile_keys);
         align_default_filament(project, machine);
     }
     retarget_nozzle_labels(project, machine, options);

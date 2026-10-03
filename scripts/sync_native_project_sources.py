@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import plistlib
@@ -431,6 +432,27 @@ def _write_tree(stage: Path, rows: list[dict[str, Any]], roots: dict[str, Path],
             _source_entry(catalog, row, target, source_paths, links)
             for row in slicer_rows
         ]
+        for row, entry in zip(slicer_rows, slice_entries):
+            if "compatibility_project" in row:
+                record = row["compatibility_project"]
+                relative = Path(*_safe_relative(record["path"]))
+                original = OUTPUT_DIR / relative
+                payload = _load_json(original)
+                for key in ("machine_uid", "nozzle_uid"):
+                    if payload["source"][key] != row[key]:
+                        raise ValueError("compatibility source hardware identity mismatch")
+                for key in ("source_slicer_id", "source_application_version", "source_profile_name"):
+                    if payload["source"][key] != record[key]:
+                        raise ValueError("compatibility source process provenance mismatch")
+                if hashlib.sha256(original.read_bytes()).hexdigest() != record["source_sha256"]:
+                    raise ValueError("compatibility source content hash mismatch")
+                license_path = ROOT.joinpath(*_safe_relative(record["license_file"]))
+                if not license_path.is_file() or not license_path.resolve().is_relative_to(ROOT.resolve()):
+                    raise ValueError("compatibility source license is missing or outside the repository")
+                entry["compatibility_project"] = record
+                destination = stage / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(original, destination)
 
         # Include every exact parent/include file in the closure. Keeping only
         # selected roots would leave dangling source-index edges at runtime.
@@ -483,6 +505,10 @@ def _write_tree(stage: Path, rows: list[dict[str, Any]], roots: dict[str, Path],
             ),
         ),
         "profile_files": copied_files,
+        "compatibility_project_files": sorted({
+            entry["compatibility_project"]["path"] for entry in copied_entries
+            if "compatibility_project" in entry
+        }),
         "references": references,
     }
     (stage / "source-index.json").write_text(_render_json(index), encoding="utf-8")
@@ -545,6 +571,10 @@ def sync(application_roots: dict[str, Path]) -> int:
         for path in (stage / "profiles").rglob("*.json"):
             relative = path.relative_to(stage).as_posix()
             destination = OUTPUT_DIR / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, destination)
+        for path in (stage / "compatibility-projects").rglob("*.json"):
+            destination = OUTPUT_DIR / path.relative_to(stage)
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, destination)
         shutil.copyfile(stage / "source-index.json", OUTPUT_DIR / "source-index.json")

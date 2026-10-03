@@ -30,4 +30,17 @@ are in the root README and `tests/`.
 
 `examples/out_of_tree_consumer` demonstrates consuming the core as a CMake
 subdirectory. It builds against the public headers and packaged compatibility
-data without relying on internal build targets.
+data without relying on internal build targets. It receives one public data
+root; the library resolves canonical/target files and native sources. It builds
+a Bambu A1 project and the Orca 2.4.2 U1 project whose retained process is from
+Orca 2.2.4. No prebuilt project fixture is needed.
+
+```bash
+cmake -S cpp/examples/out_of_tree_consumer -B build-consumer
+cmake --build build-consumer --parallel
+./build-consumer/fatcat_metadata_out_of_tree_consumer
+```
+
+Applications can pass their public packaged data root as the executable's first
+argument. The public root APIs are declared in `fatcat/native_project_source.h`;
+the existing explicit canonical/target JSON signatures remain supported.

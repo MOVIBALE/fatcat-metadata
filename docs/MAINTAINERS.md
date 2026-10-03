@@ -43,9 +43,17 @@ material profile files and their exact inheritance/include closure, and writes
 exact profile is recorded as unavailable. Do not create a substitute default
 or rename a different preset to satisfy an identity. For example, OrcaSlicer
 2.4.2 has a Snapmaker U1 0.4 mm machine and material source, but its process
-preset is not uniquely available; built-in composition must keep failing until
-an exact process profile is supplied. Snapmaker Orca 2.3.6 has its own separate
-U1 0.4 mm source.
+preset is not uniquely available. Its source row records one retained complete
+Orca 2.2.4 project in `compatibility-projects/`. The generic built-in composer
+uses that historical process with the selected 2.4.2 machine and materials.
+The native process availability stays unavailable, and the result reports the
+historical `process_source`; it must never be relabeled a 2.4.2 native process.
+Snapmaker Orca 2.3.6 has its own separate U1 0.4 mm source.
+
+The updater preserves the retained file and its source descriptor across
+refreshes. Check its recorded hardware, process provenance, content hash, and
+license before copying it. Remove the compatibility descriptor only when an
+exact native process becomes available and the replacement has been reviewed.
 
 Review the generated source index, profile files, and
 `unavailable-sources.json` before continuing. In particular, confirm the source
@@ -109,3 +117,28 @@ the app bundle's source commit or vendor release, changed identities, and any
 unavailable exact profiles in the change description. Review third-party
 license source revisions in `licenses/third-party/manifest.json` whenever an
 upstream profile source changes.
+
+## Public data root and sparse merged selections
+
+C++ callers pass a public packaged data root to
+`compose_builtin_project_settings`, `compose_project_settings_from_data`, and
+`compose_model_metadata_from_data`. Fat Cat selects the exact target and
+canonical data internally. Existing explicit JSON entry points remain available.
+The out-of-tree example builds both a native project and the U1 compatibility
+case without reading a target filename or a prebuilt project.
+
+For a merged selection, `source_materials` can describe the ordered complete
+palette while `merge_sources[].slots` describes only real source rows. Missing
+rows are synthesized using the same native-source path and exact machine/nozzle
+UIDs. Actual source temperatures, flow, process, unknown fields, and transition
+values remain authoritative. Transition pairs absent from every source require
+recorded native defaults; unavailable defaults are errors. The explicit JSON
+composer accepts `merge_default_project` for these absent transition pairs and
+checks its hardware identity. Neither entry infers a substitute machine.
+
+`assemble_project_template` and `assemble_machine_registry_template` retain
+their published C++/Python signatures for explicit historical callers. Their
+minimal/registry factories are compatibility behavior and are not used by the
+current native-source export path. Template assembly no longer selects policy
+from a printer brand or display name. Lumina's unused wrappers were removed;
+current consumers call the project/settings and metadata composers directly.

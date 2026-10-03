@@ -2582,6 +2582,17 @@
       "cut_retraction_machine_keys": [
         "long_retractions_when_cut"
       ]
+    },
+    "wipe_tower_placement": {
+      "native_defaults": {
+        "prime_tower_brim_width": "3",
+        "prime_tower_rib_wall": "1",
+        "prime_tower_rib_width": "8",
+        "prime_tower_extra_rib_length": "0",
+        "prime_tower_fillet_wall": "1",
+        "prime_tower_infill_gap": "150%"
+      },
+      "native_defaults_source": "Exact target-version PrintConfig.cpp / GCode/WipeTower.cpp compiled defaults, applied only to omitted source fields"
     }
   },
   "target_contract": {

@@ -327,8 +327,7 @@ bool compact_source_slots(const json &project, const json &request,
     if (mode != "auto") throw ProjectSettingsError("invalid source filament_slot_mode");
     if (request.value("preserve_source_material_settings", false)) return false;
     const auto profile = request.value("source_profile", json::object());
-    const bool u1 = project.value("printer_model", "") == "Snapmaker U1";
-    return !profile.value("registry", false) || u1 || slicer == "FlashStudio" || filament_count(project) <= count;
+    return !profile.value("registry", false) || slicer == "FlashStudio" || filament_count(project) <= count;
 }
 
 std::string derive_preset(std::string original, const std::string &preset) {
@@ -627,13 +626,11 @@ json prepare_source_identity(const json &base, const json &request) {
 void apply_source_flush_defaults(json &project, const json &request, const json &target) {
     if (!request.contains("source_materials") || request.contains("merge_sources") ||
         request.value("preserve_source_material_settings", false) ||
-        target.at("target_contract").value("slicer_id", "") != "FlashStudio" ||
-        project.value("printer_model", "") != "Flashforge AD5X") return;
+        target.at("target_contract").value("slicer_id", "") != "FlashStudio") return;
     rebuild_flush_matrix_from_vector(project);
 }
 
 void apply_source_tower_defaults(json &project, const json &target) {
-    const auto &contract = target.at("target_contract");
     const auto package = target.find("package_dialect");
     if (package != target.end() && package->is_object() &&
         package->contains("wipe_tower_placement")) {
@@ -654,36 +651,7 @@ void apply_source_tower_defaults(json &project, const json &target) {
             }
         }
     }
-    if (contract.value("slicer_id", "") == "BambuStudio" &&
-        contract.value("application_version", "") == "02.08.02.61") {
-        // BambuStudio v02.08.02.61 PrintConfig/WipeTower defaults define its
-        // square ribbed tower envelope even when a project omits these keys.
-        // https://github.com/bambulab/BambuStudio/blob/v02.08.02.61/src/libslic3r/PrintConfig.cpp
-        // https://github.com/bambulab/BambuStudio/blob/v02.08.02.61/src/libslic3r/GCode/WipeTower.cpp
-        const json defaults = {{"prime_tower_brim_width", "3"},
-                               {"prime_tower_rib_wall", "1"},
-                               {"prime_tower_rib_width", "8"},
-                               {"prime_tower_extra_rib_length", "0"},
-                               {"prime_tower_fillet_wall", "1"},
-                               {"prime_tower_infill_gap", "150%"}};
-        for (const auto &[key, value] : defaults.items()) {
-            if (!project.contains(key)) project[key] = value;
-        }
-        return;
-    }
-    if (contract.value("slicer_id", "") != "ElegooSlicer" ||
-        contract.value("application_version", "") != "1.5.3.5") return;
-    const auto model = project.value("printer_model", "");
-    if (model != "Elegoo Centauri Carbon" && model != "Elegoo Centauri Carbon 2") return;
-    // ElegooSlicer v1.5.3.5 PrintConfig.cpp: 6904-7023. These defaults
-    // affect the physical envelope even when omitted from a source project.
-    const json defaults = {{"prime_tower_brim_width", "3"},
-                           {"wipe_tower_wall_type", "rib"},
-                           {"wipe_tower_rib_width", "8"},
-                           {"prime_tower_infill_gap", "150%"}};
-    for (const auto &[key, value] : defaults.items()) {
-        if (!project.contains(key)) project[key] = value;
-    }
+
 }
 
 json compose_source_project(const json &base, const json &request, const json &target) {
@@ -796,13 +764,8 @@ json compose_source_project(const json &base, const json &request, const json &t
         project[key] = value;
         overrides.insert(key);
     }
-    const bool u1 = (slicer == "OrcaSlicer" || slicer == "SnapmakerOrca") &&
-                    project.value("printer_model", "") == "Snapmaker U1";
     record_differences(project, overrides, scoped_markers, difference_key,
                        difference_offset, difference_trailing);
-    if (u1) {
-        project.erase("inherits_group");
-    }
     return project;
 }
 

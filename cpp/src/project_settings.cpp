@@ -190,6 +190,7 @@ void validate_request_keys(const json &request) {
         "filament_source_slots",
         "disable_cut_retraction",
         "merge_sources",
+        "merge_default_project",
         "hardware_mode",
         "source_materials",
         "process_settings",
@@ -1547,7 +1548,7 @@ std::uint64_t merge_required_id(const json &object, std::string_view key,
 
 MergeProjectInputs collect_merge_project_inputs(
     const json &first_project, const json &request, const json &dialect,
-    const json &machine, const json &plate, bool qidi_q2_merge) {
+    const json &machine, const json &plate) {
     const json &source_inputs = merge_required_array(request, "merge_sources", "request");
 
     MergeProjectInputs result;
@@ -1576,9 +1577,9 @@ MergeProjectInputs collect_merge_project_inputs(
         source.project = source_index == 0
                              ? first_project
                              : merge_required_object(source_input, "project_settings", context);
-        if (qidi_q2_merge) {
-            // Q2 single exports retain the template's wider material arrays
-            // when the active palette uses fewer slots.
+        {
+            // Recorded scalar-per-slot fields may retain inactive template
+            // tails. Normalize their declared shape for any source hardware.
             const std::size_t native_slot_count = required_string_array(
                 source.project, "filament_settings_id", context).size();
             const json &snapshot = required_member(dialect, "filament_snapshot",
@@ -1602,7 +1603,10 @@ MergeProjectInputs collect_merge_project_inputs(
             if (source.project.contains(difference_key) &&
                 source.project.at(difference_key).is_array() &&
                 source.project.at(difference_key).size() == 1) {
-                for (std::size_t index = 0; index <= native_slot_count; ++index) {
+                const auto expected_entries = native_slot_count +
+                    snapshot.value("filament_slot_offset", std::size_t(0)) +
+                    snapshot.value("trailing_entry_count", std::size_t(0));
+                for (std::size_t index = 1; index < expected_entries; ++index) {
                     source.project[difference_key].push_back("");
                 }
             }
@@ -1703,7 +1707,8 @@ std::size_t merge_group_width(const json &project, const std::string &key,
 }
 
 MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
-                                               const json &dialect) {
+                                               const json &dialect,
+                                               const json &defaults = json()) {
     const std::size_t output_count = inputs.logical_by_id.size();
     json project = inputs.sources.front().project;
     std::vector<std::set<std::string>> colour_overrides(output_count);
@@ -1851,9 +1856,20 @@ MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
                             chosen = std::move(candidate);
                             chosen_source = source.source_id;
                         }
+                        if (!chosen && defaults.contains(key)) {
+                            const auto width = merge_group_width(defaults, key, output_count,
+                                group_size, true, false, "native transition defaults");
+                            if (output_width && *output_width != width) invalid("native transition default width differs from source");
+                            if (!output_width) values = json::array_t(output_count * output_count * width);
+                            output_width = width;
+                            std::vector<json> candidate;
+                            for (std::size_t nozzle = 0; nozzle < width; ++nozzle) {
+                                candidate.push_back(defaults.at(key).at(nozzle * output_count * output_count + row * output_count + column));
+                            }
+                            chosen = std::move(candidate);
+                        }
                         if (!chosen) {
-                            invalid("no source contains both global slots needed for merged matrix " +
-                                    key);
+                            invalid("no source contains both global slots needed for merged matrix " + key);
                         }
                         for (std::size_t nozzle = 0; nozzle < chosen->size(); ++nozzle) {
                             const auto index = nozzle * output_count * output_count + row * output_count + column;
@@ -2178,6 +2194,12 @@ json compose_preserved_source(json project, const json &request, const json &tar
                 }
             }
         }
+        if (request.contains("merge_default_project")) {
+            const auto &defaults = merge_required_object(request, "merge_default_project", "request");
+            for (const auto *key : {"printer_model", "nozzle_diameter"}) {
+                if (project.at(key) != defaults.at(key)) invalid("merged transition defaults hardware differs from source");
+            }
+        }
         const json machine = {{"printer_model", required_member(project, "printer_model", "source project")},
                               {"nozzle_diameter", required_member(project, "nozzle_diameter", "source project")}};
         project = detail::prepare_source_merge_project(project, filament_snapshot);
@@ -2190,8 +2212,8 @@ json compose_preserved_source(json project, const json &request, const json &tar
         }
         const json merge_dialect = detail::source_merge_dialect(dialect, project);
         const auto inputs = collect_merge_project_inputs(project, merge_request, merge_dialect,
-                                                         machine, plate, false);
-        auto merged = compose_merged_slot_arrays(inputs, merge_dialect);
+                                                         machine, plate);
+        auto merged = compose_merged_slot_arrays(inputs, merge_dialect, request.value("merge_default_project", json()));
         project = std::move(merged.project);
         logical_slots = std::move(merged.logical_slots);
         mappings = source_slot_mappings(inputs);
@@ -2201,12 +2223,6 @@ json compose_preserved_source(json project, const json &request, const json &tar
     std::vector<std::string> changed;
     apply_scalar_overrides(project, request, changed);
     json tower_dialect = required_member(dialect, "wipe_tower", "package dialect");
-    const auto slicer = target.at("target_contract").at("slicer_id").get<std::string>();
-    const bool u1 = (slicer == "OrcaSlicer" || slicer == "SnapmakerOrca") &&
-                    project.value("printer_model", "") == "Snapmaker U1";
-    if (u1) {
-        project.erase("inherits_group");
-    }
     apply_tower_overrides(project, request, target);
     auto summary = effective_summary(project, "preserve_template", "", "",
                                       plate.value("build_plate_uid", ""));
@@ -2300,15 +2316,11 @@ std::string compose_project_settings(std::string_view base_project_json,
     json mappings = json::array();
     std::size_t slot_count = 0;
     if (merging_sources) {
-        const bool qidi_q2_merge = slicer_id == "QIDIStudio" &&
-                                   machine_uid == "qidi:q2" &&
-                                   nozzle_uid == "nozzle:0.4mm";
         const auto inputs = collect_merge_project_inputs(
-            project, request, dialect, machine, plate,
-            qidi_q2_merge);
+            project, request, dialect, machine, plate);
         auto merged = compose_merged_slot_arrays(inputs, dialect);
         project = std::move(merged.project);
-        if (qidi_q2_merge && !project.contains("curr_bed_type")) {
+        if (!project.contains("curr_bed_type")) {
             project["curr_bed_type"] = required_string(
                 plate, "project_value", "build plate");
         }
@@ -2363,19 +2375,6 @@ std::string compose_project_settings(std::string_view base_project_json,
     update_differences(project, dialect, slot_count, changed_keys, merging_sources);
 
     json wipe_tower_dialect = required_member(dialect, "wipe_tower", "package dialect");
-    if (slicer_id == "SnapmakerOrca" && machine_uid == "snapmaker:u1" &&
-        nozzle_uid == "nozzle:0.4mm" && material_mode == "target_native_preset") {
-        // Snapmaker Orca 2.3.6 stores one process entry, one entry per
-        // filament slot, and one trailing entry in different_settings_to_system.
-        // Preserve those GUI-saved differences; only inheritance-group
-        // metadata is absent from the native U1 project.
-        project.erase("inherits_group");
-        project["small_area_infill_flow_compensation_model"] = json::array();
-        project["version"] = required_string(contract, "saved_project_format_version",
-                                               "target contract");
-        project["default_print_profile"] = required_string(
-            machine, "default_print_profile", "machine binding");
-    }
 
     detail::apply_source_flush_defaults(project, request, target);
     json result = metadata_result(project, dialect, plate,

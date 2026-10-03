@@ -10,6 +10,11 @@ The Python package includes the C++ extension, target translation data, native
 project profile snapshots, and a small optional adapter for the Neroued 3MF
 writer. The core package does not require Neroued.
 
+OrcaSlicer 2.4.2 U1 0.4 mm composition uses that release's native machine and
+material identities with a recorded Orca 2.2.4 compatibility process. The
+returned `process_source` identifies its historical provenance. The native
+2.4.2 process remains recorded as unavailable.
+
 ## Install and use
 
 Python 3.12–3.14 and a C++17 toolchain are required. From a source checkout:

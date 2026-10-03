@@ -163,7 +163,7 @@ class PublicNativeSourceTests(unittest.TestCase):
                     [material["colour"] for material in request["source_materials"]],
                 )
 
-    def test_orca_u1_without_an_exact_process_does_not_invent_a_default(self):
+    def test_orca_u1_uses_recorded_compatibility_process_with_native_identity(self):
         slicer, version, machine_uid, _ = next(
             row for row in TARGETS if row[0] == "SnapmakerOrca"
         )
@@ -189,7 +189,15 @@ class PublicNativeSourceTests(unittest.TestCase):
             "build_plate_uid": "plate:textured-pei",
             "source_materials": [{"name": "Snapmaker PLA", "colour": "#123456"}],
         }
-        with self.assertRaisesRegex(ValueError, "no unique native default process"):
+        result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+        project = json.loads(result['project_settings_json'])
+        self.assertEqual(result['process_source']['source_application_version'], '2.2.4')
+        self.assertEqual(project['version'], '2.2.4')
+        self.assertEqual(project['printer_model'], 'Snapmaker U1')
+        self.assertEqual(project['filament_colour'], ['#123456'])
+        self.assertEqual(project['print_settings_id'], source['compatibility_project']['source_profile_name'])
+        request['native_print_profile_name'] = 'Invented native default'
+        with self.assertRaisesRegex(ValueError, 'recorded compatibility'):
             fatcat.compose_project_settings(json.dumps(request))
 
     def test_native_petg_name_selects_real_profile_and_specialty_types_do_not_fall_back(self):

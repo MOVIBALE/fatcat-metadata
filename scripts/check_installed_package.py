@@ -92,6 +92,22 @@ def main() -> int:
     ]
     if missing_profiles:
         raise SystemExit(f"native source index refers to missing profile files: {missing_profiles[:5]}")
+    for row in source_index['sources']:
+        record = row.get('compatibility_project')
+        if record is None:
+            continue
+        path = source_root_data / record['path']
+        if hashlib.sha256(path.read_bytes()).hexdigest() != record['source_sha256']:
+            raise SystemExit('installed compatibility source content hash mismatch')
+        payload = json.loads(path.read_text(encoding='utf-8'))
+        for key in ('machine_uid', 'nozzle_uid'):
+            if payload['source'][key] != row[key]:
+                raise SystemExit('installed compatibility source hardware identity mismatch')
+        for key in ('source_slicer_id', 'source_application_version', 'source_profile_name'):
+            if payload['source'][key] != record[key]:
+                raise SystemExit('installed compatibility source provenance mismatch')
+        if not (data_root / record['license_file']).is_file():
+            raise SystemExit('compatibility source license is missing')
 
     manifest_path = data_root / "licenses" / "third-party" / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -107,6 +123,7 @@ def main() -> int:
     print(f"module_file={module_path}")
     print(f"working_directory={Path.cwd().resolve()}")
     print(f"target_count={len(actual_targets)} native_profile_count={len(source_index['profile_files'])}")
+    print(f"compatibility_project_count={len(source_index.get('compatibility_project_files', []))}")
     print(f"third_party_license_count={len(manifest['files'])}")
     print("distribution_license_files=LICENSE,NOTICE.md,COPYRIGHT.md")
     return 0
