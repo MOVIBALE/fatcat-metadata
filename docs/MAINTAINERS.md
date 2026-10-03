@@ -41,16 +41,22 @@ The updater verifies each exact application version, copies machine/process/
 material profile files and their exact inheritance/include closure, and writes
 `compatibility/current-src/native-project-sources/source-index.json`. A missing
 exact profile is recorded as unavailable. Do not create a substitute default
-or rename a different preset to satisfy an identity. For example, OrcaSlicer
-2.4.2 has a Snapmaker U1 0.4 mm machine source, but its process and compatible
-material presets are unavailable. Its source row records one retained complete
-Orca 2.2.4 project in `compatibility-projects/`. The generic built-in composer
-uses that historical project's process and materials with the selected 2.4.2 machine.
-Native process and compatible material availability stay unavailable. The result
-reports historical `process_source` and `material_source`; these settings must
-never be relabeled as 2.4.2 native presets. Material candidates with an explicit
-compatible_printers list must include the exact selected native machine name.
-Snapmaker Orca 2.3.6 has its own separate U1 0.4 mm source.
+or rename a different preset to satisfy an identity. A machine's declared default
+can contradict a material's explicit compatible_printers list. The updater keeps
+that declaration and records its incompatibility, then discovers instantiated
+materials in the same native catalogue whose inherited compatibility names the
+exact machine. It copies their real inheritance/include closure unchanged.
+
+OrcaSlicer 2.4.2 U1 0.4 mm has no native process. Its recorded complete Orca
+2.2.4 project supplies the process. For Textured PEI, the native 2.4.2
+`Snapmaker PLA @U1` profile has a zero plate temperature and cannot be selected;
+the recorded 2.2.4 `Snapmaker PLA Basic @U1` supplies its real 65/220 °C settings.
+The same plate resolution is used for explicit and omitted plate selections,
+and retained materials are checked too. The result identifies each actual
+`process_source` and `material_source`; historical settings must never be
+relabeled as 2.4.2 native presets. Catalogue availability does not guarantee
+that every material type or plate is supported. OrcaSlicer U1 0.6 mm has no PLA
+candidate; SnapmakerOrca 2.3.6 has genuine Generic PLA sources for 0.2/0.6/0.8 mm.
 
 The updater preserves the retained file and its source descriptor across
 refreshes. Check its recorded hardware, process provenance, content hash, and

@@ -2,6 +2,9 @@
 
 import json
 import unittest
+import shutil
+import tempfile
+from unittest.mock import patch
 from pathlib import Path
 
 import fatcat_metadata as fatcat
@@ -171,7 +174,7 @@ class PublicNativeSourceTests(unittest.TestCase):
         orca = self._target("OrcaSlicer")
         source = self._source("OrcaSlicer", "2.4.2", "snapmaker:u1")
         self.assertEqual(source["availability"]["machine"], "available")
-        self.assertEqual(source["availability"]["material"], "unavailable")
+        self.assertEqual(source["availability"]["material"], "available")
         self.assertEqual(source["availability"]["process"], "unavailable")
         self.assertFalse(source.get("default_print_profile_name"))
         self.assertTrue(
@@ -208,6 +211,49 @@ class PublicNativeSourceTests(unittest.TestCase):
         request['native_print_profile_name'] = 'Invented native default'
         with self.assertRaisesRegex(ValueError, 'recorded compatibility'):
             fatcat.compose_project_settings(json.dumps(request))
+
+    def test_omitted_plate_uses_retained_supported_default_material(self):
+        request = {"project_source": "fatcat_native", "slicer_id": "OrcaSlicer",
+                   "application_version": "2.4.2", "machine_uid": "snapmaker:u1",
+                   "nozzle_uid": NOZZLE_UID,
+                   "source_materials": [{"name": "PLA", "material_type": "PLA", "colour": "#123456"}]}
+        result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+        project = json.loads(result["project_settings_json"])
+        self.assertEqual(project["curr_bed_type"], "Textured PEI Plate")
+        self.assertEqual(project["textured_plate_temp"], ["65"])
+        self.assertEqual(result["material_source"]["source_application_version"], "2.2.4")
+        request["native_filament_profile_names"] = ["Snapmaker PLA @U1"]
+        with self.assertRaisesRegex(ValueError, "does not support selected build plate"):
+            fatcat.compose_project_settings(json.dumps(request))
+
+    def test_retained_material_rejects_an_unsupported_effective_default_plate(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            shutil.copytree(self.data_root, root / "fatcat_metadata_data")
+            source = self._source("OrcaSlicer", "2.4.2", "snapmaker:u1")
+            path = root / "fatcat_metadata_data/native_project_sources" / source["compatibility_project"]["path"]
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            count = len(payload["project_settings"]["filament_settings_id"])
+            payload["project_settings"]["textured_plate_temp"] = ["0"] * count
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            request = {"project_source": "fatcat_native", "slicer_id": "OrcaSlicer",
+                       "application_version": "2.4.2", "machine_uid": "snapmaker:u1",
+                       "nozzle_uid": NOZZLE_UID,
+                       "source_materials": [{"name": "PLA", "material_type": "PLA", "colour": "#123456"}]}
+            with patch.object(fatcat, "__file__", str(root / "fatcat_metadata.so")), self.assertRaisesRegex(
+                    ValueError, "retained material.*does not support selected build plate"):
+                fatcat.compose_project_settings(json.dumps(request))
+
+    def test_available_specific_native_variant_is_selected_without_plain_pla_fallback(self):
+        result = json.loads(fatcat.compose_project_settings(json.dumps({
+            "project_source": "fatcat_native", "slicer_id": "AnycubicSlicerNext",
+            "application_version": "2.0.0.2", "machine_uid": "anycubic:kobra-4",
+            "nozzle_uid": "nozzle:0.8mm", "build_plate_uid": "plate:textured-pei",
+            "source_materials": [{"name": "White", "material_type": "PLA Silk", "colour": "#FFFFFF"}],
+        })))
+        project = json.loads(result["project_settings_json"])
+        self.assertEqual(project["filament_settings_id"], ["Anycubic PLA Silk @Anycubic Kobra 4 0.8 nozzle"])
+        self.assertEqual(result["material_source"]["source_application_version"], "2.0.0.2")
 
     def test_incompatible_native_material_is_rejected_even_when_explicitly_selected(self):
         for nozzle in ('nozzle:0.4mm', 'nozzle:0.6mm'):

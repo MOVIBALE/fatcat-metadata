@@ -11,11 +11,17 @@ project profile snapshots, and a small optional adapter for the Neroued 3MF
 writer. The core package does not require Neroued.
 
 OrcaSlicer 2.4.2 U1 0.4 mm composition uses that release's native machine with
-the recorded Orca 2.2.4 project's process and `Snapmaker PLA Basic @U1`
-material settings. Returned `process_source` and `material_source` identify
-their historical provenance. Native 2.4.2 process and compatible material
-sources remain recorded as unavailable; the declared `Snapmaker PLA` default
-only supports A250/A350. Explicit incompatible native materials are rejected.
+the recorded Orca 2.2.4 process. For Textured PEI (including the source default),
+the recorded `Snapmaker PLA Basic @U1` material retains its actual 65 °C plate
+and 220 °C nozzle settings. Returned `process_source` and `material_source`
+identify their respective versions. The installed 2.4.2 catalogue includes
+machine-compatible `Snapmaker PLA @U1`, but its native textured plate temperature
+is zero; it is usable only on plates its actual profile supports. The declared
+`Snapmaker PLA` default supports A250/A350. Neither profile is rewritten.
+Material selection checks the exact machine, requested type and effective plate;
+explicit incompatible selections are rejected. Complete native catalogues also
+supply the exact SnapmakerOrca nondefault nozzle and FlashStudio 0.25 mm materials.
+OrcaSlicer 2.4.2 U1 0.6 mm still has no matching PLA source.
 
 ## Install and use
 

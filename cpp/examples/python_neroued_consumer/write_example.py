@@ -130,12 +130,13 @@ def _cube_material(request: dict[str, Any], project: dict[str, Any]) -> tuple[st
 
 
 def _create_builder(placement: tuple[float, float, float],
-                    material: tuple[str, str]) -> tuple[n3mf.DocumentBuilder, int]:
+                    material: tuple[str, str], production: bool = False) -> tuple[n3mf.DocumentBuilder, int, int]:
     import neroued_3mf as n3mf
 
     builder = n3mf.DocumentBuilder()
     builder.set_unit(n3mf.Unit.Millimeter)
     builder.set_language("en-US")
+    builder.add_namespace("p", "http://schemas.microsoft.com/3dmanufacturing/production/2015/06")
 
     material_group_id = builder.add_base_material_group(
         [n3mf.BaseMaterial(material[0], n3mf.Color.from_hex(material[1]))]
@@ -146,13 +147,20 @@ def _create_builder(placement: tuple[float, float, float],
     builder.set_object_uuid(object_id, str(uuid.uuid4()))
     builder.set_component_transform(object_id, n3mf.Transform.identity())
 
-    builder.enable_production(n3mf.Transform.translation(*placement))
-    builder.set_production_merge_objects(True)
-    builder.add_build_item(
-        object_id,
-        uuid=str(uuid.uuid4()),
-    )
-    return builder, object_id
+    if production:
+        builder.enable_production(n3mf.Transform.translation(*placement))
+        builder.set_production_merge_objects(True)
+        builder.add_build_item(object_id, uuid=str(uuid.uuid4()))
+        assembly_id = object_id + 1
+    else:
+        # Original 0.4.0 preserves material groups in core model resources.
+        # Its production serialization omits them; use its public core assembly API.
+        assembly_id = builder.add_component_object(
+            "Consumer cube assembly", [n3mf.Component(object_id, n3mf.Transform.identity())])
+        builder.set_object_uuid(assembly_id, str(uuid.uuid4()))
+        builder.add_build_item(assembly_id, n3mf.Transform.translation(*placement),
+                               uuid=str(uuid.uuid4()))
+    return builder, object_id, assembly_id
 
 
 def main() -> None:
@@ -172,6 +180,8 @@ def main() -> None:
         help="target and source selection request JSON; defaults for the selected source mode",
     )
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--production", action="store_true",
+                        help="external production model layout; requires a writer with material serialization support")
     parser.add_argument("--bed-center", type=float, nargs=2, metavar=("X", "Y"),
                         help="generator placement center; required if the custom project has no printable area")
     args = parser.parse_args()
@@ -193,12 +203,13 @@ def main() -> None:
     final_project_json = project_result["project_settings_json"]
     final_project = json.loads(final_project_json)
     placement = _cube_placement(final_project, tuple(args.bed_center) if args.bed_center else None)
-    builder, object_id = _create_builder(placement, _cube_material(project_request, final_project))
+    builder, object_id, assembly_id = _create_builder(
+        placement, _cube_material(project_request, final_project), args.production)
 
     _, model_request = _load_json(_EXAMPLE_DIR / "request.json")
     model_request["slicer_id"] = project_request["slicer_id"]
     model_request["application_version"] = project_request["application_version"]
-    model_request["assembly_id"] = object_id + 1
+    model_request["assembly_id"] = assembly_id
     model_request["identify_id"] = project_result["metadata_defaults"]["identify_id"]
     model_request["source_file"] = args.output.name
     model_request["active_material_count"] = len(

@@ -64,6 +64,36 @@ class ConsumerLayoutTests(unittest.TestCase):
                         with self.assertRaisesRegex(RuntimeError, 'printable area boundary'):
                             verify.verify_cube_placement(archive)
 
+    def test_core_and_external_root_material_groups_keep_strict_palette_checks(self):
+        ns = verify.CORE[1:-1]
+        group = '<basematerials id="1"><base name="Selected PLA" displaycolor="#123456"/></basematerials>'
+        obj = '<object id="2" pid="1" pindex="0"><mesh/></object>'
+        for external in (False, True):
+            for present in (False, True):
+                with self.subTest(external=external, present=present), zipfile.ZipFile(io.BytesIO(), "w") as archive:
+                    path = f' p:path="/3D/Objects/cube.model"' if external else ''
+                    root = f'<model xmlns="{ns}" xmlns:p="{verify.PRODUCTION[1:-1]}"><resources>'
+                    root += (group if present else '') + ('' if external else obj)
+                    root += f'<object id="3"><components><component objectid="2"{path}/></components></object>'
+                    root += '</resources><build><item objectid="3"/></build></model>'
+                    archive.writestr('3D/3dmodel.model', root)
+                    if external:
+                        archive.writestr('3D/Objects/cube.model', f'<model xmlns="{ns}"><resources>{obj}</resources></model>')
+                    archive.writestr('Metadata/project_settings.config', json.dumps({'filament_colour': ['#123456']}))
+                    archive.writestr('Metadata/model_settings.config', '<config><object><metadata key="extruder" value="1"/></object></config>')
+                    request = {'source_materials': [{'name': 'Selected PLA', 'colour': '#123456'}]}
+                    if not present:
+                        with self.assertRaisesRegex(RuntimeError, 'palette slot zero'):
+                            verify.verify_cube_material(archive, request)
+                        continue
+                    self.assertEqual(verify.verify_cube_material(archive, request), ('Selected PLA', '#123456'))
+                    request['source_materials'][0]['name'] = 'Wrong'
+                    with self.assertRaisesRegex(RuntimeError, 'material name'):
+                        verify.verify_cube_material(archive, request)
+                    request['source_materials'][0].update(name='Selected PLA', colour='#654321')
+                    with self.assertRaisesRegex(RuntimeError, 'material colour'):
+                        verify.verify_cube_material(archive, request)
+
     def test_selected_native_targets_center_cube_without_changing_settings(self):
         for slicer, version, machine in [("BambuStudio", "02.08.02.61", "bambu-lab:a1-mini"),
                                          ("OrcaSlicer", "2.4.2", "snapmaker:u1")]:

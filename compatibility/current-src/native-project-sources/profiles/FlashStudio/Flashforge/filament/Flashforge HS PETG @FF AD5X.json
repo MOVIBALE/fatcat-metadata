@@ -1,0 +1,61 @@
+{
+    "compatible_printers": [
+        "Flashforge AD5X 0.4 nozzle"
+    ],
+    "cool_plate_temp": [
+        "0"
+    ],
+    "cool_plate_temp_initial_layer": [
+        "0"
+    ],
+    "eng_plate_temp": [
+        "75"
+    ],
+    "eng_plate_temp_initial_layer": [
+        "75"
+    ],
+    "filament_flow_ratio": [
+        "0.98"
+    ],
+    "filament_settings_id": [
+        "Flashforge HS PETG @FF AD5X"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "hot_plate_temp": [
+        "75"
+    ],
+    "hot_plate_temp_initial_layer": [
+        "75"
+    ],
+    "inherits": "Flashforge Generic PETG",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge HS PETG @FF AD5X",
+    "nozzle_temperature": [
+        "235"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "240"
+    ],
+    "pressure_advance": [
+        "0.04"
+    ],
+    "setting_id": "o4B1kAToVny7jw0M",
+    "textured_cool_plate_temp": [
+        "75"
+    ],
+    "textured_cool_plate_temp_initial_layer": [
+        "75"
+    ],
+    "textured_plate_temp": [
+        "75"
+    ],
+    "textured_plate_temp_initial_layer": [
+        "75"
+    ],
+    "type": "filament",
+    "version": "2.1.1.0"
+}

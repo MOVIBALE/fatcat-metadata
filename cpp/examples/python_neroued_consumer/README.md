@@ -11,9 +11,10 @@ composer and the public Neroued 0.4.0 writer API:
    `printable_area`, including its native origin offset, and places its bottom
    at Z=0. It validates the cube against that area and `printable_height`.
    Geometry placement is a generator responsibility; native presets stay intact.
-   The script queues the cube as a production build item. The part ID comes
-   from `add_mesh_object`; the example assigns the next integer as a distinct
-   metadata assembly ID.
+   The default uses the public core assembly API: `add_mesh_object` creates
+   the part, `add_component_object` returns the real assembly ID, and the
+   placement is assigned to its build item. All material groups remain in the
+   root model resources.
 3. `compose_model_metadata` builds the package metadata description and
    `fatcat_metadata_neroued` applies it before neroued writes the 3MF once.
 
@@ -69,3 +70,10 @@ the bed center explicitly. For complete native projects, this option may overrid
 the default center but must keep the cube strictly inside the declared rectangle.
 The example supports rectangular beds and rejects unsupported shapes or a cube
 that exceeds the selected bed or height; it does not arrange models in a slicer.
+
+The optional `--production` switch writes an external production model and
+requires a writer that preserves its material groups, such as the B7 writer
+used by Lumina. Original Neroued 0.4.0 omits material groups in both production
+modes; its supported default here is the core assembly layout. Both layouts
+are checked for real material references, colours, slot indices, UUIDs and
+transformed geometry. No generated ZIP member is rewritten.

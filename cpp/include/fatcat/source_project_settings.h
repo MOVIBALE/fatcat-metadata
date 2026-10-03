@@ -12,6 +12,11 @@ std::string requested_material_type(const nlohmann::json &material);
 nlohmann::json prepare_source_identity(const nlohmann::json &project,
                                       const nlohmann::json &request);
 
+// Resolve the active plate with the same rules used by source composition.
+nlohmann::json resolve_source_plate(const nlohmann::json &project,
+                                    const nlohmann::json &request,
+                                    const nlohmann::json &target);
+
 // Compose from actual source settings without selecting a native hardware preset.
 nlohmann::json compose_source_project(const nlohmann::json &project,
                                       const nlohmann::json &request,

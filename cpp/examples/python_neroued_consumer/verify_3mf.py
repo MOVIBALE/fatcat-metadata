@@ -29,8 +29,8 @@ def verify_cube_placement(archive: zipfile.ZipFile) -> tuple[tuple[float, ...], 
     item = root.find(f"{CORE}build/{CORE}item")
     assembly = root.find(f"{CORE}resources/{CORE}object[@id='{item.get('objectid')}']")
     component = assembly.find(f"{CORE}components/{CORE}component")
-    path = component.get(f"{PRODUCTION}path").lstrip("/")
-    source = ET.fromstring(archive.read(path))
+    path = component.get(f"{PRODUCTION}path")
+    source = ET.fromstring(archive.read(path.lstrip("/"))) if path else root
     mesh = source.find(f"{CORE}resources/{CORE}object[@id='{component.get('objectid')}']/{CORE}mesh")
     vertices = [_transform(_transform(tuple(float(vertex.get(axis)) for axis in "xyz"), component), item)
                 for vertex in mesh.findall(f"{CORE}vertices/{CORE}vertex")]
@@ -60,11 +60,15 @@ def verify_cube_material(archive: zipfile.ZipFile, request: dict | None = None) 
         project['filament_settings_id'][0] if request is not None else None)
     expected_colour = palette[0]['colour'] if palette else project['filament_colour'][0]
     root = ET.fromstring(archive.read('3D/3dmodel.model'))
-    component = root.find(f'{CORE}resources/{CORE}object/{CORE}components/{CORE}component')
-    source = ET.fromstring(archive.read(component.get(f'{PRODUCTION}path').lstrip('/')))
+    item = root.find(f'{CORE}build/{CORE}item')
+    component = root.find(f"{CORE}resources/{CORE}object[@id='{item.get('objectid')}']/{CORE}components/{CORE}component")
+    path = component.get(f'{PRODUCTION}path')
+    source = ET.fromstring(archive.read(path.lstrip('/'))) if path else root
     obj = source.find(f"{CORE}resources/{CORE}object[@id='{component.get('objectid')}']")
     group = source.find(f"{CORE}resources/{CORE}basematerials[@id='{obj.get('pid')}']")
-    if obj.get('pindex') != '0' or len(group) != 1:
+    if group is None:
+        group = root.find(f"{CORE}resources/{CORE}basematerials[@id='{obj.get('pid')}']")
+    if group is None or obj.get('pindex') != '0' or len(group) != 1:
         raise RuntimeError('consumer cube does not reference palette slot zero')
     material = group[0]
     if expected_name is not None and material.get('name') != expected_name:

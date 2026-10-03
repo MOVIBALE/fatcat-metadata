@@ -297,6 +297,31 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
     target_processes, target_materials = _target_profile_options(target, row)
     process_names = list(dict.fromkeys((*machine_process_names, *target_processes)))
     material_names = list(dict.fromkeys((*machine_material_names, *target_materials)))
+    # Some machines declare a default whose explicit compatibility list targets
+    # other printers. Include genuine compatible alternatives from that vendor's
+    # native files instead of treating the incomplete default list as the catalog.
+    scope = ProfileCatalog._scope(machine_path, "machine")
+    incompatible_default = False
+    for name in machine_material_names:
+        path = catalog.find_named('filament', name, scope)
+        if path is not None:
+            profile = catalog.resolve('filament', path, {})
+            printers = profile.get('compatible_printers', [])
+            incompatible_default |= bool(printers and row['source_machine_profile_name'] not in printers)
+    if incompatible_default:
+        for path, document in catalog.documents.items():
+            if _profile_category(path) != 'filament' or ProfileCatalog._scope(path, 'filament') != scope:
+                continue
+            try:
+                profile = catalog.resolve('filament', path, {})
+            except ValueError:
+                continue
+            if str(profile.get('instantiation', '')).lower() != 'true':
+                continue
+            if row['source_machine_profile_name'] in profile.get('compatible_printers', []):
+                name = document.get('name')
+                if isinstance(name, str) and name not in material_names:
+                    material_names.append(name)
 
     process_options = [
         _profile_option(catalog, "process", name, ProfileCatalog._scope(machine_path, "machine"),

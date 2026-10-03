@@ -35,6 +35,28 @@ class RetainedSourceRefreshTests(unittest.TestCase):
             self.assertEqual(entry['availability']['material'], 'unavailable')
             self.assertIn('not compatible', entry['filament_profile_options'][0]['unavailable_reason'])
 
+    def test_refresh_discovers_native_compatible_alternative_without_rewriting_default(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for category in ("machine", "filament"):
+                (root / category).mkdir()
+            profiles = {
+                "machine/Printer.json": {"type": "machine", "name": "Printer", "default_filament_profile": ["PLA"]},
+                "filament/PLA.json": {"type": "filament", "name": "PLA", "compatible_printers": ["Other"]},
+                "filament/PLA @Printer.json": {"type": "filament", "name": "PLA @Printer", "instantiation": "true", "compatible_printers": ["Printer"]},
+            }
+            for name, profile in profiles.items():
+                (root / name).write_text(json.dumps(profile), encoding="utf-8")
+            entry = refresh._source_entry(refresh.ProfileCatalog(root),
+                {"source_machine_profile_name": "Printer", "machine_uid": "test:printer", "nozzle_uid": "nozzle:0.4mm"},
+                {"target_contract": {"application_version": "1.0"}, "print_profile_bindings": [], "material_bindings": []}, set(), {})
+            self.assertEqual(entry["default_filament_profile_names"], ["PLA"])
+            self.assertEqual(entry["availability"]["material"], "available")
+            options = {option["name"]: option for option in entry["filament_profile_options"]}
+            self.assertIn("unavailable_reason", options["PLA"])
+            self.assertEqual(options["PLA @Printer"]["path"], "filament/PLA @Printer.json")
+            self.assertNotIn("unavailable_reason", options["PLA @Printer"])
+
     def _refresh(self, change=None):
         source_map = json.loads(refresh.SOURCE_MAP_PATH.read_text(encoding='utf-8'))
         row = copy.deepcopy(next(row for row in source_map['machine_profiles'] if 'compatibility_project' in row))

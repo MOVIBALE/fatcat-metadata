@@ -2240,6 +2240,10 @@ json compose_preserved_source(json project, const json &request, const json &tar
 
 }  // namespace
 
+nlohmann::json detail::resolve_source_plate(const json &project, const json &request, const json &target) {
+    return source_plate(project, request, target);
+}
+
 std::string compose_project_settings(std::string_view base_project_json,
                                      std::string_view request_json,
                                      std::string_view canonical_json,
