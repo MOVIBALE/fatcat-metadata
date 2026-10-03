@@ -1133,8 +1133,8 @@ std::string metadata_target_data(std::string_view slicer_id,
         const auto path = safe_path(data_root, "translations/targets/" + entry.path().filename().string());
         auto target = read_json(path, "packaged target");
         const auto &contract = target.at("target_contract");
-        if (contract.at("slicer_id") != slicer_id ||
-            (!application_version.empty() && contract.at("application_version") != application_version)) continue;
+        if (contract.at("slicer_id") != std::string(slicer_id) ||
+            (!application_version.empty() && contract.at("application_version") != std::string(application_version))) continue;
         if (!selected.is_null()) invalid("packaged slicer/version selection is not unique");
         selected = std::move(target);
     }
