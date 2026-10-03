@@ -10,10 +10,12 @@ The Python package includes the C++ extension, target translation data, native
 project profile snapshots, and a small optional adapter for the Neroued 3MF
 writer. The core package does not require Neroued.
 
-OrcaSlicer 2.4.2 U1 0.4 mm composition uses that release's native machine and
-material identities with a recorded Orca 2.2.4 compatibility process. The
-returned `process_source` identifies its historical provenance. The native
-2.4.2 process remains recorded as unavailable.
+OrcaSlicer 2.4.2 U1 0.4 mm composition uses that release's native machine with
+the recorded Orca 2.2.4 project's process and `Snapmaker PLA Basic @U1`
+material settings. Returned `process_source` and `material_source` identify
+their historical provenance. Native 2.4.2 process and compatible material
+sources remain recorded as unavailable; the declared `Snapmaker PLA` default
+only supports A250/A350. Explicit incompatible native materials are rejected.
 
 ## Install and use
 

@@ -15,6 +15,26 @@ _spec.loader.exec_module(refresh)
 
 
 class RetainedSourceRefreshTests(unittest.TestCase):
+    def test_refresh_marks_inherited_incompatible_material_unavailable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'machine').mkdir()
+            (root / 'filament').mkdir()
+            (root / 'machine/Printer.json').write_text(json.dumps({
+                'type': 'machine', 'name': 'Printer', 'default_filament_profile': ['PLA']}), encoding='utf-8')
+            (root / 'filament/PLA.json').write_text(json.dumps({
+                'type': 'filament', 'name': 'PLA', 'inherits': 'base'}), encoding='utf-8')
+            (root / 'filament/base.json').write_text(json.dumps({
+                'type': 'filament', 'name': 'base', 'compatible_printers': ['Different Printer']}), encoding='utf-8')
+            catalog = refresh.ProfileCatalog(root)
+            row = {'source_machine_profile_name': 'Printer', 'machine_uid': 'test:printer',
+                   'nozzle_uid': 'nozzle:0.4mm'}
+            target = {'target_contract': {'application_version': '1.0'},
+                      'print_profile_bindings': [], 'material_bindings': []}
+            entry = refresh._source_entry(catalog, row, target, set(), {})
+            self.assertEqual(entry['availability']['material'], 'unavailable')
+            self.assertIn('not compatible', entry['filament_profile_options'][0]['unavailable_reason'])
+
     def _refresh(self, change=None):
         source_map = json.loads(refresh.SOURCE_MAP_PATH.read_text(encoding='utf-8'))
         row = copy.deepcopy(next(row for row in source_map['machine_profiles'] if 'compatibility_project' in row))

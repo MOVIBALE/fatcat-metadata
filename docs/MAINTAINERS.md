@@ -42,18 +42,21 @@ material profile files and their exact inheritance/include closure, and writes
 `compatibility/current-src/native-project-sources/source-index.json`. A missing
 exact profile is recorded as unavailable. Do not create a substitute default
 or rename a different preset to satisfy an identity. For example, OrcaSlicer
-2.4.2 has a Snapmaker U1 0.4 mm machine and material source, but its process
-preset is not uniquely available. Its source row records one retained complete
+2.4.2 has a Snapmaker U1 0.4 mm machine source, but its process and compatible
+material presets are unavailable. Its source row records one retained complete
 Orca 2.2.4 project in `compatibility-projects/`. The generic built-in composer
-uses that historical process with the selected 2.4.2 machine and materials.
-The native process availability stays unavailable, and the result reports the
-historical `process_source`; it must never be relabeled a 2.4.2 native process.
+uses that historical project's process and materials with the selected 2.4.2 machine.
+Native process and compatible material availability stay unavailable. The result
+reports historical `process_source` and `material_source`; these settings must
+never be relabeled as 2.4.2 native presets. Material candidates with an explicit
+compatible_printers list must include the exact selected native machine name.
 Snapmaker Orca 2.3.6 has its own separate U1 0.4 mm source.
 
 The updater preserves the retained file and its source descriptor across
 refreshes. Check its recorded hardware, process provenance, content hash, and
 license before copying it. Remove the compatibility descriptor only when an
-exact native process becomes available and the replacement has been reviewed.
+exact native process and compatible materials become available and the
+replacement has been reviewed.
 
 Review the generated source index, profile files, and
 `unavailable-sources.json` before continuing. In particular, confirm the source

@@ -130,6 +130,7 @@ class PublicNativeSourceTests(unittest.TestCase):
                 available_materials = [
                     option for option in source["filament_profile_options"]
                     if isinstance(option.get("path"), str)
+                    and 'unavailable_reason' not in option
                     and (self.source_root / option["path"]).is_file()
                 ]
                 self.assertTrue(available_materials)
@@ -163,14 +164,14 @@ class PublicNativeSourceTests(unittest.TestCase):
                     [material["colour"] for material in request["source_materials"]],
                 )
 
-    def test_orca_u1_uses_recorded_compatibility_process_with_native_identity(self):
+    def test_orca_u1_uses_recorded_process_and_materials_with_native_hardware(self):
         slicer, version, machine_uid, _ = next(
             row for row in TARGETS if row[0] == "SnapmakerOrca"
         )
         orca = self._target("OrcaSlicer")
         source = self._source("OrcaSlicer", "2.4.2", "snapmaker:u1")
         self.assertEqual(source["availability"]["machine"], "available")
-        self.assertEqual(source["availability"]["material"], "available")
+        self.assertEqual(source["availability"]["material"], "unavailable")
         self.assertEqual(source["availability"]["process"], "unavailable")
         self.assertFalse(source.get("default_print_profile_name"))
         self.assertTrue(
@@ -192,13 +193,43 @@ class PublicNativeSourceTests(unittest.TestCase):
         result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
         project = json.loads(result['project_settings_json'])
         self.assertEqual(result['process_source']['source_application_version'], '2.2.4')
+        self.assertEqual(result['material_source']['source_application_version'], '2.2.4')
+        self.assertEqual(result['material_source']['filament_settings_id'], ['Snapmaker PLA Basic @U1'])
         self.assertEqual(project['version'], '2.2.4')
         self.assertEqual(project['printer_model'], 'Snapmaker U1')
         self.assertEqual(project['filament_colour'], ['#123456'])
         self.assertEqual(project['print_settings_id'], source['compatibility_project']['source_profile_name'])
+        retained = json.loads((self.source_root / source['compatibility_project']['path']).read_text(encoding='utf-8'))['project_settings']
+        for key in ('filament_settings_id', 'filament_ids', 'filament_type',
+                    'textured_plate_temp', 'textured_plate_temp_initial_layer',
+                    'hot_plate_temp', 'hot_plate_temp_initial_layer',
+                    'nozzle_temperature', 'nozzle_temperature_initial_layer', 'filament_flow_ratio'):
+            self.assertEqual(project[key], retained[key][:1], key)
         request['native_print_profile_name'] = 'Invented native default'
         with self.assertRaisesRegex(ValueError, 'recorded compatibility'):
             fatcat.compose_project_settings(json.dumps(request))
+
+    def test_incompatible_native_material_is_rejected_even_when_explicitly_selected(self):
+        for nozzle in ('nozzle:0.4mm', 'nozzle:0.6mm'):
+            request = self._orca_builtin_request({'name': 'PLA', 'colour': '#123456'})
+            request.update(machine_uid='snapmaker:u1', nozzle_uid=nozzle,
+                           native_filament_profile_names=['Snapmaker PLA'])
+            with self.subTest(nozzle=nozzle), self.assertRaisesRegex(ValueError, 'not compatible'):
+                fatcat.compose_project_settings(json.dumps(request))
+
+    def test_missing_native_material_does_not_reuse_a_different_nozzle_source(self):
+        request = self._orca_builtin_request({'name': 'PLA', 'colour': '#123456'})
+        request.update(machine_uid='snapmaker:u1', nozzle_uid='nozzle:0.6mm')
+        with self.assertRaisesRegex(ValueError, 'no available native filament profile'):
+            fatcat.compose_project_settings(json.dumps(request))
+
+    def test_retained_materials_do_not_claim_an_unsupported_requested_type(self):
+        for material_type in ('PETG', 'PLA-CF'):
+            request = self._orca_builtin_request({'name': material_type, 'material_type': material_type,
+                                                 'colour': '#123456'})
+            request['machine_uid'] = 'snapmaker:u1'
+            with self.subTest(material_type=material_type), self.assertRaisesRegex(ValueError, 'retained material'):
+                fatcat.compose_project_settings(json.dumps(request))
 
     def test_native_petg_name_selects_real_profile_and_specialty_types_do_not_fall_back(self):
         basic_request = self._orca_builtin_request({

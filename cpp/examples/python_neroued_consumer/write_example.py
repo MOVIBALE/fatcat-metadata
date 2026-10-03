@@ -122,7 +122,15 @@ def _cube_placement(project: dict[str, Any],
     return translation
 
 
-def _create_builder(placement: tuple[float, float, float]) -> tuple[n3mf.DocumentBuilder, int]:
+def _cube_material(request: dict[str, Any], project: dict[str, Any]) -> tuple[str, str]:
+    palette = request.get('source_materials')
+    if palette:
+        return palette[0]['name'], palette[0]['colour']
+    return project['filament_settings_id'][0], project['filament_colour'][0]
+
+
+def _create_builder(placement: tuple[float, float, float],
+                    material: tuple[str, str]) -> tuple[n3mf.DocumentBuilder, int]:
     import neroued_3mf as n3mf
 
     builder = n3mf.DocumentBuilder()
@@ -130,7 +138,7 @@ def _create_builder(placement: tuple[float, float, float]) -> tuple[n3mf.Documen
     builder.set_language("en-US")
 
     material_group_id = builder.add_base_material_group(
-        [n3mf.BaseMaterial("Bambu PLA Basic", n3mf.Color(230, 57, 70))]
+        [n3mf.BaseMaterial(material[0], n3mf.Color.from_hex(material[1]))]
     )
     object_id = builder.add_mesh_object(
         "Consumer cube", _cube_mesh(), material_group_id, 0
@@ -185,7 +193,7 @@ def main() -> None:
     final_project_json = project_result["project_settings_json"]
     final_project = json.loads(final_project_json)
     placement = _cube_placement(final_project, tuple(args.bed_center) if args.bed_center else None)
-    builder, object_id = _create_builder(placement)
+    builder, object_id = _create_builder(placement, _cube_material(project_request, final_project))
 
     _, model_request = _load_json(_EXAMPLE_DIR / "request.json")
     model_request["slicer_id"] = project_request["slicer_id"]

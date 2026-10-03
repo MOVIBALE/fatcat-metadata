@@ -596,6 +596,13 @@ struct SelectedMaterialProfile {
     json profile;
 };
 
+bool material_compatible_with_machine(const json &profile, const std::string &machine_name) {
+    const auto printers = profile.find("compatible_printers");
+    if (printers == profile.end()) return true;
+    if (!printers->is_array()) invalid("native compatible_printers must be an array");
+    return printers->empty() || std::find(printers->begin(), printers->end(), machine_name) != printers->end();
+}
+
 std::vector<SelectedMaterialProfile> select_material_profiles(
     const json &request, const json &target, const json &source, const json &index,
     const std::filesystem::path &data_root, const std::string &machine_uid,
@@ -610,6 +617,7 @@ std::vector<SelectedMaterialProfile> select_material_profiles(
     }
 
     const auto &material_options = profile_options(source, "filament_profile_options", "native source");
+    const auto machine_name = required_string(source, "source_machine_profile_name", "native source");
     std::map<std::string, json> resolved_profiles;
     auto profile_for_name = [&](const std::string &name) -> const json & {
         const auto cached = resolved_profiles.find(name);
@@ -713,7 +721,7 @@ std::vector<SelectedMaterialProfile> select_material_profiles(
         }
     } else if (explicit_names == request.end()) {
         for (std::size_t slot = 0; slot < material_count; ++slot) {
-            const auto requested_type = normalized_text(
+            auto requested_type = normalized_text(
                 detail::requested_material_type(materials.at(slot)));
             if (requested_type.empty()) {
                 const auto native_default = default_for_slot(slot);
@@ -721,8 +729,16 @@ std::vector<SelectedMaterialProfile> select_material_profiles(
                     invalid("built-in source has no native default for source material slot " +
                             std::to_string(slot) + "; select native_filament_profile_names");
                 }
-                requested_names.push_back(native_default);
-                continue;
+                const auto &profile = profile_for_name(native_default);
+                if (material_compatible_with_machine(profile, machine_name)) {
+                    requested_names.push_back(native_default);
+                    continue;
+                }
+                // A machine's declared default may contradict the material's
+                // explicit compatibility list. Use its real type to select a
+                // compatible native candidate through the same selection path.
+                requested_type = native_profile_material_type(profile, native_default);
+                if (requested_type.empty()) invalid("incompatible native default has no material type");
             }
 
             std::vector<std::string> matching_names;
@@ -730,6 +746,7 @@ std::vector<SelectedMaterialProfile> select_material_profiles(
                 if (!option.is_object() || !option.contains("path") || !option.at("path").is_string()) continue;
                 const auto name = required_string(option, "name", "native material source");
                 const auto &profile = profile_for_name(name);
+                if (!material_compatible_with_machine(profile, machine_name)) continue;
                 const auto native_type = native_profile_material_type(profile, name);
                 const auto source_name = materials.at(slot).value("name", std::string());
                 if (native_type_matches_request(requested_type, native_type, name, source_name)) {
@@ -798,6 +815,9 @@ std::vector<SelectedMaterialProfile> select_material_profiles(
     for (std::size_t slot = 0; slot < material_count; ++slot) {
         const auto &name = requested_names[slot];
         const auto &profile = profile_for_name(name);
+        if (!material_compatible_with_machine(profile, machine_name)) {
+            invalid("native filament profile '" + name + "' is not compatible with '" + machine_name + "'");
+        }
         const auto native_type = native_profile_material_type(profile, name);
         if (native_type.empty()) {
             invalid("native filament profile '" + name + "' does not provide a filament_type; "
@@ -925,6 +945,10 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     const std::string process_name = source_process_name(input_request, source);
     const bool compatibility = availability.value("process", std::string()) != "available" &&
                                source.contains("compatibility_project");
+    const bool retained_materials = compatibility &&
+        availability.value("material", std::string()) != "available" &&
+        !input_request.contains("native_filament_profile_names") &&
+        !input_request.contains("material_uid") && !input_request.contains("material_uids");
     json process;
     json provenance;
     if (compatibility) {
@@ -941,9 +965,8 @@ json compose_builtin_project(const json &input_request, const json &canonical,
             invalid("compatibility source hardware identity differs from selected native source");
         }
         process = payload.at("project_settings");
-        // Retained projects have their own material-slot protocol. Project it
-        // through the existing source composer before applying exact native
-        // machine/material profiles; never reuse historical material identity.
+        // Preserve the recorded project's slots through the shared composer.
+        // Exact native material profiles replace them only when available.
         process = detail::compose_source_project(process,
             {{"source_materials", materials}, {"filament_slot_mode", "compact"},
              {"preserve_source_material_settings", true}}, target);
@@ -953,15 +976,33 @@ json compose_builtin_project(const json &input_request, const json &canonical,
         process = resolve_profile(data_root, index, required_string(option, "path", "native process source"));
     }
 
-    const auto selected_materials = select_material_profiles(
-        input_request, target, source, index, data_root, machine_uid, nozzle_uid, materials);
     std::vector<std::string> material_names;
     std::vector<json> material_profiles;
-    material_names.reserve(selected_materials.size());
-    material_profiles.reserve(selected_materials.size());
-    for (const auto &selected : selected_materials) {
-        material_names.push_back(selected.name);
-        material_profiles.push_back(selected.profile);
+    material_names.reserve(materials.size());
+    material_profiles.reserve(materials.size());
+    if (retained_materials) {
+        const auto &identities = required_array(process, "filament_settings_id", "retained material source");
+        const auto &types = required_array(process, "filament_type", "retained material source");
+        if (identities.size() != materials.size() || types.size() != materials.size()) {
+            invalid("retained material source slots differ from the selected palette");
+        }
+        for (std::size_t slot = 0; slot < materials.size(); ++slot) {
+            const auto name = identities.at(slot).get<std::string>();
+            const auto type = types.at(slot).get<std::string>();
+            const auto requested_type = detail::requested_material_type(materials.at(slot));
+            if (!requested_type.empty() && !native_type_matches_request(
+                    requested_type, type, name, materials.at(slot).value("name", std::string()))) {
+                invalid("retained material '" + name + "' does not match requested type '" + requested_type + "'");
+            }
+            material_names.push_back(name);
+        }
+    } else {
+        const auto selected_materials = select_material_profiles(
+            input_request, target, source, index, data_root, machine_uid, nozzle_uid, materials);
+        for (const auto &selected : selected_materials) {
+            material_names.push_back(selected.name);
+            material_profiles.push_back(selected.profile);
+        }
     }
 
     const auto machine_path = required_string(source, "machine_profile_path", "native source");
@@ -971,8 +1012,10 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     if (compatibility) merge_profile_settings(project, process);
     merge_profile_settings(project, machine, true);
     if (!compatibility) merge_profile_settings(project, process);
-    project.update(compose_material_settings(
-        material_profiles, material_names, target, variant_groups));
+    if (!retained_materials) {
+        project.update(compose_material_settings(
+            material_profiles, material_names, target, variant_groups));
+    }
 
     for (const auto *key : {"printer_model", "nozzle_diameter"}) {
         if (!machine.contains(key) || !project.contains(key) ||
@@ -1048,8 +1091,13 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     request["preserve_source_material_settings"] = true;
     auto composed = json::parse(compose_project_settings(
         project.dump(), request.dump(), canonical.dump(), target.dump()));
-    apply_builtin_native_variant_identity(composed, material_names, variant_groups);
+    if (!retained_materials) apply_builtin_native_variant_identity(composed, material_names, variant_groups);
     if (compatibility) composed["process_source"] = provenance;
+    if (retained_materials) {
+        auto material_provenance = provenance;
+        material_provenance["filament_settings_id"] = material_names;
+        composed["material_source"] = std::move(material_provenance);
+    }
     return composed;
 }
 

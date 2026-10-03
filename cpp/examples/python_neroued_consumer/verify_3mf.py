@@ -53,9 +53,33 @@ def verify_cube_placement(archive: zipfile.ZipFile) -> tuple[tuple[float, ...], 
     return lower, upper
 
 
+def verify_cube_material(archive: zipfile.ZipFile, request: dict | None = None) -> tuple[str, str]:
+    project = json.loads(archive.read('Metadata/project_settings.config'))
+    palette = (request or {}).get('source_materials')
+    expected_name = palette[0]['name'] if palette else (
+        project['filament_settings_id'][0] if request is not None else None)
+    expected_colour = palette[0]['colour'] if palette else project['filament_colour'][0]
+    root = ET.fromstring(archive.read('3D/3dmodel.model'))
+    component = root.find(f'{CORE}resources/{CORE}object/{CORE}components/{CORE}component')
+    source = ET.fromstring(archive.read(component.get(f'{PRODUCTION}path').lstrip('/')))
+    obj = source.find(f"{CORE}resources/{CORE}object[@id='{component.get('objectid')}']")
+    group = source.find(f"{CORE}resources/{CORE}basematerials[@id='{obj.get('pid')}']")
+    if obj.get('pindex') != '0' or len(group) != 1:
+        raise RuntimeError('consumer cube does not reference palette slot zero')
+    material = group[0]
+    if expected_name is not None and material.get('name') != expected_name:
+        raise RuntimeError('consumer cube material name differs from selected palette')
+    if material.get('displaycolor').upper() != expected_colour.upper() or project['filament_colour'][0].upper() != expected_colour.upper():
+        raise RuntimeError('consumer cube material colour differs from selected palette/project')
+    settings = ET.fromstring(archive.read('Metadata/model_settings.config'))
+    if any(item.get('value') != '1' for item in settings.findall(".//metadata[@key='extruder']")):
+        raise RuntimeError('consumer cube metadata does not reference filament slot one')
+    return material.get('name'), material.get('displaycolor')
+
+
 def main() -> None:
-    if len(sys.argv) != 2:
-        raise SystemExit("usage: verify_3mf.py PATH")
+    if len(sys.argv) not in (2, 3):
+        raise SystemExit("usage: verify_3mf.py PATH [PROJECT_REQUEST_JSON]")
     path = Path(sys.argv[1])
     with zipfile.ZipFile(path) as archive:
         broken = archive.testzip()
@@ -74,7 +98,10 @@ def main() -> None:
         if missing:
             raise RuntimeError(f"3MF is missing required entries: {missing}")
         lower, upper = verify_cube_placement(archive)
+        request = json.loads(Path(sys.argv[2]).read_text(encoding='utf-8')) if len(sys.argv) == 3 else None
+        material = verify_cube_material(archive, request)
     print(f"Verified serialized cube bounds: {lower} to {upper}")
+    print(f"Verified selected cube material and slot: {material}, palette 0 / filament 1")
     print(f"Verified 3MF archive: {path} ({len(names)} entries)")
 
 

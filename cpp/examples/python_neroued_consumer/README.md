@@ -45,10 +45,14 @@ python cpp/examples/python_neroued_consumer/write_example.py \
   --output /tmp/fatcat-u1-example.3mf
 ```
 
-The retained U1 process remains labelled with its actual 2.2.4 provenance;
+The retained U1 process and material settings are labelled with their actual
+2.2.4 provenance (`process_source` and `material_source`);
 placement uses the composed 2.4.2 hardware's printable area. Run
-`verify_3mf.py PATH` after either export to check the serialized cube geometry
-with both its component and production build transforms applied.
+`verify_3mf.py PATH PROJECT_REQUEST_JSON` after either export to check the
+serialized cube geometry with component and production transforms applied,
+plus material name, colour, and slot against the same selected request.
+The builder reads that palette too; custom sources without an explicit palette
+use the composed project's first material and colour.
 
 To use a custom source JSON, pass the explicit project fixture and its request:
 

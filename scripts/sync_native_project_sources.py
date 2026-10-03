@@ -251,12 +251,18 @@ def _target_profile_options(target: dict[str, Any], row: dict[str, Any]) -> tupl
 
 
 def _profile_option(catalog: ProfileCatalog, category: str, name: str,
-                    scope: str, source_paths: set[str], links: dict[str, dict[str, str]]) -> dict[str, Any]:
+                    scope: str, source_paths: set[str], links: dict[str, dict[str, str]],
+                    machine_name: str | None = None) -> dict[str, Any]:
     path = catalog.find_named(category, name, scope)
     if path is None:
         return {"name": name, "unavailable_reason": "no unique exact native preset file"}
     try:
-        catalog.resolve(category, path, links)
+        profile = catalog.resolve(category, path, links)
+        printers = profile.get('compatible_printers', [])
+        if machine_name is not None and printers and machine_name not in printers:
+            source_paths.add(path)
+            return {'name': name, 'path': path, 'unavailable_reason':
+                    f"native filament profile is not compatible with '{machine_name}'"}
     except ValueError as error:
         return {"name": name, "unavailable_reason": str(error)}
     source_paths.add(path)
@@ -299,13 +305,14 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
     ]
     material_options = [
         _profile_option(catalog, "filament", name, ProfileCatalog._scope(machine_path, "machine"),
-                        source_paths, links)
+                        source_paths, links, row['source_machine_profile_name'])
         for name in dict.fromkeys(material_names)
     ]
     entry["print_profile_options"] = process_options
     entry["filament_profile_options"] = material_options
     available_processes = [option["name"] for option in process_options if "path" in option]
-    available_materials = [option["name"] for option in material_options if "path" in option]
+    available_materials = [option["name"] for option in material_options
+                           if "path" in option and 'unavailable_reason' not in option]
     default_process = (
         machine_process_names[0]
         if len(machine_process_names) == 1

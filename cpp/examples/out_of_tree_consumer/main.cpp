@@ -85,12 +85,15 @@ int main(int argc, char **argv) {
         if (compatible.at("process_source").at("source_application_version") != "2.2.4") {
             throw std::runtime_error("consumer lost the historical process provenance");
         }
+        if (compatible.at("material_source").at("source_application_version") != "2.2.4") {
+            throw std::runtime_error("consumer lost the historical material provenance");
+        }
         request["slicer_id"] = selection.at("slicer_id");
         request["application_version"] = selection.at("application_version");
         const auto compatible_metadata = json::parse(fatcat::compose_model_metadata_from_data(
             compatible.at("project_settings_json").get<std::string>(), request.dump(), data_root));
         if (compatible_metadata.at("parts").empty()) throw std::runtime_error("U1 metadata is empty");
-        std::cout << "Fat Cat compatible C++ consumer passed: Orca 2.4.2 hardware/materials, 2.2.4 process\n";
+        std::cout << "Fat Cat compatible C++ consumer passed: Orca 2.4.2 hardware, 2.2.4 process/materials\n";
         return 0;
     } catch (const std::exception &error) {
         std::cerr << "Fat Cat native C++ consumer failed: " << error.what() << '\n';
