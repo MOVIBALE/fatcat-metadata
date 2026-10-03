@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import plistlib
@@ -250,12 +251,18 @@ def _target_profile_options(target: dict[str, Any], row: dict[str, Any]) -> tupl
 
 
 def _profile_option(catalog: ProfileCatalog, category: str, name: str,
-                    scope: str, source_paths: set[str], links: dict[str, dict[str, str]]) -> dict[str, Any]:
+                    scope: str, source_paths: set[str], links: dict[str, dict[str, str]],
+                    machine_name: str | None = None) -> dict[str, Any]:
     path = catalog.find_named(category, name, scope)
     if path is None:
         return {"name": name, "unavailable_reason": "no unique exact native preset file"}
     try:
-        catalog.resolve(category, path, links)
+        profile = catalog.resolve(category, path, links)
+        printers = profile.get('compatible_printers', [])
+        if machine_name is not None and printers and machine_name not in printers:
+            source_paths.add(path)
+            return {'name': name, 'path': path, 'unavailable_reason':
+                    f"native filament profile is not compatible with '{machine_name}'"}
     except ValueError as error:
         return {"name": name, "unavailable_reason": str(error)}
     source_paths.add(path)
@@ -290,6 +297,31 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
     target_processes, target_materials = _target_profile_options(target, row)
     process_names = list(dict.fromkeys((*machine_process_names, *target_processes)))
     material_names = list(dict.fromkeys((*machine_material_names, *target_materials)))
+    # Some machines declare a default whose explicit compatibility list targets
+    # other printers. Include genuine compatible alternatives from that vendor's
+    # native files instead of treating the incomplete default list as the catalog.
+    scope = ProfileCatalog._scope(machine_path, "machine")
+    incompatible_default = False
+    for name in machine_material_names:
+        path = catalog.find_named('filament', name, scope)
+        if path is not None:
+            profile = catalog.resolve('filament', path, {})
+            printers = profile.get('compatible_printers', [])
+            incompatible_default |= bool(printers and row['source_machine_profile_name'] not in printers)
+    if incompatible_default:
+        for path, document in catalog.documents.items():
+            if _profile_category(path) != 'filament' or ProfileCatalog._scope(path, 'filament') != scope:
+                continue
+            try:
+                profile = catalog.resolve('filament', path, {})
+            except ValueError:
+                continue
+            if str(profile.get('instantiation', '')).lower() != 'true':
+                continue
+            if row['source_machine_profile_name'] in profile.get('compatible_printers', []):
+                name = document.get('name')
+                if isinstance(name, str) and name not in material_names:
+                    material_names.append(name)
 
     process_options = [
         _profile_option(catalog, "process", name, ProfileCatalog._scope(machine_path, "machine"),
@@ -298,13 +330,14 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
     ]
     material_options = [
         _profile_option(catalog, "filament", name, ProfileCatalog._scope(machine_path, "machine"),
-                        source_paths, links)
+                        source_paths, links, row['source_machine_profile_name'])
         for name in dict.fromkeys(material_names)
     ]
     entry["print_profile_options"] = process_options
     entry["filament_profile_options"] = material_options
     available_processes = [option["name"] for option in process_options if "path" in option]
-    available_materials = [option["name"] for option in material_options if "path" in option]
+    available_materials = [option["name"] for option in material_options
+                           if "path" in option and 'unavailable_reason' not in option]
     default_process = (
         machine_process_names[0]
         if len(machine_process_names) == 1
@@ -431,6 +464,27 @@ def _write_tree(stage: Path, rows: list[dict[str, Any]], roots: dict[str, Path],
             _source_entry(catalog, row, target, source_paths, links)
             for row in slicer_rows
         ]
+        for row, entry in zip(slicer_rows, slice_entries):
+            if "compatibility_project" in row:
+                record = row["compatibility_project"]
+                relative = Path(*_safe_relative(record["path"]))
+                original = OUTPUT_DIR / relative
+                payload = _load_json(original)
+                for key in ("machine_uid", "nozzle_uid"):
+                    if payload["source"][key] != row[key]:
+                        raise ValueError("compatibility source hardware identity mismatch")
+                for key in ("source_slicer_id", "source_application_version", "source_profile_name"):
+                    if payload["source"][key] != record[key]:
+                        raise ValueError("compatibility source process provenance mismatch")
+                if hashlib.sha256(original.read_bytes()).hexdigest() != record["source_sha256"]:
+                    raise ValueError("compatibility source content hash mismatch")
+                license_path = ROOT.joinpath(*_safe_relative(record["license_file"]))
+                if not license_path.is_file() or not license_path.resolve().is_relative_to(ROOT.resolve()):
+                    raise ValueError("compatibility source license is missing or outside the repository")
+                entry["compatibility_project"] = record
+                destination = stage / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(original, destination)
 
         # Include every exact parent/include file in the closure. Keeping only
         # selected roots would leave dangling source-index edges at runtime.
@@ -483,13 +537,17 @@ def _write_tree(stage: Path, rows: list[dict[str, Any]], roots: dict[str, Path],
             ),
         ),
         "profile_files": copied_files,
+        "compatibility_project_files": sorted({
+            entry["compatibility_project"]["path"] for entry in copied_entries
+            if "compatibility_project" in entry
+        }),
         "references": references,
     }
     (stage / "source-index.json").write_text(_render_json(index), encoding="utf-8")
     return reports
 
 
-def sync(application_roots: dict[str, Path]) -> int:
+def sync(application_roots: dict[str, Path], *, dry_run: bool = False) -> int:
     source_map = _load_json(SOURCE_MAP_PATH)
     rows = source_map.get("machine_profiles")
     if source_map.get("schema_version") != 1 or not isinstance(rows, list):
@@ -522,12 +580,21 @@ def sync(application_roots: dict[str, Path]) -> int:
                 "the generated native source index was left unchanged"
             )
 
-    OUTPUT_DIR.parent.mkdir(parents=True, exist_ok=True)
-    stage_parent = OUTPUT_DIR.parent
+    if not dry_run:
+        OUTPUT_DIR.parent.mkdir(parents=True, exist_ok=True)
+    stage_parent = None if dry_run else OUTPUT_DIR.parent
     with tempfile.TemporaryDirectory(prefix=".native-project-sources-", dir=stage_parent) as temp_dir:
         stage = Path(temp_dir) / "package"
         stage.mkdir()
         reports = _write_tree(stage, rows, application_roots, targets)
+        staged_index = _load_json(stage / "source-index.json")
+        profile_count = len(staged_index["profile_files"])
+        if dry_run:
+            print(f"Would import {len(rows)} identities and {profile_count} native profile files.")
+            print(f"Unavailable exact combinations: {len(reports)}; repository files unchanged.")
+            for item in reports:
+                print(f"- {item['slicer_id']} {item['machine_uid']} {item['nozzle_uid']}: {item['reason']}")
+            return 0
         old_files: set[str] = set()
         old_index = OUTPUT_DIR / "source-index.json"
         if old_index.is_file():
@@ -537,8 +604,9 @@ def sync(application_roots: dict[str, Path]) -> int:
                 old_files = set()
 
         # Reconcile only files named by our previous generated index.
+        new_files = set(staged_index["profile_files"])
         for path in sorted(old_files):
-            if path not in set(_load_json(stage / "source-index.json")["profile_files"]):
+            if path not in new_files:
                 previous = OUTPUT_DIR / path
                 if previous.is_file() and previous.resolve().is_relative_to(OUTPUT_DIR.resolve()):
                     previous.unlink()
@@ -547,10 +615,14 @@ def sync(application_roots: dict[str, Path]) -> int:
             destination = OUTPUT_DIR / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, destination)
+        for path in (stage / "compatibility-projects").rglob("*.json"):
+            destination = OUTPUT_DIR / path.relative_to(stage)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, destination)
         shutil.copyfile(stage / "source-index.json", OUTPUT_DIR / "source-index.json")
 
     print(f"Imported {len(rows)} exact machine/nozzle identities.")
-    print(f"Packaged {len(_load_json(OUTPUT_DIR / 'source-index.json')['profile_files'])} shared native profile files.")
+    print(f"Packaged {profile_count} shared native profile files.")
     if reports:
         print(f"Unavailable exact combinations: {len(reports)}")
         for item in reports:
@@ -565,6 +637,8 @@ def sync(application_roots: dict[str, Path]) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dry-run", action="store_true",
+                        help="validate and preview in a temporary directory without changing repository files")
     parser.add_argument(
         "--application-root",
         action="append",
@@ -574,7 +648,7 @@ def main() -> int:
     )
     args = parser.parse_args()
     try:
-        return sync(_application_roots(args.application_root))
+        return sync(_application_roots(args.application_root), dry_run=args.dry_run)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"native source sync failed: {error}", file=sys.stderr)
         return 2

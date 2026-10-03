@@ -544,6 +544,15 @@
           "media_type": "image/png"
         }
       ]
+    },
+    "wipe_tower_placement": {
+      "native_defaults": {
+        "prime_tower_brim_width": "3",
+        "wipe_tower_wall_type": "rib",
+        "wipe_tower_rib_width": "8",
+        "prime_tower_infill_gap": "150%"
+      },
+      "native_defaults_source": "Exact target-version PrintConfig.cpp / GCode/WipeTower.cpp compiled defaults, applied only to omitted source fields"
     }
   },
   "target_contract": {

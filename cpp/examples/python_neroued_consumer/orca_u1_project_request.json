@@ -1,0 +1,15 @@
+{
+  "project_source": "fatcat_native",
+  "slicer_id": "OrcaSlicer",
+  "application_version": "2.4.2",
+  "machine_uid": "snapmaker:u1",
+  "nozzle_uid": "nozzle:0.4mm",
+  "build_plate_uid": "plate:textured-pei",
+  "source_materials": [
+    {
+      "name": "PLA",
+      "material_type": "PLA",
+      "colour": "#123456"
+    }
+  ]
+}

@@ -3,9 +3,11 @@
 The native source updater is `scripts/sync_native_project_sources.py`. It reads
 the profile files installed by each supported macOS slicer release and checks
 the exact `CFBundleShortVersionString` in its app bundle before it writes any
-profile snapshot. Run it only from a clean working tree after backing up or
-committing changes: there is no dry-run option, and a successful run replaces
-the generated source index and profile files.
+profile snapshot. Use `--dry-run` with the same application roots to validate and preview the
+update without changing repository files. A normal successful run replaces the
+generated source index and profile files; use a clean working tree and preserve
+local changes before applying it. These refresh tools require macOS app bundles;
+consuming the installed SDK works on Linux, macOS and Windows.
 
 ## Refresh the pinned application snapshots
 
@@ -41,11 +43,28 @@ The updater verifies each exact application version, copies machine/process/
 material profile files and their exact inheritance/include closure, and writes
 `compatibility/current-src/native-project-sources/source-index.json`. A missing
 exact profile is recorded as unavailable. Do not create a substitute default
-or rename a different preset to satisfy an identity. For example, OrcaSlicer
-2.4.2 has a Snapmaker U1 0.4 mm machine and material source, but its process
-preset is not uniquely available; built-in composition must keep failing until
-an exact process profile is supplied. Snapmaker Orca 2.3.6 has its own separate
-U1 0.4 mm source.
+or rename a different preset to satisfy an identity. A machine's declared default
+can contradict a material's explicit compatible_printers list. The updater keeps
+that declaration and records its incompatibility, then discovers instantiated
+materials in the same native catalogue whose inherited compatibility names the
+exact machine. It copies their real inheritance/include closure unchanged.
+
+OrcaSlicer 2.4.2 U1 0.4 mm has no native process. Its recorded complete Orca
+2.2.4 project supplies the process. For Textured PEI, the native 2.4.2
+`Snapmaker PLA @U1` profile has a zero plate temperature and cannot be selected;
+the recorded 2.2.4 `Snapmaker PLA Basic @U1` supplies its real 65/220 °C settings.
+The same plate resolution is used for explicit and omitted plate selections,
+and retained materials are checked too. The result identifies each actual
+`process_source` and `material_source`; historical settings must never be
+relabeled as 2.4.2 native presets. Catalogue availability does not guarantee
+that every material type or plate is supported. OrcaSlicer U1 0.6 mm has no PLA
+candidate; SnapmakerOrca 2.3.6 has genuine Generic PLA sources for 0.2/0.6/0.8 mm.
+
+The updater preserves the retained file and its source descriptor across
+refreshes. Check its recorded hardware, process provenance, content hash, and
+license before copying it. Remove the compatibility descriptor only when an
+exact native process and compatible materials become available and the
+replacement has been reviewed.
 
 Review the generated source index, profile files, and
 `unavailable-sources.json` before continuing. In particular, confirm the source
@@ -61,6 +80,7 @@ do not derive a new machine from a similar printer profile. After reviewing the
 source index, run:
 
 ```bash
+python3 scripts/sync_native_machine_bindings.py --dry-run
 python3 scripts/sync_native_machine_bindings.py
 ```
 
@@ -109,3 +129,28 @@ the app bundle's source commit or vendor release, changed identities, and any
 unavailable exact profiles in the change description. Review third-party
 license source revisions in `licenses/third-party/manifest.json` whenever an
 upstream profile source changes.
+
+## Public data root and sparse merged selections
+
+C++ callers pass a public packaged data root to
+`compose_builtin_project_settings`, `compose_project_settings_from_data`, and
+`compose_model_metadata_from_data`. Fat Cat selects the exact target and
+canonical data internally. Existing explicit JSON entry points remain available.
+The out-of-tree example builds both a native project and the U1 compatibility
+case without reading a target filename or a prebuilt project.
+
+For a merged selection, `source_materials` can describe the ordered complete
+palette while `merge_sources[].slots` describes only real source rows. Missing
+rows are synthesized using the same native-source path and exact machine/nozzle
+UIDs. Actual source temperatures, flow, process, unknown fields, and transition
+values remain authoritative. Transition pairs absent from every source require
+recorded native defaults; unavailable defaults are errors. The explicit JSON
+composer accepts `merge_default_project` for these absent transition pairs and
+checks its hardware identity. Neither entry infers a substitute machine.
+
+`assemble_project_template` and `assemble_machine_registry_template` retain
+their published C++/Python signatures for explicit historical callers. Their
+minimal/registry factories are compatibility behavior and are not used by the
+current native-source export path. Template assembly no longer selects policy
+from a printer brand or display name. Lumina's unused wrappers were removed;
+current consumers call the project/settings and metadata composers directly.

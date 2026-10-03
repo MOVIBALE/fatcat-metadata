@@ -1,8 +1,6 @@
 #include <array>
 #include <filesystem>
-#include <fstream>
 #include <optional>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -25,18 +23,13 @@ namespace {
 
 struct PackagedTarget {
     const char *slicer;
-    const char *file;
     bool import_source;
 };
 
 constexpr std::array<PackagedTarget, 7> packaged_targets = {{
-    {"BambuStudio", "targets/bambu-studio-02.08.02.61.json", true},
-    {"OrcaSlicer", "targets/orca-slicer-2.4.2.json", true},
-    {"QIDIStudio", "targets/qidi-studio-02.07.02.60.json", true},
-    {"ElegooSlicer", "targets/elegoo-slicer-1.5.3.5.json", true},
-    {"AnycubicSlicerNext", "targets/anycubic-slicer-next-2.0.0.2.json", true},
-    {"FlashStudio", "targets/flash-studio-1.7.15.json", false},
-    {"SnapmakerOrca", "targets/snapmaker-orca-2.3.6.json", true},
+    {"BambuStudio", true}, {"OrcaSlicer", true}, {"QIDIStudio", true},
+    {"ElegooSlicer", true}, {"AnycubicSlicerNext", true}, {"FlashStudio", false},
+    {"SnapmakerOrca", true},
 }};
 
 std::filesystem::path packaged_data_root(const char *relative_path) {
@@ -47,55 +40,60 @@ std::filesystem::path packaged_data_root(const char *relative_path) {
         "fatcat_metadata_data" / relative_path;
 }
 
-std::string read_packaged_translation(const char *relative_path) {
-    const std::filesystem::path path = packaged_data_root("translations") / relative_path;
-    std::ifstream stream(path, std::ios::binary);
-    if (!stream) {
-        throw std::runtime_error("packaged translation data is missing: " +
-                                 path.string());
-    }
-    std::ostringstream contents;
-    contents << stream.rdbuf();
-    return contents.str();
-}
-
 std::string read_packaged_target(const std::string &slicer) {
-    for (const auto &target : packaged_targets) {
-        if (slicer == target.slicer) return read_packaged_translation(target.file);
-    }
-    throw std::invalid_argument("unsupported metadata target: " + slicer);
+    return fatcat::metadata_target_data(slicer, "", packaged_data_root(""));
 }
 
 std::string read_requested_target(const std::string &request_json) {
     const auto request = nlohmann::json::parse(request_json);
     const auto slicer = request.at("slicer_id").get<std::string>();
-    auto source = read_packaged_target(slicer);
-    if (request.contains("application_version")) {
-        const auto target = nlohmann::json::parse(source);
-        if (request.at("application_version") != target.at("target_contract").at("application_version")) {
-            throw std::invalid_argument("unsupported metadata target version for " + slicer);
-        }
-    }
-    return source;
+    return fatcat::metadata_target_data(slicer, request.value("application_version", ""),
+                                       packaged_data_root(""));
 }
 
 std::string compose_builtin_from_package(const std::string &request_json) {
     try {
-        const auto canonical = read_packaged_translation("canonical.json");
-        const auto target = read_requested_target(request_json);
         return fatcat::compose_builtin_project_settings(
-            request_json, canonical, target,
-            packaged_data_root("native_project_sources"));
+            request_json, packaged_data_root(""));
     } catch (const std::exception &error) {
         throw py::value_error(error.what());
     }
+}
+
+std::string compose_from_package(const std::optional<std::string> &project_json,
+                                const std::string &request_json) {
+    if (!project_json) return compose_builtin_from_package(request_json);
+    try {
+        if (nlohmann::json::parse(request_json).contains("project_source")) {
+            throw fatcat::ProjectSettingsError(
+                "project_source requires project_json=None or the one-argument built-in overload");
+        }
+        return fatcat::compose_project_settings_from_data(
+            *project_json, request_json, packaged_data_root(""));
+    } catch (const std::exception &error) {
+        throw py::value_error(error.what());
+    }
+}
+
+std::string dictionary_json(const py::dict &value) {
+    return py::module_::import("json").attr("dumps")(
+        value, py::arg("ensure_ascii") = false, py::arg("allow_nan") = false,
+        py::arg("sort_keys") = true, py::arg("separators") = py::make_tuple(",", ":"))
+        .cast<std::string>();
+}
+
+py::dict project_dictionary(const std::string &result_json) {
+    const auto loads = py::module_::import("json").attr("loads");
+    auto result = loads(result_json).cast<py::dict>();
+    result["project_settings"] = loads(result.attr("pop")("project_settings_json"));
+    return result;
 }
 
 std::array<std::string, 6> read_import_targets() {
     std::array<std::string, 6> targets;
     std::size_t index = 0;
     for (const auto &target : packaged_targets) {
-        if (target.import_source) targets.at(index++) = read_packaged_translation(target.file);
+        if (target.import_source) targets.at(index++) = read_packaged_target(target.slicer);
     }
     return targets;
 }
@@ -340,29 +338,27 @@ PYBIND11_MODULE(fatcat_metadata, module) {
 
     module.def(
         "compose_project_settings",
-        [](const std::optional<std::string> &project_json,
-           const std::string &request_json) {
-            try {
-                if (!project_json.has_value()) {
-                    return compose_builtin_from_package(request_json);
-                }
-                const auto request = nlohmann::json::parse(request_json);
-                if (request.contains("project_source")) {
-                    throw fatcat::ProjectSettingsError(
-                        "project_source requires project_json=None or the one-argument built-in overload");
-                }
-                const auto canonical = read_packaged_translation("canonical.json");
-                const auto target = read_requested_target(request_json);
-                return fatcat::compose_project_settings(
-                    *project_json, request_json, canonical, target);
-            } catch (const fatcat::ProjectSettingsError &error) {
-                throw py::value_error(error.what());
-            } catch (const std::exception &error) {
-                throw py::value_error(error.what());
-            }
-        },
+        &compose_from_package,
         py::arg("project_json"), py::arg("request_json"),
         "Compose project settings from explicit project JSON or a built-in source.");
+
+    module.def(
+        "compose_project_settings",
+        [](const py::dict &request) {
+            return project_dictionary(compose_builtin_from_package(dictionary_json(request)));
+        },
+        py::arg("request"),
+        "Compose a built-in source from a dictionary; return project_settings as a dictionary.");
+
+    module.def(
+        "compose_project_settings",
+        [](const std::optional<py::dict> &project, const py::dict &request) {
+            const auto source = project
+                ? std::optional<std::string>(dictionary_json(*project)) : std::nullopt;
+            return project_dictionary(compose_from_package(source, dictionary_json(request)));
+        },
+        py::arg("project"), py::arg("request"),
+        "Compose an explicit source dictionary or None through the same C++ composer.");
 
     module.def(
         "native_project_source_catalog",
@@ -385,9 +381,8 @@ PYBIND11_MODULE(fatcat_metadata, module) {
         "compose_model_metadata",
         [](const std::string &project_json, const std::string &request_json) {
             try {
-                const auto target = read_requested_target(request_json);
-                return fatcat::compose_model_metadata(project_json, request_json,
-                                                       target);
+                return fatcat::compose_model_metadata_from_data(
+                    project_json, request_json, packaged_data_root(""));
             } catch (const fatcat::MetadataComponentsError &error) {
                 throw py::value_error(error.what());
             } catch (const std::exception &error) {
@@ -396,4 +391,18 @@ PYBIND11_MODULE(fatcat_metadata, module) {
         },
         py::arg("project_json"), py::arg("request_json"),
         "Generate metadata parts and package descriptions for the explicit slicer/version.");
+
+    module.def(
+        "compose_model_metadata",
+        [](const py::dict &project, const py::dict &request) {
+            try {
+                const auto description = fatcat::compose_model_metadata_from_data(
+                    dictionary_json(project), dictionary_json(request), packaged_data_root(""));
+                return py::module_::import("json").attr("loads")(description).cast<py::dict>();
+            } catch (const std::exception &error) {
+                throw py::value_error(error.what());
+            }
+        },
+        py::arg("project"), py::arg("request"),
+        "Describe metadata from dictionaries using the same C++ composer.");
 }

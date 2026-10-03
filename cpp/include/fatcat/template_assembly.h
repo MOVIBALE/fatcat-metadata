@@ -8,6 +8,9 @@ namespace fatcat {
 
 /// Assemble selected source templates, retaining their material parameters.
 /// 合成已选择的源模板，并保留其材料参数。
+/// Compatibility API for existing explicit template callers. Current built-in
+/// exports use compose_builtin_project_settings and packaged source data.
+/// 此入口仅兼容现有显式模板调用；当前内置导出使用来源数据与内置合成入口。
 ///
 /// base_project_json is the selected built-in project template. An absent
 /// registry_machine_json keeps that project; project_template_kind="none" with
@@ -27,7 +30,8 @@ namespace fatcat {
 /// - legacy_nozzle_size: nozzle used to select the built-in project template.
 /// - registry_nozzle_size: nozzle of the selected registry device.
 /// - device_brand / device_display_name: the selected registry device's original
-///   brand and display name, used for the existing Snapmaker U1 profile rule.
+///   brand and display name retained as source context; composition follows
+///   the source slot shape and target format rather than a machine-name rule.
 /// Optional text fields default to empty; project_template_kind defaults to
 /// printer. Minimal mode uses Generic PLA identity with the existing temperature
 /// defaults, without adding hardware identity, file paths or geometry.
@@ -43,6 +47,9 @@ std::string assemble_project_template(
 
 /// Compose the offline registry template from selected process and source facts.
 /// 根据已选择的产品工艺与来源事实合成离线注册表模板。
+/// Compatibility API; current built-in exports do not invoke this legacy
+/// registry/default factory. Its explicit historical options remain supported.
+/// 兼容入口；当前内置导出不调用此旧注册表与默认值工厂，历史显式选项仍受支持。
 /// options_json may contain protected_process_settings, line_width_settings,
 /// slot_count, source_profile_name and slicer_id for process composition.
 /// source_version, default_application_metadata and nozzle_size additionally

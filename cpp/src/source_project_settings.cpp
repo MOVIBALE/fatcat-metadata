@@ -226,23 +226,6 @@ struct MaterialSelection {
     bool allow_petg_fallback = true;
 };
 
-std::string requested_material_type(const json &material) {
-    const auto raw_type = material.find("material_type");
-    // Missing historical facts retain the old product compatibility choice.
-    // An explicit unknown type is never interpreted as PLA.
-    const auto name = text(material.value("name", json()));
-    if (raw_type != material.end() && !raw_type->is_null()) return stripped(text(*raw_type));
-    const auto normalized = upper(name);
-    if (normalized.find("PETG") == std::string::npos) return "PLA Basic";
-    std::string compact;
-    for (unsigned char c : normalized) if (std::isalnum(c)) compact += static_cast<char>(c);
-    if (compact.find("PETGCF") != std::string::npos) return "PETG-CF";
-    if (compact.find("PETGHF") != std::string::npos) return "PETG HF";
-    if (normalized.find("TRANSLUCENT") != std::string::npos || normalized.find("TRANSPARENT") != std::string::npos ||
-        name.find("透明") != std::string::npos) return "PETG Translucent";
-    return "PETG Basic";
-}
-
 MaterialSelection material_selection(const json &material, const json &source) {
     const auto raw_type = material.find("material_type");
     const bool explicit_type = raw_type != material.end() && !raw_type->is_null();
@@ -344,8 +327,7 @@ bool compact_source_slots(const json &project, const json &request,
     if (mode != "auto") throw ProjectSettingsError("invalid source filament_slot_mode");
     if (request.value("preserve_source_material_settings", false)) return false;
     const auto profile = request.value("source_profile", json::object());
-    const bool u1 = project.value("printer_model", "") == "Snapmaker U1";
-    return !profile.value("registry", false) || u1 || slicer == "FlashStudio" || filament_count(project) <= count;
+    return !profile.value("registry", false) || slicer == "FlashStudio" || filament_count(project) <= count;
 }
 
 std::string derive_preset(std::string original, const std::string &preset) {
@@ -574,6 +556,33 @@ void preserve_selected_slots(json &project, const json &source, const json &requ
 
 }  // namespace
 
+std::string requested_material_type(const nlohmann::json &material) {
+    if (!material.is_object()) {
+        throw ProjectSettingsError("each source_materials slot must be an object");
+    }
+    const auto raw_type = material.find("material_type");
+    // Leave unknown names unresolved so native callers can use their source
+    // default. An explicit unknown type is never interpreted as PLA.
+    const auto name = text(material.value("name", json()));
+    if (raw_type != material.end() && !raw_type->is_null()) {
+        if (!raw_type->is_string()) {
+            throw ProjectSettingsError("source_materials.material_type must be text");
+        }
+        return stripped(text(*raw_type));
+    }
+    const auto normalized = upper(name);
+    if (normalized.find("PETG") == std::string::npos) {
+        return normalized.find("PLA") == std::string::npos ? "" : "PLA Basic";
+    }
+    std::string compact;
+    for (unsigned char c : normalized) if (std::isalnum(c)) compact += static_cast<char>(c);
+    if (compact.find("PETGCF") != std::string::npos) return "PETG-CF";
+    if (compact.find("PETGHF") != std::string::npos) return "PETG HF";
+    if (normalized.find("TRANSLUCENT") != std::string::npos || normalized.find("TRANSPARENT") != std::string::npos ||
+        name.find("透明") != std::string::npos) return "PETG Translucent";
+    return "PETG Basic";
+}
+
 json prepare_source_identity(const json &base, const json &request) {
     json project = base;
     if (project.contains("filament_settings_id") || request.contains("merge_sources")) return project;
@@ -617,13 +626,11 @@ json prepare_source_identity(const json &base, const json &request) {
 void apply_source_flush_defaults(json &project, const json &request, const json &target) {
     if (!request.contains("source_materials") || request.contains("merge_sources") ||
         request.value("preserve_source_material_settings", false) ||
-        target.at("target_contract").value("slicer_id", "") != "FlashStudio" ||
-        project.value("printer_model", "") != "Flashforge AD5X") return;
+        target.at("target_contract").value("slicer_id", "") != "FlashStudio") return;
     rebuild_flush_matrix_from_vector(project);
 }
 
 void apply_source_tower_defaults(json &project, const json &target) {
-    const auto &contract = target.at("target_contract");
     const auto package = target.find("package_dialect");
     if (package != target.end() && package->is_object() &&
         package->contains("wipe_tower_placement")) {
@@ -644,36 +651,7 @@ void apply_source_tower_defaults(json &project, const json &target) {
             }
         }
     }
-    if (contract.value("slicer_id", "") == "BambuStudio" &&
-        contract.value("application_version", "") == "02.08.02.61") {
-        // BambuStudio v02.08.02.61 PrintConfig/WipeTower defaults define its
-        // square ribbed tower envelope even when a project omits these keys.
-        // https://github.com/bambulab/BambuStudio/blob/v02.08.02.61/src/libslic3r/PrintConfig.cpp
-        // https://github.com/bambulab/BambuStudio/blob/v02.08.02.61/src/libslic3r/GCode/WipeTower.cpp
-        const json defaults = {{"prime_tower_brim_width", "3"},
-                               {"prime_tower_rib_wall", "1"},
-                               {"prime_tower_rib_width", "8"},
-                               {"prime_tower_extra_rib_length", "0"},
-                               {"prime_tower_fillet_wall", "1"},
-                               {"prime_tower_infill_gap", "150%"}};
-        for (const auto &[key, value] : defaults.items()) {
-            if (!project.contains(key)) project[key] = value;
-        }
-        return;
-    }
-    if (contract.value("slicer_id", "") != "ElegooSlicer" ||
-        contract.value("application_version", "") != "1.5.3.5") return;
-    const auto model = project.value("printer_model", "");
-    if (model != "Elegoo Centauri Carbon" && model != "Elegoo Centauri Carbon 2") return;
-    // ElegooSlicer v1.5.3.5 PrintConfig.cpp: 6904-7023. These defaults
-    // affect the physical envelope even when omitted from a source project.
-    const json defaults = {{"prime_tower_brim_width", "3"},
-                           {"wipe_tower_wall_type", "rib"},
-                           {"wipe_tower_rib_width", "8"},
-                           {"prime_tower_infill_gap", "150%"}};
-    for (const auto &[key, value] : defaults.items()) {
-        if (!project.contains(key)) project[key] = value;
-    }
+
 }
 
 json compose_source_project(const json &base, const json &request, const json &target) {
@@ -786,13 +764,8 @@ json compose_source_project(const json &base, const json &request, const json &t
         project[key] = value;
         overrides.insert(key);
     }
-    const bool u1 = (slicer == "OrcaSlicer" || slicer == "SnapmakerOrca") &&
-                    project.value("printer_model", "") == "Snapmaker U1";
     record_differences(project, overrides, scoped_markers, difference_key,
                        difference_offset, difference_trailing);
-    if (u1) {
-        project.erase("inherits_group");
-    }
     return project;
 }
 
@@ -844,7 +817,10 @@ json native_source_request(const json &project, const json &request, const json 
     json uids = json::array();
     std::set<std::string> managed_keys;
     for (const auto &material : selections) {
-        const auto selected = requested_material_type(material);
+        const auto requested = requested_material_type(material);
+        // Legacy source-to-native compatibility treats untyped material names
+        // as PLA, while built-in native selection uses the source's own default.
+        const auto selected = requested.empty() ? "PLA Basic" : requested;
         const auto kind = upper(selected);
         const auto uid = kind == "PLA" || kind == "PLA BASIC" ? "material:pla" :
                          kind == "PETG" || kind == "PETG BASIC" ? "material:petg" : "";

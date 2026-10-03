@@ -2,6 +2,9 @@
 
 import json
 import unittest
+import shutil
+import tempfile
+from unittest.mock import patch
 from pathlib import Path
 
 import fatcat_metadata as fatcat
@@ -53,6 +56,18 @@ class PublicNativeSourceTests(unittest.TestCase):
         ]
         self.assertEqual(len(rows), 1, (slicer, machine_uid, NOZZLE_UID))
         return rows[0]
+
+    def _orca_builtin_request(self, material):
+        return {
+            "project_source": "fatcat_native",
+            "slicer_id": "OrcaSlicer",
+            "application_version": "2.4.2",
+            "machine_uid": "bambu-lab:p1s",
+            "nozzle_uid": NOZZLE_UID,
+            "build_plate_uid": "plate:textured-pei",
+            "source_materials": [material],
+            "process_settings": {"wall_loops": "1"},
+        }
 
     def test_seven_targets_compose_from_exact_packaged_sources(self):
         self.assertEqual(self.source_index["schema_version"], 1)
@@ -118,6 +133,7 @@ class PublicNativeSourceTests(unittest.TestCase):
                 available_materials = [
                     option for option in source["filament_profile_options"]
                     if isinstance(option.get("path"), str)
+                    and 'unavailable_reason' not in option
                     and (self.source_root / option["path"]).is_file()
                 ]
                 self.assertTrue(available_materials)
@@ -151,7 +167,7 @@ class PublicNativeSourceTests(unittest.TestCase):
                     [material["colour"] for material in request["source_materials"]],
                 )
 
-    def test_orca_u1_without_an_exact_process_does_not_invent_a_default(self):
+    def test_orca_u1_uses_recorded_process_and_materials_with_native_hardware(self):
         slicer, version, machine_uid, _ = next(
             row for row in TARGETS if row[0] == "SnapmakerOrca"
         )
@@ -177,8 +193,203 @@ class PublicNativeSourceTests(unittest.TestCase):
             "build_plate_uid": "plate:textured-pei",
             "source_materials": [{"name": "Snapmaker PLA", "colour": "#123456"}],
         }
-        with self.assertRaisesRegex(ValueError, "no unique native default process"):
+        result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+        project = json.loads(result['project_settings_json'])
+        self.assertEqual(result['process_source']['source_application_version'], '2.2.4')
+        self.assertEqual(result['material_source']['source_application_version'], '2.2.4')
+        self.assertEqual(result['material_source']['filament_settings_id'], ['Snapmaker PLA Basic @U1'])
+        self.assertEqual(project['version'], '2.2.4')
+        self.assertEqual(project['printer_model'], 'Snapmaker U1')
+        self.assertEqual(project['filament_colour'], ['#123456'])
+        self.assertEqual(project['print_settings_id'], source['compatibility_project']['source_profile_name'])
+        retained = json.loads((self.source_root / source['compatibility_project']['path']).read_text(encoding='utf-8'))['project_settings']
+        for key in ('filament_settings_id', 'filament_ids', 'filament_type',
+                    'textured_plate_temp', 'textured_plate_temp_initial_layer',
+                    'hot_plate_temp', 'hot_plate_temp_initial_layer',
+                    'nozzle_temperature', 'nozzle_temperature_initial_layer', 'filament_flow_ratio'):
+            self.assertEqual(project[key], retained[key][:1], key)
+        request['native_print_profile_name'] = 'Invented native default'
+        with self.assertRaisesRegex(ValueError, 'recorded compatibility'):
             fatcat.compose_project_settings(json.dumps(request))
+
+    def test_omitted_plate_uses_retained_supported_default_material(self):
+        request = {"project_source": "fatcat_native", "slicer_id": "OrcaSlicer",
+                   "application_version": "2.4.2", "machine_uid": "snapmaker:u1",
+                   "nozzle_uid": NOZZLE_UID,
+                   "source_materials": [{"name": "PLA", "material_type": "PLA", "colour": "#123456"}]}
+        result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+        project = json.loads(result["project_settings_json"])
+        self.assertEqual(project["curr_bed_type"], "Textured PEI Plate")
+        self.assertEqual(project["textured_plate_temp"], ["65"])
+        self.assertEqual(result["material_source"]["source_application_version"], "2.2.4")
+        request["native_filament_profile_names"] = ["Snapmaker PLA @U1"]
+        with self.assertRaisesRegex(ValueError, "does not support selected build plate"):
+            fatcat.compose_project_settings(json.dumps(request))
+
+    def test_retained_material_rejects_an_unsupported_effective_default_plate(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            shutil.copytree(self.data_root, root / "fatcat_metadata_data")
+            source = self._source("OrcaSlicer", "2.4.2", "snapmaker:u1")
+            path = root / "fatcat_metadata_data/native_project_sources" / source["compatibility_project"]["path"]
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            count = len(payload["project_settings"]["filament_settings_id"])
+            payload["project_settings"]["textured_plate_temp"] = ["0"] * count
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            request = {"project_source": "fatcat_native", "slicer_id": "OrcaSlicer",
+                       "application_version": "2.4.2", "machine_uid": "snapmaker:u1",
+                       "nozzle_uid": NOZZLE_UID,
+                       "source_materials": [{"name": "PLA", "material_type": "PLA", "colour": "#123456"}]}
+            with patch.object(fatcat, "__file__", str(root / "fatcat_metadata.so")), self.assertRaisesRegex(
+                    ValueError, "retained material.*does not support selected build plate"):
+                fatcat.compose_project_settings(json.dumps(request))
+
+    def test_available_specific_native_variant_is_selected_without_plain_pla_fallback(self):
+        result = json.loads(fatcat.compose_project_settings(json.dumps({
+            "project_source": "fatcat_native", "slicer_id": "AnycubicSlicerNext",
+            "application_version": "2.0.0.2", "machine_uid": "anycubic:kobra-4",
+            "nozzle_uid": "nozzle:0.8mm", "build_plate_uid": "plate:textured-pei",
+            "source_materials": [{"name": "White", "material_type": "PLA Silk", "colour": "#FFFFFF"}],
+        })))
+        project = json.loads(result["project_settings_json"])
+        self.assertEqual(project["filament_settings_id"], ["Anycubic PLA Silk @Anycubic Kobra 4 0.8 nozzle"])
+        self.assertEqual(result["material_source"]["source_application_version"], "2.0.0.2")
+
+    def test_incompatible_native_material_is_rejected_even_when_explicitly_selected(self):
+        for nozzle in ('nozzle:0.4mm', 'nozzle:0.6mm'):
+            request = self._orca_builtin_request({'name': 'PLA', 'colour': '#123456'})
+            request.update(machine_uid='snapmaker:u1', nozzle_uid=nozzle,
+                           native_filament_profile_names=['Snapmaker PLA'])
+            with self.subTest(nozzle=nozzle), self.assertRaisesRegex(ValueError, 'not compatible'):
+                fatcat.compose_project_settings(json.dumps(request))
+
+    def test_missing_native_material_does_not_reuse_a_different_nozzle_source(self):
+        request = self._orca_builtin_request({'name': 'PLA', 'colour': '#123456'})
+        request.update(machine_uid='snapmaker:u1', nozzle_uid='nozzle:0.6mm')
+        with self.assertRaisesRegex(ValueError, 'no available native filament profile'):
+            fatcat.compose_project_settings(json.dumps(request))
+
+    def test_retained_materials_do_not_claim_an_unsupported_requested_type(self):
+        for material_type in ('PETG', 'PLA-CF'):
+            request = self._orca_builtin_request({'name': material_type, 'material_type': material_type,
+                                                 'colour': '#123456'})
+            request['machine_uid'] = 'snapmaker:u1'
+            with self.subTest(material_type=material_type), self.assertRaisesRegex(ValueError, 'retained material'):
+                fatcat.compose_project_settings(json.dumps(request))
+
+    def test_native_petg_name_selects_real_profile_and_specialty_types_do_not_fall_back(self):
+        basic_request = self._orca_builtin_request({
+            "name": "Bambu PETG Basic @BBL X1C",
+            "colour": "#345678",
+        })
+        basic_result = json.loads(fatcat.compose_project_settings(json.dumps(basic_request)))
+        basic_project = json.loads(basic_result["project_settings_json"])
+        self.assertEqual(
+            basic_project["filament_settings_id"], ["Bambu PETG Basic @BBL X1C"]
+        )
+
+        for name, material_type in (
+            ("PETG HF", "PETG HF"),
+            ("PETG-CF", "PETG-CF"),
+            ("PETG Translucent", "PETG Translucent"),
+        ):
+            with self.subTest(material_type=material_type):
+                request = self._orca_builtin_request({"name": name, "colour": "#345678"})
+                with self.assertRaisesRegex(
+                    ValueError,
+                    rf"no available native filament profile matches source material slot 0 type '{material_type.upper()}'",
+                ):
+                    fatcat.compose_project_settings(json.dumps(request))
+
+        explicit_request = self._orca_builtin_request({
+            "name": "PETG HF",
+            "colour": "#345678",
+            "material_type": "petg basic",
+        })
+        explicit_result = json.loads(
+            fatcat.compose_project_settings(json.dumps(explicit_request))
+        )
+        explicit_project = json.loads(explicit_result["project_settings_json"])
+        self.assertEqual(
+            explicit_project["filament_settings_id"], ["Bambu PETG Basic @BBL X1C"]
+        )
+
+    def test_untyped_native_material_name_uses_native_default_profile(self):
+        slicer = "AnycubicSlicerNext"
+        version = "2.0.0.2"
+        machine_uid = "anycubic:kobra-2"
+        source = self._source(slicer, version, machine_uid)
+        defaults = source["default_filament_profile_names"]
+        materials = [
+            {
+                "name": defaults[0],
+                "colour": "#010203",
+                "material_type": "PLA",
+            },
+            {"name": "Red", "colour": "#ABCDEF"},
+        ]
+        request = {
+            "project_source": "fatcat_native",
+            "slicer_id": slicer,
+            "application_version": version,
+            "machine_uid": machine_uid,
+            "nozzle_uid": NOZZLE_UID,
+            "build_plate_uid": "plate:cool",
+            "source_materials": materials,
+        }
+        result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+        project = json.loads(result["project_settings_json"])
+
+        self.assertEqual(
+            project["filament_settings_id"], defaults
+        )
+
+    def test_orca_builtin_process_keeps_one_wall_fix_and_template_override(self):
+        request = self._orca_builtin_request({
+            "name": "Bambu PLA Basic @BBL X1C",
+            "colour": "#345678",
+            "material_type": "PLA Basic",
+        })
+        builtin_result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+        builtin_project = json.loads(builtin_result["project_settings_json"])
+        self.assertEqual(builtin_project["wall_loops"], "1")
+        self.assertEqual(builtin_project["precise_outer_wall"], "0")
+        self.assertIn(
+            "precise_outer_wall",
+            builtin_project["different_settings_to_system"][0].split(";"),
+        )
+
+        explicit_request = self._orca_builtin_request({
+            "name": "Bambu PLA Basic @BBL X1C",
+            "colour": "#345678",
+            "material_type": "PLA Basic",
+        })
+        explicit_request["process_settings"]["precise_outer_wall"] = "1"
+        explicit_result = json.loads(
+            fatcat.compose_project_settings(json.dumps(explicit_request))
+        )
+        explicit_project = json.loads(explicit_result["project_settings_json"])
+        self.assertEqual(explicit_project["precise_outer_wall"], "1")
+        self.assertIn(
+            "precise_outer_wall",
+            explicit_project["different_settings_to_system"][0].split(";"),
+        )
+
+        builtin_project["precise_outer_wall"] = "1"
+        template_request = {
+            "slicer_id": "OrcaSlicer",
+            "application_version": "2.4.2",
+            "hardware_mode": "preserve_source",
+            "material_mode": "preserve_template",
+            "preserve_source_material_settings": True,
+            "source_materials": request["source_materials"],
+            "process_settings": {"wall_loops": "1"},
+        }
+        template_result = json.loads(fatcat.compose_project_settings(
+            json.dumps(builtin_project), json.dumps(template_request)
+        ))
+        template_project = json.loads(template_result["project_settings_json"])
+        self.assertEqual(template_project["precise_outer_wall"], "1")
 
 
 if __name__ == "__main__":

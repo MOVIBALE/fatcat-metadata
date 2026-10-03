@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(FATCAT_BUILD_PYTHON "Build the Python extension" ON)
 option(FATCAT_BUILD_TESTS "Build the standalone C++ tests" ON)
+option(FATCAT_INSTALL_CPP "Install the standalone C++ SDK and its public data" OFF)
 option(FATCAT_TEST_NON_C_LOCALE
     "Register the comma-decimal locale test (requires de_DE.UTF-8)" OFF)
 
@@ -15,6 +16,8 @@ option(FATCAT_TEST_NON_C_LOCALE
 # self-contained for wheel builds on machines without Homebrew packages.
 find_package(nlohmann_json 3.12.0 CONFIG QUIET)
 if(NOT nlohmann_json_FOUND)
+    # Scope dependency installation to this SDK without changing the host cache.
+    set(JSON_Install ${FATCAT_INSTALL_CPP})
     include(FetchContent)
     FetchContent_Declare(
         nlohmann_json
@@ -27,8 +30,10 @@ endif()
 # TinyXML2 is the single lightweight XML serializer used for fixed slicer
 # metadata parts. Version 10.0.0 is zlib-licensed and pinned for the three
 # CI platforms; a system package is preferred for local builds.
+set(FATCAT_BUNDLED_TINYXML2 OFF)
 find_package(tinyxml2 10.0 CONFIG QUIET)
 if(NOT tinyxml2_FOUND)
+    set(FATCAT_BUNDLED_TINYXML2 ON)
     include(FetchContent)
     FetchContent_Declare(
         tinyxml2
@@ -55,7 +60,9 @@ if(NOT tinyxml2_FOUND)
     set_target_properties(fatcat_tinyxml2 PROPERTIES
         POSITION_INDEPENDENT_CODE ON
     )
-    target_include_directories(fatcat_tinyxml2 PUBLIC ${tinyxml2_SOURCE_DIR})
+    target_include_directories(fatcat_tinyxml2 PUBLIC
+        $<BUILD_INTERFACE:${tinyxml2_SOURCE_DIR}>
+    )
     add_library(tinyxml2::tinyxml2 ALIAS fatcat_tinyxml2)
 endif()
 
@@ -72,11 +79,47 @@ add_library(fatcat_metadata_core STATIC
 set_target_properties(fatcat_metadata_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(fatcat_metadata_core
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(fatcat_metadata_core PUBLIC nlohmann_json::nlohmann_json
     tinyxml2::tinyxml2)
 target_compile_features(fatcat_metadata_core PUBLIC cxx_std_17)
+
+if(FATCAT_INSTALL_CPP)
+    include(GNUInstallDirs)
+    include(CMakePackageConfigHelpers)
+    set_target_properties(fatcat_metadata_core PROPERTIES EXPORT_NAME Core)
+    install(TARGETS fatcat_metadata_core EXPORT FatCatMetadataTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    if(FATCAT_BUNDLED_TINYXML2)
+        set_target_properties(fatcat_tinyxml2 PROPERTIES EXPORT_NAME PrivateTinyXML2)
+        install(TARGETS fatcat_tinyxml2 EXPORT FatCatMetadataTargets
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    endif()
+    install(DIRECTORY include/fatcat DESTINATION include)
+    set(FATCAT_DATA_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/fatcat-metadata)
+    install(DIRECTORY ../compatibility/current-src/translations
+        DESTINATION ${FATCAT_DATA_INSTALL_DIR})
+    install(DIRECTORY ../compatibility/current-src/native-project-sources/
+        DESTINATION ${FATCAT_DATA_INSTALL_DIR}/native_project_sources)
+    install(DIRECTORY ../licenses/third-party
+        DESTINATION ${FATCAT_DATA_INSTALL_DIR}/licenses)
+    install(FILES ../LICENSE ../NOTICE.md ../COPYRIGHT.md
+        DESTINATION ${FATCAT_DATA_INSTALL_DIR})
+    configure_package_config_file(cmake/FatCatMetadataConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/FatCatMetadataConfig.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/FatCatMetadata
+        PATH_VARS FATCAT_DATA_INSTALL_DIR)
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/FatCatMetadataConfigVersion.cmake
+        VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
+    install(EXPORT FatCatMetadataTargets NAMESPACE FatCatMetadata::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/FatCatMetadata)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/FatCatMetadataConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/FatCatMetadataConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/FatCatMetadata)
+endif()
 
 if(FATCAT_BUILD_TESTS)
     enable_testing()
@@ -159,6 +202,8 @@ if(FATCAT_BUILD_PYTHON)
         ${CMAKE_CURRENT_SOURCE_DIR}/../python/fatcat_metadata_neroued.py
         DESTINATION .
     )
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../python/fatcat_metadata.pyi
+        DESTINATION fatcat_metadata-stubs RENAME __init__.pyi)
     install(FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/canonical.json
         DESTINATION fatcat_metadata_data/translations

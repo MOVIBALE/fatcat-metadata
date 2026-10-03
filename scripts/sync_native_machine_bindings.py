@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+import argparse
 from decimal import Decimal, InvalidOperation
 import json
 from pathlib import Path
@@ -134,7 +135,7 @@ def build_binding(
     return binding
 
 
-def sync() -> int:
+def sync(*, dry_run: bool = False) -> int:
     source_map = load(SOURCE_MAP)
     map_rows = source_map.get("machine_profiles")
     source_index = load(SOURCE_INDEX)
@@ -256,15 +257,19 @@ def sync() -> int:
             nozzles.append({"diameter_mm": diameter(uid), "nozzle_uid": uid})
     canonical["nozzles"] = nozzles
 
-    write(CANONICAL, canonical)
-    for slicer, target in targets.items():
-        write(TARGET_DIR / TARGET_FILES[slicer], target)
-    write(SOURCE_INDEX, source_index)
-    write(SOURCES_DIR / "unavailable-sources.json", {"schema_version": 1, "sources": unavailable})
-    print(f"Reconciled {len(map_rows)} exact identities; added {added_bindings} target bindings.")
+    if not dry_run:
+        write(CANONICAL, canonical)
+        for slicer, target in targets.items():
+            write(TARGET_DIR / TARGET_FILES[slicer], target)
+        write(SOURCE_INDEX, source_index)
+        write(SOURCES_DIR / "unavailable-sources.json", {"schema_version": 1, "sources": unavailable})
+    action = "Would reconcile" if dry_run else "Reconciled"
+    print(f"{action} {len(map_rows)} exact identities; added {added_bindings} target bindings.")
+    if dry_run:
+        print("Repository files unchanged.")
     print(f"Canonical coverage: {len(canonical['machines'])} machines, {len(canonical['nozzles'])} nozzle diameters.")
     if unavailable:
-        print(f"Combinations needing the existing Lumina path: {len(unavailable)}")
+        print(f"Combinations with unavailable exact source roles: {len(unavailable)}")
         for row in unavailable:
             print(f"- {row['slicer_id']} {row['application_version']} {row['machine_uid']} "
                   f"{row['nozzle_uid']}: {row['reason']}")
@@ -274,8 +279,11 @@ def sync() -> int:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dry-run", action="store_true", help="preview reconciliation without writing files")
+    args = parser.parse_args()
     try:
-        raise SystemExit(sync())
+        raise SystemExit(sync(dry_run=args.dry_run))
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"native machine binding sync failed: {error}", file=sys.stderr)
         raise SystemExit(2)

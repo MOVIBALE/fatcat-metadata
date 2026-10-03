@@ -17,6 +17,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "json_object.h"
+
 #include "fatcat/wipe_tower.h"
 #include "fatcat/source_project_settings.h"
 #include "difference_index.h"
@@ -31,46 +33,6 @@ using detail::render_difference_tokens;
 
 [[noreturn]] void invalid(std::string message) {
     throw ProjectSettingsError(std::move(message));
-}
-
-json parse_json(std::string_view text, std::string_view name) {
-    bool duplicate_key = false;
-    std::string duplicate_name;
-    std::vector<std::set<std::string>> object_keys;
-    const json::parser_callback_t callback =
-        [&](int, json::parse_event_t event, json &parsed) {
-            if (event == json::parse_event_t::object_start) {
-                object_keys.emplace_back();
-            } else if (event == json::parse_event_t::object_end) {
-                if (!object_keys.empty()) {
-                    object_keys.pop_back();
-                }
-            } else if (event == json::parse_event_t::key &&
-                       !object_keys.empty()) {
-                const auto key = parsed.get<std::string>();
-                if (!object_keys.back().insert(key).second) {
-                    duplicate_key = true;
-                    duplicate_name = key;
-                    return false;
-                }
-            }
-            return true;
-        };
-    try {
-        json parsed = json::parse(text, callback, true, false);
-        if (duplicate_key) {
-            invalid("duplicate JSON field in " + std::string(name) + ": " +
-                    duplicate_name);
-        }
-        if (!parsed.is_object()) {
-            invalid(std::string(name) + " must be a JSON object");
-        }
-        return parsed;
-    } catch (const ProjectSettingsError &) {
-        throw;
-    } catch (const json::exception &error) {
-        invalid("invalid " + std::string(name) + " JSON: " + error.what());
-    }
 }
 
 const json &required_member(const json &object, std::string_view key,
@@ -190,6 +152,7 @@ void validate_request_keys(const json &request) {
         "filament_source_slots",
         "disable_cut_retraction",
         "merge_sources",
+        "merge_default_project",
         "hardware_mode",
         "source_materials",
         "process_settings",
@@ -946,7 +909,7 @@ void normalize_typed_positions(json &positions) {
 void apply_tower_patch(json &project, const std::string &settings_json,
                        const json &dialect) {
     try {
-        project = parse_json(
+        project = detail::parse_json_object<ProjectSettingsError>(
             patch_wipe_tower(project.dump(), settings_json, dialect.dump()),
             "patched project settings");
     } catch (const WipeTowerError &error) {
@@ -1547,7 +1510,7 @@ std::uint64_t merge_required_id(const json &object, std::string_view key,
 
 MergeProjectInputs collect_merge_project_inputs(
     const json &first_project, const json &request, const json &dialect,
-    const json &machine, const json &plate, bool qidi_q2_merge) {
+    const json &machine, const json &plate) {
     const json &source_inputs = merge_required_array(request, "merge_sources", "request");
 
     MergeProjectInputs result;
@@ -1576,9 +1539,9 @@ MergeProjectInputs collect_merge_project_inputs(
         source.project = source_index == 0
                              ? first_project
                              : merge_required_object(source_input, "project_settings", context);
-        if (qidi_q2_merge) {
-            // Q2 single exports retain the template's wider material arrays
-            // when the active palette uses fewer slots.
+        {
+            // Recorded scalar-per-slot fields may retain inactive template
+            // tails. Normalize their declared shape for any source hardware.
             const std::size_t native_slot_count = required_string_array(
                 source.project, "filament_settings_id", context).size();
             const json &snapshot = required_member(dialect, "filament_snapshot",
@@ -1602,7 +1565,10 @@ MergeProjectInputs collect_merge_project_inputs(
             if (source.project.contains(difference_key) &&
                 source.project.at(difference_key).is_array() &&
                 source.project.at(difference_key).size() == 1) {
-                for (std::size_t index = 0; index <= native_slot_count; ++index) {
+                const auto expected_entries = native_slot_count +
+                    snapshot.value("filament_slot_offset", std::size_t(0)) +
+                    snapshot.value("trailing_entry_count", std::size_t(0));
+                for (std::size_t index = 1; index < expected_entries; ++index) {
                     source.project[difference_key].push_back("");
                 }
             }
@@ -1702,8 +1668,227 @@ std::size_t merge_group_width(const json &project, const std::string &key,
             " does not match the target's declared slot shape");
 }
 
+json merge_transition_defaults(const json &request, const json &machine) {
+    if (!request.contains("merge_default_project")) return json();
+    const auto &defaults = merge_required_object(request, "merge_default_project", "request");
+    validate_source_hardware(defaults, machine);
+    return defaults;
+}
+
+json merged_colour_values(const MergeProjectInputs &inputs, const std::string &key,
+                          std::vector<std::set<std::string>> &colour_overrides) {
+    const std::size_t output_count = inputs.logical_by_id.size();
+    json colors = json::array();
+    for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
+        const auto slot_id = inputs.id_by_output_index.at(output_index);
+        const auto &identity = inputs.logical_by_id.at(slot_id);
+        colors.push_back(identity.preview_color);
+        for (std::size_t source_index = 0;
+             source_index < inputs.sources.size(); ++source_index) {
+            const auto mapped = inputs.source_index_by_slot[source_index].find(slot_id);
+            if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
+            const auto &source = inputs.sources[source_index];
+            if (!source.project.contains(key)) {
+                colour_overrides[output_index].insert(key);
+                continue;
+            }
+            const json &source_colors = source.project.at(key);
+            if (!source_colors.is_array() || mapped->second >= source_colors.size()) {
+                invalid("merge source " + source.source_id +
+                        "." + key + " does not contain a mapped source slot");
+            }
+            if (source_colors.at(mapped->second) != identity.preview_color) {
+                colour_overrides[output_index].insert(key);
+            }
+        }
+    }
+    return colors;
+}
+
+json merged_slot_indices(const MergeProjectInputs &inputs, const std::string &key,
+                         std::size_t group_size) {
+    const std::size_t output_count = inputs.logical_by_id.size();
+    std::optional<std::size_t> output_width;
+    for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
+        const auto slot_id = inputs.id_by_output_index.at(output_index);
+        for (std::size_t source_index = 0;
+             source_index < inputs.sources.size(); ++source_index) {
+            const auto mapped = inputs.source_index_by_slot[source_index].find(slot_id);
+            if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
+            const auto &source = inputs.sources[source_index];
+            if (!source.project.contains(key)) {
+                invalid("merged source " + source.source_id +
+                        " is missing slot index field " + key);
+            }
+            const auto width = merge_group_width(
+                source.project, key, source.slot_count, group_size, false, false,
+                source.source_id);
+            if (output_width && *output_width != width) {
+                invalid("merged source slot field " + key +
+                        " has different variant counts");
+            }
+            output_width = width;
+        }
+    }
+    const std::size_t width = output_width.value_or(group_size);
+    json values = json::array();
+    for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
+        for (std::size_t variant = 0; variant < width; ++variant) {
+            values.push_back(std::to_string(output_index + 1));
+        }
+    }
+    return values;
+}
+
+json merged_transition_matrix(const MergeProjectInputs &inputs, const std::string &key,
+                              std::size_t group_size, const json &defaults) {
+    const std::size_t output_count = inputs.logical_by_id.size();
+    std::optional<std::size_t> output_width;
+    json values = json::array();
+    for (std::size_t row = 0; row < output_count; ++row) {
+        const auto row_id = inputs.id_by_output_index.at(row);
+        for (std::size_t column = 0; column < output_count; ++column) {
+            const auto column_id = inputs.id_by_output_index.at(column);
+            std::optional<std::vector<json>> chosen;
+            std::string chosen_source;
+            for (std::size_t source_index = 0;
+                 source_index < inputs.sources.size(); ++source_index) {
+                const auto row_source = inputs.source_index_by_slot[source_index].find(row_id);
+                const auto column_source = inputs.source_index_by_slot[source_index].find(column_id);
+                if (row_source == inputs.source_index_by_slot[source_index].end() ||
+                    column_source == inputs.source_index_by_slot[source_index].end()) {
+                    continue;
+                }
+                const auto &source = inputs.sources[source_index];
+                if (!source.project.contains(key)) {
+                    invalid("merged source " + source.source_id +
+                            " is missing matrix field " + key);
+                }
+                const auto width = merge_group_width(
+                    source.project, key, source.slot_count, group_size, true, false,
+                    source.source_id);
+                if (output_width && *output_width != width) {
+                    invalid("merged source matrix field " + key +
+                            " has different variant counts");
+                }
+                if (!output_width) {
+                    values = json::array_t(output_count * output_count * width);
+                }
+                output_width = width;
+                const json &matrix = source.project.at(key);
+                std::vector<json> candidate;
+                for (std::size_t nozzle = 0; nozzle < width; ++nozzle) {
+                    const auto index = nozzle * source.slot_count * source.slot_count +
+                                       row_source->second * source.slot_count + column_source->second;
+                    candidate.push_back(matrix.at(index));
+                }
+                if (chosen && *chosen != candidate) {
+                    invalid("merged source conflict for " + key +
+                            " at global slots " + std::to_string(row_id) +
+                            " and " + std::to_string(column_id) + " between " +
+                            chosen_source + " and " + source.source_id);
+                }
+                chosen = std::move(candidate);
+                chosen_source = source.source_id;
+            }
+            if (!chosen && defaults.contains(key)) {
+                const auto width = merge_group_width(defaults, key, output_count,
+                    group_size, true, false, "native transition defaults");
+                if (output_width && *output_width != width) invalid("native transition default width differs from source");
+                if (!output_width) values = json::array_t(output_count * output_count * width);
+                output_width = width;
+                std::vector<json> candidate;
+                for (std::size_t nozzle = 0; nozzle < width; ++nozzle) {
+                    candidate.push_back(defaults.at(key).at(nozzle * output_count * output_count + row * output_count + column));
+                }
+                chosen = std::move(candidate);
+            }
+            if (!chosen) {
+                invalid("no source contains both global slots needed for merged matrix " + key);
+            }
+            for (std::size_t nozzle = 0; nozzle < chosen->size(); ++nozzle) {
+                const auto index = nozzle * output_count * output_count + row * output_count + column;
+                values.at(index) = chosen->at(nozzle);
+            }
+        }
+    }
+    return values;
+}
+
+json merged_material_values(const MergeProjectInputs &inputs, const std::string &key,
+                            const json &rule, std::size_t group_size, bool variable_group,
+                            std::vector<std::set<std::string>> &colour_overrides) {
+    const std::size_t output_count = inputs.logical_by_id.size();
+    std::optional<std::size_t> output_width;
+    std::vector<std::vector<json>> merged_values(output_count);
+    std::vector<std::string> chosen_sources(output_count);
+    for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
+        const auto output_id = inputs.id_by_output_index.at(output_index);
+        for (std::size_t source_index = 0;
+             source_index < inputs.sources.size(); ++source_index) {
+            const auto mapped = inputs.source_index_by_slot[source_index].find(output_id);
+            if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
+            const auto &source = inputs.sources[source_index];
+            if (!source.project.contains(key)) {
+                invalid("merged source " + source.source_id +
+                        " is missing slot field " + key + " for global slot " +
+                        std::to_string(output_id));
+            }
+            const json &array = source.project.at(key);
+            const bool broadcast_singleton =
+                rule.value("broadcast_singleton", false) &&
+                array.is_array() && array.size() == 1;
+            const auto width = broadcast_singleton ? 1 : merge_group_width(
+                source.project, key, source.slot_count, group_size, false,
+                variable_group,
+                source.source_id);
+            if (output_width && *output_width != width) {
+                invalid("merged source slot field " + key +
+                        " has different variant counts");
+            }
+            output_width = width;
+            std::vector<json> candidate;
+            for (std::size_t variant = 0; variant < width; ++variant) {
+                json value = array.at(
+                    broadcast_singleton ? 0 : mapped->second * width + variant);
+                // A source may store a real multi-colour description here.
+                // Only a mirror of its plain preview colour follows a new
+                // global preview colour; independent source values survive.
+                if (key == "filament_multi_colour" &&
+                    source.project.contains("filament_colour") &&
+                    value == source.project.at("filament_colour").at(mapped->second)) {
+                    const auto &colour = inputs.logical_by_id.at(output_id).preview_color;
+                    if (value != colour) colour_overrides[output_index].insert(key);
+                    value = colour;
+                }
+                candidate.push_back(std::move(value));
+            }
+            if (!merged_values[output_index].empty() &&
+                merged_values[output_index] != candidate) {
+                invalid("merged source conflict for " + key + " at global slot " +
+                        std::to_string(output_id) + " between " +
+                        chosen_sources[output_index] + " and " + source.source_id);
+            }
+            if (merged_values[output_index].empty()) {
+                merged_values[output_index] = std::move(candidate);
+                chosen_sources[output_index] = source.source_id;
+            }
+        }
+        if (merged_values[output_index].empty()) {
+            invalid("no source supplies " + key + " for merged global slot " +
+                    std::to_string(output_id));
+        }
+    }
+    json values = json::array();
+    for (const auto &slot_values : merged_values) {
+        for (const auto &value : slot_values) values.push_back(value);
+    }
+    return values;
+}
+
 MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
-                                               const json &dialect) {
+                                               const json &dialect,
+                                               const json &defaults = json()) {
     const std::size_t output_count = inputs.logical_by_id.size();
     json project = inputs.sources.front().project;
     std::vector<std::set<std::string>> colour_overrides(output_count);
@@ -1735,201 +1920,28 @@ MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
                 any_source_has_key = any_source_has_key || source.project.contains(key);
             }
             if (key == "filament_colour") {
-                json colors = json::array();
-                for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
-                    const auto slot_id = inputs.id_by_output_index.at(output_index);
-                    const auto &identity = inputs.logical_by_id.at(slot_id);
-                    colors.push_back(identity.preview_color);
-                    for (std::size_t source_index = 0;
-                         source_index < inputs.sources.size(); ++source_index) {
-                        const auto mapped = inputs.source_index_by_slot[source_index].find(slot_id);
-                        if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
-                        const auto &source = inputs.sources[source_index];
-                        if (!source.project.contains(key)) {
-                            colour_overrides[output_index].insert(key);
-                            continue;
-                        }
-                        const json &source_colors = source.project.at(key);
-                        if (!source_colors.is_array() || mapped->second >= source_colors.size()) {
-                            invalid("merge source " + source.source_id +
-                                    "." + key + " does not contain a mapped source slot");
-                        }
-                        if (source_colors.at(mapped->second) != identity.preview_color) {
-                            colour_overrides[output_index].insert(key);
-                        }
-                    }
-                }
-                project[key] = std::move(colors);
+                project[key] = merged_colour_values(inputs, key, colour_overrides);
                 continue;
             }
+
             if (!any_source_has_key) {
                 project.erase(key);
                 continue;
             }
 
             if (selection == "slot_index") {
-                std::optional<std::size_t> output_width;
-                for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
-                    const auto slot_id = inputs.id_by_output_index.at(output_index);
-                    for (std::size_t source_index = 0;
-                         source_index < inputs.sources.size(); ++source_index) {
-                        const auto mapped = inputs.source_index_by_slot[source_index].find(slot_id);
-                        if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
-                        const auto &source = inputs.sources[source_index];
-                        if (!source.project.contains(key)) {
-                            invalid("merged source " + source.source_id +
-                                    " is missing slot index field " + key);
-                        }
-                        const auto width = merge_group_width(
-                            source.project, key, source.slot_count, group_size, false,
-                            material_group && selection == "default_or_group",
-                            source.source_id);
-                        if (output_width && *output_width != width) {
-                            invalid("merged source slot field " + key +
-                                    " has different variant counts");
-                        }
-                        output_width = width;
-                    }
-                }
-                const std::size_t width = output_width.value_or(group_size);
-                json values = json::array();
-                for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
-                    for (std::size_t variant = 0; variant < width; ++variant) {
-                        values.push_back(std::to_string(output_index + 1));
-                    }
-                }
-                project[key] = std::move(values);
+                project[key] = merged_slot_indices(inputs, key, group_size);
                 continue;
             }
 
             if (selection == "matrix") {
-                std::optional<std::size_t> output_width;
-                json values = json::array();
-                for (std::size_t row = 0; row < output_count; ++row) {
-                    const auto row_id = inputs.id_by_output_index.at(row);
-                    for (std::size_t column = 0; column < output_count; ++column) {
-                        const auto column_id = inputs.id_by_output_index.at(column);
-                        std::optional<std::vector<json>> chosen;
-                        std::string chosen_source;
-                        for (std::size_t source_index = 0;
-                             source_index < inputs.sources.size(); ++source_index) {
-                            const auto row_source = inputs.source_index_by_slot[source_index].find(row_id);
-                            const auto column_source = inputs.source_index_by_slot[source_index].find(column_id);
-                            if (row_source == inputs.source_index_by_slot[source_index].end() ||
-                                column_source == inputs.source_index_by_slot[source_index].end()) {
-                                continue;
-                            }
-                            const auto &source = inputs.sources[source_index];
-                            if (!source.project.contains(key)) {
-                                invalid("merged source " + source.source_id +
-                                        " is missing matrix field " + key);
-                            }
-                            const auto width = merge_group_width(
-                                source.project, key, source.slot_count, group_size, true, false,
-                                source.source_id);
-                            if (output_width && *output_width != width) {
-                                invalid("merged source matrix field " + key +
-                                        " has different variant counts");
-                            }
-                            if (!output_width) {
-                                values = json::array_t(output_count * output_count * width);
-                            }
-                            output_width = width;
-                            const json &matrix = source.project.at(key);
-                            std::vector<json> candidate;
-                            for (std::size_t nozzle = 0; nozzle < width; ++nozzle) {
-                                const auto index = nozzle * source.slot_count * source.slot_count +
-                                                   row_source->second * source.slot_count + column_source->second;
-                                candidate.push_back(matrix.at(index));
-                            }
-                            if (chosen && *chosen != candidate) {
-                                invalid("merged source conflict for " + key +
-                                        " at global slots " + std::to_string(row_id) +
-                                        " and " + std::to_string(column_id) + " between " +
-                                        chosen_source + " and " + source.source_id);
-                            }
-                            chosen = std::move(candidate);
-                            chosen_source = source.source_id;
-                        }
-                        if (!chosen) {
-                            invalid("no source contains both global slots needed for merged matrix " +
-                                    key);
-                        }
-                        for (std::size_t nozzle = 0; nozzle < chosen->size(); ++nozzle) {
-                            const auto index = nozzle * output_count * output_count + row * output_count + column;
-                            values.at(index) = chosen->at(nozzle);
-                        }
-                    }
-                }
-                project[key] = std::move(values);
+                project[key] = merged_transition_matrix(inputs, key, group_size, defaults);
                 continue;
             }
 
-            std::optional<std::size_t> output_width;
-            std::vector<std::vector<json>> merged_values(output_count);
-            std::vector<std::string> chosen_sources(output_count);
-            for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
-                const auto output_id = inputs.id_by_output_index.at(output_index);
-                for (std::size_t source_index = 0;
-                     source_index < inputs.sources.size(); ++source_index) {
-                    const auto mapped = inputs.source_index_by_slot[source_index].find(output_id);
-                    if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
-                    const auto &source = inputs.sources[source_index];
-                    if (!source.project.contains(key)) {
-                        invalid("merged source " + source.source_id +
-                                " is missing slot field " + key + " for global slot " +
-                                std::to_string(output_id));
-                    }
-                    const json &array = source.project.at(key);
-                    const bool broadcast_singleton =
-                        rule.value("broadcast_singleton", false) &&
-                        array.is_array() && array.size() == 1;
-                    const auto width = broadcast_singleton ? 1 : merge_group_width(
-                        source.project, key, source.slot_count, group_size, false,
-                        material_group && selection == "default_or_group",
-                        source.source_id);
-                    if (output_width && *output_width != width) {
-                        invalid("merged source slot field " + key +
-                                " has different variant counts");
-                    }
-                    output_width = width;
-                    std::vector<json> candidate;
-                    for (std::size_t variant = 0; variant < width; ++variant) {
-                        json value = array.at(
-                            broadcast_singleton ? 0 : mapped->second * width + variant);
-                        // A source may store a real multi-colour description here.
-                        // Only a mirror of its plain preview colour follows a new
-                        // global preview colour; independent source values survive.
-                        if (key == "filament_multi_colour" &&
-                            source.project.contains("filament_colour") &&
-                            value == source.project.at("filament_colour").at(mapped->second)) {
-                            const auto &colour = inputs.logical_by_id.at(output_id).preview_color;
-                            if (value != colour) colour_overrides[output_index].insert(key);
-                            value = colour;
-                        }
-                        candidate.push_back(std::move(value));
-                    }
-                    if (!merged_values[output_index].empty() &&
-                        merged_values[output_index] != candidate) {
-                        invalid("merged source conflict for " + key + " at global slot " +
-                                std::to_string(output_id) + " between " +
-                                chosen_sources[output_index] + " and " + source.source_id);
-                    }
-                    if (merged_values[output_index].empty()) {
-                        merged_values[output_index] = std::move(candidate);
-                        chosen_sources[output_index] = source.source_id;
-                    }
-                }
-                if (merged_values[output_index].empty()) {
-                    invalid("no source supplies " + key + " for merged global slot " +
-                            std::to_string(output_id));
-                }
-            }
-            json values = json::array();
-            for (const auto &slot_values : merged_values) {
-                for (const auto &value : slot_values) values.push_back(value);
-            }
-            project[key] = std::move(values);
+            project[key] = merged_material_values(
+                inputs, key, rule, group_size,
+                material_group && selection == "default_or_group", colour_overrides);
         }
     }
 
@@ -2190,8 +2202,9 @@ json compose_preserved_source(json project, const json &request, const json &tar
         }
         const json merge_dialect = detail::source_merge_dialect(dialect, project);
         const auto inputs = collect_merge_project_inputs(project, merge_request, merge_dialect,
-                                                         machine, plate, false);
-        auto merged = compose_merged_slot_arrays(inputs, merge_dialect);
+                                                         machine, plate);
+        auto merged = compose_merged_slot_arrays(inputs, merge_dialect,
+            merge_transition_defaults(request, machine));
         project = std::move(merged.project);
         logical_slots = std::move(merged.logical_slots);
         mappings = source_slot_mappings(inputs);
@@ -2201,12 +2214,6 @@ json compose_preserved_source(json project, const json &request, const json &tar
     std::vector<std::string> changed;
     apply_scalar_overrides(project, request, changed);
     json tower_dialect = required_member(dialect, "wipe_tower", "package dialect");
-    const auto slicer = target.at("target_contract").at("slicer_id").get<std::string>();
-    const bool u1 = (slicer == "OrcaSlicer" || slicer == "SnapmakerOrca") &&
-                    project.value("printer_model", "") == "Snapmaker U1";
-    if (u1) {
-        project.erase("inherits_group");
-    }
     apply_tower_overrides(project, request, target);
     auto summary = effective_summary(project, "preserve_template", "", "",
                                       plate.value("build_plate_uid", ""));
@@ -2222,14 +2229,18 @@ json compose_preserved_source(json project, const json &request, const json &tar
 
 }  // namespace
 
+nlohmann::json detail::resolve_source_plate(const json &project, const json &request, const json &target) {
+    return source_plate(project, request, target);
+}
+
 std::string compose_project_settings(std::string_view base_project_json,
                                      std::string_view request_json,
                                      std::string_view canonical_json,
                                      std::string_view target_json) {
-    json project = parse_json(base_project_json, "base project settings");
-    json request = parse_json(request_json, "project settings request");
-    const json canonical = parse_json(canonical_json, "canonical data");
-    const json target = parse_json(target_json, "target data");
+    json project = detail::parse_json_object<ProjectSettingsError>(base_project_json, "base project settings");
+    json request = detail::parse_json_object<ProjectSettingsError>(request_json, "project settings request");
+    const json canonical = detail::parse_json_object<ProjectSettingsError>(canonical_json, "canonical data");
+    const json target = detail::parse_json_object<ProjectSettingsError>(target_json, "target data");
     validate_request_keys(request);
     if (request.value("hardware_mode", "target_binding") == "auto" &&
         project.contains("printer_settings_id")) {
@@ -2300,15 +2311,24 @@ std::string compose_project_settings(std::string_view base_project_json,
     json mappings = json::array();
     std::size_t slot_count = 0;
     if (merging_sources) {
-        const bool qidi_q2_merge = slicer_id == "QIDIStudio" &&
-                                   machine_uid == "qidi:q2" &&
-                                   nozzle_uid == "nozzle:0.4mm";
+        // Hardware binding does not change the already-composed material shape.
+        // Derive the merge plan from actual source fields, as preserve_source does.
+        const auto &snapshot = required_member(dialect, "filament_snapshot", "package dialect");
+        project = detail::prepare_source_merge_project(project, snapshot);
+        json merge_request = request;
+        for (auto &source : merge_request.at("merge_sources")) {
+            if (source.contains("project_settings")) {
+                source["project_settings"] = detail::prepare_source_merge_project(
+                    source.at("project_settings"), snapshot);
+            }
+        }
+        const json merge_dialect = detail::source_merge_dialect(dialect, project);
         const auto inputs = collect_merge_project_inputs(
-            project, request, dialect, machine, plate,
-            qidi_q2_merge);
-        auto merged = compose_merged_slot_arrays(inputs, dialect);
+            project, merge_request, merge_dialect, machine, plate);
+        auto merged = compose_merged_slot_arrays(inputs, merge_dialect,
+            merge_transition_defaults(request, machine));
         project = std::move(merged.project);
-        if (qidi_q2_merge && !project.contains("curr_bed_type")) {
+        if (!project.contains("curr_bed_type")) {
             project["curr_bed_type"] = required_string(
                 plate, "project_value", "build plate");
         }
@@ -2363,19 +2383,6 @@ std::string compose_project_settings(std::string_view base_project_json,
     update_differences(project, dialect, slot_count, changed_keys, merging_sources);
 
     json wipe_tower_dialect = required_member(dialect, "wipe_tower", "package dialect");
-    if (slicer_id == "SnapmakerOrca" && machine_uid == "snapmaker:u1" &&
-        nozzle_uid == "nozzle:0.4mm" && material_mode == "target_native_preset") {
-        // Snapmaker Orca 2.3.6 stores one process entry, one entry per
-        // filament slot, and one trailing entry in different_settings_to_system.
-        // Preserve those GUI-saved differences; only inheritance-group
-        // metadata is absent from the native U1 project.
-        project.erase("inherits_group");
-        project["small_area_infill_flow_compensation_model"] = json::array();
-        project["version"] = required_string(contract, "saved_project_format_version",
-                                               "target contract");
-        project["default_print_profile"] = required_string(
-            machine, "default_print_profile", "machine binding");
-    }
 
     detail::apply_source_flush_defaults(project, request, target);
     json result = metadata_result(project, dialect, plate,

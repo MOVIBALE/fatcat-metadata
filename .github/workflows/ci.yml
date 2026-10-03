@@ -48,9 +48,13 @@ jobs:
         build_type: [Debug, Release]
     steps:
       - uses: actions/checkout@v7
-      - run: cmake -S cpp -B build -DFATCAT_BUILD_PYTHON=OFF -DFATCAT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      - run: cmake -S cpp -B build -DFATCAT_BUILD_PYTHON=OFF -DFATCAT_BUILD_TESTS=ON -DFATCAT_INSTALL_CPP=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
       - run: cmake --build build --config ${{ matrix.build_type }} --parallel 2
       - run: ctest --test-dir build --output-on-failure -C ${{ matrix.build_type }}
+      - run: cmake --install build --config ${{ matrix.build_type }} --prefix "${{ runner.temp }}/fatcat-sdk"
+      - run: cmake -S cpp/examples/out_of_tree_consumer -B build-installed-consumer -DFATCAT_CONSUME_INSTALLED=ON -DCMAKE_PREFIX_PATH="${{ runner.temp }}/fatcat-sdk" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      - run: cmake --build build-installed-consumer --config ${{ matrix.build_type }} --parallel 2
+      - run: ctest --test-dir build-installed-consumer --output-on-failure -C ${{ matrix.build_type }} --no-tests=error
 
   cpp-non-c-locale:
     name: C++ comma-decimal locale (Linux)

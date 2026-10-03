@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(nlohmann_json 3.12.0 CONFIG)
+if(NOT @FATCAT_BUNDLED_TINYXML2@)
+    find_dependency(tinyxml2 10.0 CONFIG)
+endif()
+include("${CMAKE_CURRENT_LIST_DIR}/FatCatMetadataTargets.cmake")
+set_and_check(FatCatMetadata_DATA_DIR "@PACKAGE_FATCAT_DATA_INSTALL_DIR@")
+check_required_components(FatCatMetadata)
