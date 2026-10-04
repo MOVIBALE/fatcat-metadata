@@ -60,6 +60,7 @@ sdist.include = [
     "python/*.pyi",
     "scripts/*.py",
     "README.md",
+    "README_CN.md",
     "LICENSE",
     "NOTICE.md",
     "COPYRIGHT.md",
