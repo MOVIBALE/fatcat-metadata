@@ -6,6 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(FATCAT_SUPPORTED_TARGETS_FILE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/supported-targets.json)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    ${FATCAT_SUPPORTED_TARGETS_FILE})
+file(READ ${FATCAT_SUPPORTED_TARGETS_FILE} FATCAT_SUPPORTED_TARGETS_JSON)
+configure_file(cmake/supported_targets.h.in generated/supported_targets.h @ONLY)
+
 option(FATCAT_BUILD_PYTHON "Build the Python extension" ON)
 option(FATCAT_BUILD_TESTS "Build the standalone C++ tests" ON)
 option(FATCAT_INSTALL_CPP "Install the standalone C++ SDK and its public data" OFF)
@@ -81,6 +88,7 @@ target_include_directories(fatcat_metadata_core
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated
 )
 target_link_libraries(fatcat_metadata_core PUBLIC nlohmann_json::nlohmann_json
     tinyxml2::tinyxml2)
@@ -187,6 +195,8 @@ if(FATCAT_BUILD_PYTHON)
         bindings/module.cpp
     )
     target_link_libraries(fatcat_metadata PRIVATE fatcat_metadata_core)
+    target_include_directories(fatcat_metadata PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}/generated)
     target_compile_features(fatcat_metadata PRIVATE cxx_std_17)
     target_compile_definitions(fatcat_metadata PRIVATE
         FATCAT_METADATA_VERSION="${PROJECT_VERSION}"
@@ -206,17 +216,13 @@ if(FATCAT_BUILD_PYTHON)
         DESTINATION fatcat_metadata-stubs RENAME __init__.pyi)
     install(FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/canonical.json
+        ${FATCAT_SUPPORTED_TARGETS_FILE}
         DESTINATION fatcat_metadata_data/translations
     )
-    install(FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/targets/bambu-studio-02.08.02.61.json
-        ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/targets/orca-slicer-2.4.2.json
-        ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/targets/qidi-studio-02.07.02.60.json
-        ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/targets/elegoo-slicer-1.5.3.5.json
-        ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/targets/anycubic-slicer-next-2.0.0.2.json
-        ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/targets/flash-studio-1.7.15.json
-        ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/targets/snapmaker-orca-2.3.6.json
-        DESTINATION fatcat_metadata_data/translations/targets
+    install(DIRECTORY
+        ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/targets
+        DESTINATION fatcat_metadata_data/translations
+        FILES_MATCHING PATTERN "*.json"
     )
     install(DIRECTORY
         ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/native-project-sources/

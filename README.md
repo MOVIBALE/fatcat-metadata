@@ -16,11 +16,31 @@ provenance; see [compatibility notes](docs/COMPATIBILITY.md).
 
 ## Install and use
 
-Python 3.12–3.14 and a C++17 toolchain are required. From a source checkout:
+Python 3.12–3.14 is supported. To install from a source checkout, use a C++17
+toolchain:
 
 ```bash
 python -m pip install .
 ```
+
+To install without compiling C++, download a wheel from a successful
+[CI run](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml).
+Select the run for the source commit you want, then its artifact for your
+operating system, architecture and Python version. Sign in to GitHub, unzip
+the artifact and install its `.whl` file:
+
+```bash
+python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
+```
+
+CI builds Python 3.12/3.13/3.14 wheels on Linux x64, macOS ARM64 and Windows
+x64. Each job installs and checks the same wheel it uploads. These are CI
+artifacts retained for 30 days, not a package-index release. The wheel tags must
+match your interpreter and platform; Linux artifacts use the runner's native
+platform tag and do not promise portability across older Linux distributions.
+All current builds remain version 0.1.0, so keep the source commit with the
+downloaded artifact. For other platforms or an expired artifact, use the source
+installation above.
 
 The public extension module is `fatcat_metadata`. Its recommended Python
 entry points are `compose_project_settings(request)` and

@@ -19,15 +19,6 @@ SOURCE_MAP_PATH = ROOT / "compatibility/current-src/native-source-map.json"
 TARGET_DIR = ROOT / "compatibility/current-src/translations/targets"
 OUTPUT_DIR = ROOT / "compatibility/current-src/native-project-sources"
 PROFILE_CATEGORIES = ("machine", "process", "filament")
-TARGET_FILES = {
-    "BambuStudio": "bambu-studio-02.08.02.61.json",
-    "OrcaSlicer": "orca-slicer-2.4.2.json",
-    "QIDIStudio": "qidi-studio-02.07.02.60.json",
-    "ElegooSlicer": "elegoo-slicer-1.5.3.5.json",
-    "AnycubicSlicerNext": "anycubic-slicer-next-2.0.0.2.json",
-    "FlashStudio": "flash-studio-1.7.15.json",
-    "SnapmakerOrca": "snapmaker-orca-2.3.6.json",
-}
 
 
 def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -54,6 +45,13 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 def _render_json(value: dict[str, Any]) -> str:
     return json.dumps(value, ensure_ascii=False, indent=2) + "\n"
+
+
+SUPPORTED_TARGETS = {
+    target["slicer_id"]: target
+    for target in _load_json(TARGET_DIR.parent / "supported-targets.json")["targets"]
+}
+TARGET_FILES = {slicer: target["filename"] for slicer, target in SUPPORTED_TARGETS.items()}
 
 
 def _safe_relative(value: str) -> tuple[str, ...]:
@@ -270,7 +268,12 @@ def _profile_option(catalog: ProfileCatalog, category: str, name: str,
 
 
 def _load_target(slicer_id: str) -> dict[str, Any]:
-    return _load_json(TARGET_DIR / TARGET_FILES[slicer_id])
+    target = _load_json(TARGET_DIR / TARGET_FILES[slicer_id])
+    contract = target["target_contract"]
+    supported = SUPPORTED_TARGETS[slicer_id]
+    if any(contract[key] != supported[key] for key in ("slicer_id", "application_version")):
+        raise ValueError(f"target contract differs from supported-targets.json: {slicer_id}")
+    return target
 
 
 def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str, Any],

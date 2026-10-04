@@ -12,7 +12,7 @@ import re
 import sys
 from typing import Any
 
-from sync_native_project_sources import ProfileCatalog
+from sync_native_project_sources import ProfileCatalog, TARGET_FILES
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,15 +22,6 @@ SOURCES_DIR = SOURCE_INDEX.parent
 TRANSLATIONS = ROOT / "compatibility/current-src/translations"
 CANONICAL = TRANSLATIONS / "canonical.json"
 TARGET_DIR = TRANSLATIONS / "targets"
-TARGET_FILES = {
-    "AnycubicSlicerNext": "anycubic-slicer-next-2.0.0.2.json",
-    "BambuStudio": "bambu-studio-02.08.02.61.json",
-    "ElegooSlicer": "elegoo-slicer-1.5.3.5.json",
-    "FlashStudio": "flash-studio-1.7.15.json",
-    "OrcaSlicer": "orca-slicer-2.4.2.json",
-    "QIDIStudio": "qidi-studio-02.07.02.60.json",
-    "SnapmakerOrca": "snapmaker-orca-2.3.6.json",
-}
 MANUFACTURERS = {
     "anycubic": "Anycubic",
     "bambu-lab": "Bambu Lab",

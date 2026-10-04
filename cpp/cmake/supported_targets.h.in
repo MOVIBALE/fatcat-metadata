@@ -1,0 +1,24 @@
+#pragma once
+
+#include <string>
+#include <string_view>
+#include <nlohmann/json.hpp>
+
+namespace fatcat::detail {
+
+// Generated from the same manifest used by source maintenance and packaging.
+inline const nlohmann::json &supported_targets() {
+    static const auto targets = nlohmann::json::parse(
+        R"fc_targets(@FATCAT_SUPPORTED_TARGETS_JSON@)fc_targets").at("targets");
+    return targets;
+}
+
+inline bool supports_target(std::string_view slicer, std::string_view version) {
+    for (const auto &target : supported_targets()) {
+        if (target.at("slicer_id") == std::string(slicer) &&
+            target.at("application_version") == std::string(version)) return true;
+    }
+    return false;
+}
+
+}  // namespace fatcat::detail

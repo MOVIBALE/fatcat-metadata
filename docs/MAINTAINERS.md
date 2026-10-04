@@ -11,6 +11,15 @@ consuming the installed SDK works on Linux, macOS and Windows.
 
 ## Refresh the pinned application snapshots
 
+The version, target filename and template-import order are maintained once in
+[`supported-targets.json`](../compatibility/current-src/translations/supported-targets.json).
+CMake generates the internal C++ registry from that manifest; the Python
+extension and source updater use the same entries. When changing a supported
+release, update its manifest entry and matching target contract together, then
+refresh and review the native source data. The updater rejects a contract that
+disagrees with the manifest. Native profile JSON remains unchanged upstream
+source data, rather than being flattened into this registry.
+
 Install these exact application releases under `/Applications` (or provide
 their actual bundle paths) before running the updater:
 

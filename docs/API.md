@@ -12,6 +12,11 @@ as the published JSON-string API. The wheel installs
 This is a complete stub-only package; it needs no `py.typed` marker and does
 not change the runtime extension's import name or location. See the
 [mypy packaging guide](https://mypy.readthedocs.io/en/stable/installed_packages.html#creating-pep-561-compatible-packages).
+The signatures describe nested palette entries, merged-source slot mappings,
+model parts, plate fields and the returned metadata parts/relationships.
+The private `TypedDict` names describe dictionary shapes for editors; they are
+not runtime classes to instantiate or import. Ordinary dictionaries, including
+advanced JSON fields, remain supported.
 
 ```python
 import fatcat_metadata
@@ -55,6 +60,14 @@ the exact target, real object/assembly IDs, ordered parts/material indices,
 plate and `component_inputs`. The result describes `root_model`, `parts`,
 `content_types` and `relationships` for the writer. Binary resources such as
 thumbnails remain caller-owned bytes.
+
+For a single model, the caller supplies `assembly_id`, `instance_id`,
+`identify_id`, `source_file` and `parts`. Each part describes its real writer
+`part_id`, zero-based `material_index`, name, source IDs, matrix and offsets.
+`plate` supplies `plater_id`, `plater_name` and `locked`; `component_inputs`
+can be empty. For merged models, supply `objects` instead of the single-model
+fields; each object's `model_index` follows the final one-based build order,
+with source XML, part/slot mappings and actual placement.
 
 The [complete independent generator](../cpp/examples/python_neroued_consumer/)
 shows both requests and registers the description with

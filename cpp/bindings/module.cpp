@@ -16,21 +16,11 @@
 #include "fatcat/template_import.h"
 #include "fatcat/template_assembly.h"
 #include "fatcat/wipe_tower.h"
+#include "supported_targets.h"
 
 namespace py = pybind11;
 
 namespace {
-
-struct PackagedTarget {
-    const char *slicer;
-    bool import_source;
-};
-
-constexpr std::array<PackagedTarget, 7> packaged_targets = {{
-    {"BambuStudio", true}, {"OrcaSlicer", true}, {"QIDIStudio", true},
-    {"ElegooSlicer", true}, {"AnycubicSlicerNext", true}, {"FlashStudio", false},
-    {"SnapmakerOrca", true},
-}};
 
 std::filesystem::path packaged_data_root(const char *relative_path) {
     const auto module = py::module_::import("fatcat_metadata");
@@ -92,8 +82,11 @@ py::dict project_dictionary(const std::string &result_json) {
 std::array<std::string, 6> read_import_targets() {
     std::array<std::string, 6> targets;
     std::size_t index = 0;
-    for (const auto &target : packaged_targets) {
-        if (target.import_source) targets.at(index++) = read_packaged_target(target.slicer);
+    for (const auto &target : fatcat::detail::supported_targets()) {
+        if (target.at("template_import").get<bool>()) {
+            targets.at(index++) = read_packaged_target(
+                target.at("slicer_id").get<std::string>());
+        }
     }
     return targets;
 }

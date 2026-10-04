@@ -2,6 +2,28 @@ from typing import Any, NotRequired, Required, TypedDict, overload
 
 _Object = dict[str, Any]
 
+
+class _SourceMaterial(TypedDict, total=False):
+    name: str
+    colour: str
+    material_type: str | None
+
+
+class _MergeSlot(TypedDict):
+    source_slot_id: int
+    source_slot_index: NotRequired[int]
+    slot_name: str
+    material_id: str
+    preview_color: str
+
+
+class _MergeSource(TypedDict):
+    source_id: str
+    slots: list[_MergeSlot]
+    # The first source uses the project's positional argument instead.
+    project_settings: NotRequired[_Object]
+
+
 class _ProjectRequest(TypedDict, total=False):
     slicer_id: Required[str]
     application_version: Required[str]
@@ -9,7 +31,7 @@ class _ProjectRequest(TypedDict, total=False):
     machine_uid: str
     nozzle_uid: str
     build_plate_uid: str
-    source_materials: list[_Object]
+    source_materials: list[_SourceMaterial]
     native_print_profile_name: str
     native_filament_profile_names: list[str]
     material_uid: str
@@ -17,15 +39,16 @@ class _ProjectRequest(TypedDict, total=False):
     material_mode: str
     hardware_mode: str
     process_settings: _Object
-    merge_sources: list[_Object]
+    merge_sources: list[_MergeSource]
     merge_default_project: _Object
     filament_slot_mode: str
     default_filament_source_slot: int
-    filament_source_slots: list[int | _Object]
+    filament_source_slots: list[int | None]
     preserve_source_material_settings: bool
     filament_colour: list[str]
     layer_height: str | float
     sparse_infill_density: str | float
+
 
 class _ProjectComposition(TypedDict):
     project_settings: _Object
@@ -33,6 +56,106 @@ class _ProjectComposition(TypedDict):
     metadata_defaults: _Object
     process_source: NotRequired[_Object]
     material_source: NotRequired[_Object]
+
+
+class _ModelPart(TypedDict):
+    part_id: int
+    name: str
+    material_index: int
+    source_object_id: int
+    source_volume_id: int
+    matrix: str
+    source_offset_x: str
+    source_offset_y: str
+    source_offset_z: str
+
+
+class _MergedPart(TypedDict):
+    part_id: int
+    source_part_id: int
+
+
+class _MergedModel(TypedDict):
+    model_index: int
+    assembly_id: int
+    source_assembly_id: int
+    instance_id: str
+    identify_id: str
+    source_model_settings_xml: str
+    face_count: int
+    parts: list[_MergedPart]
+    source_slot_output_indexes: list[int]
+    source_root_metadata: dict[str, str]
+    transform: list[float]
+    offset_mm: list[float]
+    source_model_index: NotRequired[int]
+    default_slot_output_index: NotRequired[int]
+    source_layer_config_ranges_xml: NotRequired[str]
+    source_slots: NotRequired[list[_Object]]
+
+
+class _Plate(TypedDict):
+    plater_id: str
+    plater_name: str
+    locked: bool
+    bed_type: NotRequired[str]
+    filament_map_mode: NotRequired[str]
+
+
+class _OutputOptions(TypedDict, total=False):
+    emit_lumina_merged_slots_json: bool
+
+
+class _ComponentInputs(TypedDict, total=False):
+    plate_summary: _Object
+    wipe_tower_placement: _Object
+    layer_config_ranges: _Object | None
+
+
+class _ModelRequest(TypedDict, total=False):
+    slicer_id: Required[str]
+    application_version: Required[str]
+    plate: Required[_Plate]
+    component_inputs: Required[_ComponentInputs]
+    resource_roles: list[str]
+    output_options: _OutputOptions
+    slice_uuid: str
+    source_slice_info_xml: str
+    # Supply these fields for a single model, or objects for merged models.
+    assembly_id: int
+    instance_id: str
+    identify_id: str
+    source_file: str
+    parts: list[_ModelPart]
+    active_material_count: int
+    objects: list[_MergedModel]
+
+
+class _MetadataPart(TypedDict):
+    role: str
+    path: str
+    media_type: str
+    content: NotRequired[str]
+    resource_role: NotRequired[str]
+
+
+class _Relationship(TypedDict):
+    source: str
+    id: str
+    type: str
+    target: str
+
+
+class _MetadataDescription(TypedDict):
+    parts: list[_MetadataPart]
+    relationships: list[_Relationship]
+    content_types: list[_Object]
+    root_model: _Object
+    settings_parts: dict[str, str]
+    project_bed_type: str
+    model_settings_bed_type: str
+    build_items: NotRequired[list[_Object]]
+
 
 __version__: str
 __fatcat_cpp_extension__: bool
@@ -47,7 +170,7 @@ def compose_project_settings(request_json: str) -> str: ...
 @overload
 def compose_project_settings(project_json: str | None, request_json: str) -> str: ...
 @overload
-def compose_model_metadata(project: _Object, request: _Object) -> _Object: ...
+def compose_model_metadata(project: _Object, request: _ModelRequest | _Object) -> _MetadataDescription: ...
 @overload
 def compose_model_metadata(project_json: str, request_json: str) -> str: ...
 

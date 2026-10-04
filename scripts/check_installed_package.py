@@ -11,17 +11,6 @@ from pathlib import Path
 import sys
 
 
-EXPECTED_TARGETS = {
-    "BambuStudio": "02.08.02.61",
-    "OrcaSlicer": "2.4.2",
-    "QIDIStudio": "02.07.02.60",
-    "ElegooSlicer": "1.5.3.5",
-    "AnycubicSlicerNext": "2.0.0.2",
-    "FlashStudio": "1.7.15",
-    "SnapmakerOrca": "2.3.6",
-}
-
-
 def main() -> int:
     import fatcat_metadata
     import fatcat_metadata_neroued
@@ -70,15 +59,26 @@ def main() -> int:
         raise SystemExit("wheel COPYRIGHT.md is missing Fat Cat copyright information")
 
     data_root = module_root / "fatcat_metadata_data"
+    relative_manifest = Path("translations/supported-targets.json")
+    manifest = json.loads((data_root / relative_manifest).read_text(encoding="utf-8"))
+    source_manifest = source_root / "compatibility/current-src" / relative_manifest
+    if manifest != json.loads(source_manifest.read_text(encoding="utf-8")):
+        raise SystemExit("installed support manifest differs from the source checkout")
+    expected_targets = {
+        target["slicer_id"]: target["application_version"]
+        for target in manifest["targets"]
+    }
     target_root = data_root / "translations" / "targets"
     target_paths = sorted(target_root.glob("*.json"))
+    if {path.name for path in target_paths} != {target["filename"] for target in manifest["targets"]}:
+        raise SystemExit("installed target filenames differ from the support manifest")
     actual_targets = {}
     for target_path in target_paths:
         target = json.loads(target_path.read_text(encoding="utf-8"))
         contract = target["target_contract"]
         actual_targets[contract["slicer_id"]] = contract["application_version"]
-    if actual_targets != EXPECTED_TARGETS:
-        raise SystemExit(f"installed targets differ from the seven pinned targets: {actual_targets}")
+    if actual_targets != expected_targets:
+        raise SystemExit(f"installed targets differ from the support manifest: {actual_targets}")
     if not (data_root / "translations" / "canonical.json").is_file():
         raise SystemExit("canonical machine translation data is missing from the wheel")
 
@@ -86,7 +86,7 @@ def main() -> int:
     source_index_path = source_root_data / "source-index.json"
     source_index = json.loads(source_index_path.read_text(encoding="utf-8"))
     actual_slicers = {row["slicer_id"] for row in source_index["sources"]}
-    if actual_slicers != set(EXPECTED_TARGETS):
+    if actual_slicers != set(expected_targets):
         raise SystemExit(f"native source index does not cover all targets: {actual_slicers}")
     missing_profiles = [
         name for name in source_index["profile_files"]
