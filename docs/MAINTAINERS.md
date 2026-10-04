@@ -172,7 +172,10 @@ palette while `merge_sources[].slots` describes only real source rows. Missing
 rows are synthesized using the same native-source path and exact machine/nozzle
 UIDs. Actual source temperatures, flow, process, unknown fields, and transition
 values remain authoritative. Transition pairs absent from every source require
-recorded native defaults; unavailable defaults are errors. The explicit JSON
+recorded native defaults; unavailable defaults are errors. The material carrier
+retains the source's hardware values and missing-field state, so an omitted
+source plate or bed geometry is not replaced by a material-default field.
+The explicit JSON
 composer accepts `merge_default_project` for these absent transition pairs and
 checks its hardware identity. Neither entry infers a substitute machine.
 

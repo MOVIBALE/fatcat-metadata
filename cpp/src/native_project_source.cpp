@@ -1333,8 +1333,14 @@ std::string compose_project_settings_from_data(std::string_view project_json,
                 if (first.at(key) != defaults.at(key)) invalid("missing palette completion hardware differs from source");
             }
             json carrier = defaults;
+            // This carrier supplies materials, not replacement hardware. Keep
+            // the source's missing fields missing as well as its present values.
             for (const auto *key : {"printable_area", "printable_height", "curr_bed_type"}) {
-                if (first.contains(key)) carrier[key] = first.at(key);
+                if (first.contains(key)) {
+                    carrier[key] = first.at(key);
+                } else {
+                    carrier.erase(key);
+                }
             }
             const auto &snapshot = target.at("package_dialect").at("filament_snapshot");
             const auto normalized = detail::prepare_source_merge_project(first, snapshot);
