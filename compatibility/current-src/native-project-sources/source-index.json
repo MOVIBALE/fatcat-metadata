@@ -5,16 +5,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-1",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 1",
       "source_machine_profile_name": "Anycubic Kobra 1 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 1 0.4 nozzle.json",
       "print_profile_options": [
@@ -56,16 +47,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-1-max",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 1 Max",
       "source_machine_profile_name": "Anycubic Kobra 1 Max 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 1 Max 0.4 nozzle.json",
       "print_profile_options": [
@@ -107,16 +89,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-1-plus",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 1 Plus",
       "source_machine_profile_name": "Anycubic Kobra 1 Plus 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 1 Plus 0.4 nozzle.json",
       "print_profile_options": [
@@ -158,16 +131,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-2",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 2",
       "source_machine_profile_name": "Anycubic Kobra 2 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 2 0.4 nozzle.json",
       "print_profile_options": [
@@ -204,16 +168,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-2-max",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 2 Max",
       "source_machine_profile_name": "Anycubic Kobra 2 Max 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 2 Max 0.4 nozzle.json",
       "print_profile_options": [
@@ -270,16 +225,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-2-neo",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 2 Neo",
       "source_machine_profile_name": "Anycubic Kobra 2 Neo 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 2 Neo 0.4 nozzle.json",
       "print_profile_options": [
@@ -316,16 +262,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-2-plus",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 2 Plus",
       "source_machine_profile_name": "Anycubic Kobra 2 Plus 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 2 Plus 0.4 nozzle.json",
       "print_profile_options": [
@@ -397,16 +334,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-2-pro",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 2 Pro",
       "source_machine_profile_name": "Anycubic Kobra 2 Pro 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 2 Pro 0.4 nozzle.json",
       "print_profile_options": [
@@ -483,16 +411,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Anycubic Kobra 3",
       "source_machine_profile_name": "Anycubic Kobra 3 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 0.2 nozzle.json",
       "print_profile_options": [
@@ -511,7 +430,6 @@
         "Anycubic PLA @Anycubic Kobra 3 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @Anycubic Kobra 3 0.2 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -525,16 +443,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 3",
       "source_machine_profile_name": "Anycubic Kobra 3 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 0.4 nozzle.json",
       "print_profile_options": [
@@ -553,7 +462,6 @@
         "Anycubic PLA @Anycubic Kobra 3 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @Anycubic Kobra 3 0.4 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -567,16 +475,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Anycubic Kobra 3",
       "source_machine_profile_name": "Anycubic Kobra 3 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 0.6 nozzle.json",
       "print_profile_options": [
@@ -595,7 +494,6 @@
         "Anycubic PLA @Anycubic Kobra 3 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @Anycubic Kobra 3 0.6 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -609,16 +507,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Anycubic Kobra 3",
       "source_machine_profile_name": "Anycubic Kobra 3 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 0.8 nozzle.json",
       "print_profile_options": [
@@ -637,7 +526,6 @@
         "Anycubic PLA @Anycubic Kobra 3 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @Anycubic Kobra 3 0.8 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -651,16 +539,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3-max",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 3 Max",
       "source_machine_profile_name": "Anycubic Kobra 3 Max 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 Max 0.4 nozzle.json",
       "print_profile_options": [
@@ -679,7 +558,6 @@
         "Anycubic PLA @Anycubic Kobra 3 Max 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @Anycubic Kobra 3 Max 0.4 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 Max 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -693,16 +571,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3-max",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Anycubic Kobra 3 Max",
       "source_machine_profile_name": "Anycubic Kobra 3 Max 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 Max 0.6 nozzle.json",
       "print_profile_options": [
@@ -721,7 +590,6 @@
         "Anycubic PLA @Anycubic Kobra 3 Max 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @Anycubic Kobra 3 Max 0.6 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 Max 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -735,16 +603,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3-max",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Anycubic Kobra 3 Max",
       "source_machine_profile_name": "Anycubic Kobra 3 Max 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 Max 0.8 nozzle.json",
       "print_profile_options": [
@@ -763,7 +622,6 @@
         "Anycubic PLA @Anycubic Kobra 3 Max 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @Anycubic Kobra 3 Max 0.8 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 Max 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -777,16 +635,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3-v2",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Anycubic Kobra 3 V2",
       "source_machine_profile_name": "Anycubic Kobra 3 V2 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 V2 0.2 nozzle.json",
       "print_profile_options": [
@@ -805,7 +654,6 @@
         "Anycubic PLA @Anycubic Kobra 3 V2 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @Anycubic Kobra 3 V2 0.2 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 V2 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -819,16 +667,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3-v2",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 3 V2",
       "source_machine_profile_name": "Anycubic Kobra 3 V2 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 V2 0.4 nozzle.json",
       "print_profile_options": [
@@ -851,7 +690,6 @@
         "Anycubic PLA @Anycubic Kobra 3 V2 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @Anycubic Kobra 3 V2 0.4 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 V2 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -865,16 +703,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3-v2",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Anycubic Kobra 3 V2",
       "source_machine_profile_name": "Anycubic Kobra 3 V2 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 V2 0.6 nozzle.json",
       "print_profile_options": [
@@ -893,7 +722,6 @@
         "Anycubic PLA @Anycubic Kobra 3 V2 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @Anycubic Kobra 3 V2 0.6 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 V2 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -907,16 +735,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-3-v2",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Anycubic Kobra 3 V2",
       "source_machine_profile_name": "Anycubic Kobra 3 V2 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 3 V2 0.8 nozzle.json",
       "print_profile_options": [
@@ -935,7 +754,6 @@
         "Anycubic PLA @Anycubic Kobra 3 V2 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @Anycubic Kobra 3 V2 0.8 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 3 V2 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -949,16 +767,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-4",
       "nozzle_uid": "nozzle:0.25mm",
-      "machine_display_name": "Anycubic Kobra 4",
       "source_machine_profile_name": "Anycubic Kobra 4 0.25 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 4 0.25 nozzle.json",
       "print_profile_options": [
@@ -977,7 +786,6 @@
         "Anycubic PLA @Anycubic Kobra 4 0.25 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @Anycubic Kobra 4 0.25 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 4 0.25 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -991,16 +799,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-4",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra 4",
       "source_machine_profile_name": "Anycubic Kobra 4 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 4 0.4 nozzle.json",
       "print_profile_options": [
@@ -1019,7 +818,6 @@
         "Anycubic PLA @Anycubic Kobra 4 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @Anycubic Kobra 4 0.4 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 4 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1033,16 +831,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-4",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Anycubic Kobra 4",
       "source_machine_profile_name": "Anycubic Kobra 4 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 4 0.6 nozzle.json",
       "print_profile_options": [
@@ -1061,7 +850,6 @@
         "Anycubic PLA @Anycubic Kobra 4 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @Anycubic Kobra 4 0.6 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra 4 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1075,16 +863,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-4",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Anycubic Kobra 4",
       "source_machine_profile_name": "Anycubic Kobra 4 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra 4 0.8 nozzle.json",
       "print_profile_options": [
@@ -1181,15 +960,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-s1",
       "nozzle_uid": "nozzle:0.25mm",
-      "machine_display_name": "Anycubic Kobra S1",
       "source_machine_profile_name": "Anycubic Kobra S1 0.25 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra S1 0.25 nozzle.json",
       "print_profile_options": [
@@ -1208,7 +979,6 @@
         "Anycubic PLA @Anycubic Kobra S1 0.25 nozzle"
       ],
       "default_print_profile_name": "0.08mm Standard @Anycubic Kobra S1 0.25 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra S1 0.25 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1222,15 +992,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-s1",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra S1",
       "source_machine_profile_name": "Anycubic Kobra S1 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra S1 0.4 nozzle.json",
       "print_profile_options": [
@@ -1249,7 +1011,6 @@
         "Anycubic PLA @Anycubic Kobra S1 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @Anycubic Kobra S1 0.4 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra S1 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1263,15 +1024,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-s1",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Anycubic Kobra S1",
       "source_machine_profile_name": "Anycubic Kobra S1 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra S1 0.6 nozzle.json",
       "print_profile_options": [
@@ -1290,7 +1043,6 @@
         "Anycubic PLA @Anycubic Kobra S1 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @Anycubic Kobra S1 0.6 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra S1 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1304,15 +1056,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-s1",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Anycubic Kobra S1",
       "source_machine_profile_name": "Anycubic Kobra S1 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra S1 0.8 nozzle.json",
       "print_profile_options": [
@@ -1331,7 +1075,6 @@
         "Anycubic PLA @Anycubic Kobra S1 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @Anycubic Kobra S1 0.8 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra S1 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1345,16 +1088,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-s1-max",
       "nozzle_uid": "nozzle:0.25mm",
-      "machine_display_name": "Anycubic Kobra S1 Max",
       "source_machine_profile_name": "Anycubic Kobra S1 Max 0.25 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra S1 Max 0.25 nozzle.json",
       "print_profile_options": [
@@ -1373,7 +1107,6 @@
         "Anycubic PLA @Anycubic Kobra S1 Max 0.25 nozzle"
       ],
       "default_print_profile_name": "0.08mm Standard @Anycubic Kobra S1 Max 0.25 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra S1 Max 0.25 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1387,16 +1120,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-s1-max",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra S1 Max",
       "source_machine_profile_name": "Anycubic Kobra S1 Max 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra S1 Max 0.4 nozzle.json",
       "print_profile_options": [
@@ -1415,7 +1139,6 @@
         "Anycubic PLA @Anycubic Kobra S1 Max 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @Anycubic Kobra S1 Max 0.4 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra S1 Max 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1429,16 +1152,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-s1-max",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Anycubic Kobra S1 Max",
       "source_machine_profile_name": "Anycubic Kobra S1 Max 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra S1 Max 0.6 nozzle.json",
       "print_profile_options": [
@@ -1457,7 +1171,6 @@
         "Anycubic PLA @Anycubic Kobra S1 Max 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @Anycubic Kobra S1 Max 0.6 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra S1 Max 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1471,16 +1184,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-s1-max",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Anycubic Kobra S1 Max",
       "source_machine_profile_name": "Anycubic Kobra S1 Max 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra S1 Max 0.8 nozzle.json",
       "print_profile_options": [
@@ -1499,7 +1203,6 @@
         "Anycubic PLA @Anycubic Kobra S1 Max 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @Anycubic Kobra S1 Max 0.8 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra S1 Max 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1513,16 +1216,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-x",
       "nozzle_uid": "nozzle:0.25mm",
-      "machine_display_name": "Anycubic Kobra X",
       "source_machine_profile_name": "Anycubic Kobra X 0.25 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra X 0.25 nozzle.json",
       "print_profile_options": [
@@ -1541,7 +1235,6 @@
         "Anycubic PLA @Anycubic Kobra X 0.25 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @Anycubic Kobra X 0.25 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra X 0.25 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1555,16 +1248,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-x",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Anycubic Kobra X",
       "source_machine_profile_name": "Anycubic Kobra X 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra X 0.4 nozzle.json",
       "print_profile_options": [
@@ -1583,7 +1267,6 @@
         "Anycubic PLA @Anycubic Kobra X 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @Anycubic Kobra X 0.4 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra X 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1597,16 +1280,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-x",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Anycubic Kobra X",
       "source_machine_profile_name": "Anycubic Kobra X 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra X 0.6 nozzle.json",
       "print_profile_options": [
@@ -1625,7 +1299,6 @@
         "Anycubic PLA @Anycubic Kobra X 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @Anycubic Kobra X 0.6 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra X 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1639,16 +1312,7 @@
       "slicer_id": "AnycubicSlicerNext",
       "machine_uid": "anycubic:kobra-x",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Anycubic Kobra X",
       "source_machine_profile_name": "Anycubic Kobra X 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.0.0.2",
       "machine_profile_path": "profiles/AnycubicSlicerNext/Anycubic/machine/Anycubic Kobra X 0.8 nozzle.json",
       "print_profile_options": [
@@ -1667,7 +1331,6 @@
         "Anycubic PLA @Anycubic Kobra X 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @Anycubic Kobra X 0.8 nozzle",
-      "default_filament_profile_name": "Anycubic PLA @Anycubic Kobra X 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1681,15 +1344,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a1",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab A1",
       "source_machine_profile_name": "Bambu Lab A1 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A1 0.2 nozzle.json",
       "print_profile_options": [
@@ -1712,7 +1367,6 @@
         "Bambu PLA Basic @BBL A1 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL A1 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1726,15 +1380,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a1",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab A1",
       "source_machine_profile_name": "Bambu Lab A1 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A1 0.4 nozzle.json",
       "print_profile_options": [
@@ -1757,7 +1403,6 @@
         "Bambu PLA Basic @BBL A1"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL A1",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1771,15 +1416,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a1",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab A1",
       "source_machine_profile_name": "Bambu Lab A1 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A1 0.6 nozzle.json",
       "print_profile_options": [
@@ -1802,7 +1439,6 @@
         "Bambu PLA Basic @BBL A1"
       ],
       "default_print_profile_name": "0.30mm Strength @BBL A1 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1816,15 +1452,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a1",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab A1",
       "source_machine_profile_name": "Bambu Lab A1 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A1 0.8 nozzle.json",
       "print_profile_options": [
@@ -1847,7 +1475,6 @@
         "Bambu PLA Basic @BBL A1"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL A1 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1861,13 +1488,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a1-mini",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab A1 mini",
       "source_machine_profile_name": "Bambu Lab A1 mini 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A1 mini 0.2 nozzle.json",
       "print_profile_options": [
@@ -1890,7 +1511,6 @@
         "Bambu PLA Basic @BBL A1M 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL A1M 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1M 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1904,13 +1524,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a1-mini",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab A1 mini",
       "source_machine_profile_name": "Bambu Lab A1 mini 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A1 mini 0.4 nozzle.json",
       "print_profile_options": [
@@ -1933,7 +1547,6 @@
         "Bambu PLA Basic @BBL A1M"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL A1M",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1M",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1947,13 +1560,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a1-mini",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab A1 mini",
       "source_machine_profile_name": "Bambu Lab A1 mini 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A1 mini 0.6 nozzle.json",
       "print_profile_options": [
@@ -1976,7 +1583,6 @@
         "Bambu PLA Basic @BBL A1M"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL A1M 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1M",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -1990,13 +1596,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a1-mini",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab A1 mini",
       "source_machine_profile_name": "Bambu Lab A1 mini 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A1 mini 0.8 nozzle.json",
       "print_profile_options": [
@@ -2019,7 +1619,6 @@
         "Bambu PLA Basic @BBL A1M"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL A1M 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1M",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2033,14 +1632,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a2l",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab A2L",
       "source_machine_profile_name": "Bambu Lab A2L 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A2L 0.2 nozzle.json",
       "print_profile_options": [
@@ -2059,7 +1651,6 @@
         "Bambu PLA Basic @BBL A2L 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL A2L 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A2L 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2073,14 +1664,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a2l",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab A2L",
       "source_machine_profile_name": "Bambu Lab A2L 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A2L 0.4 nozzle.json",
       "print_profile_options": [
@@ -2099,7 +1683,6 @@
         "Bambu PLA Basic @BBL A2L 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL A2L",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A2L 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2113,14 +1696,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a2l",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab A2L",
       "source_machine_profile_name": "Bambu Lab A2L 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A2L 0.6 nozzle.json",
       "print_profile_options": [
@@ -2139,7 +1715,6 @@
         "Bambu PLA Basic @BBL A2L 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL A2L 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A2L 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2153,14 +1728,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:a2l",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab A2L",
       "source_machine_profile_name": "Bambu Lab A2L 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab A2L 0.8 nozzle.json",
       "print_profile_options": [
@@ -2179,7 +1747,6 @@
         "Bambu PLA Basic @BBL A2L 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL A2L 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A2L 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2193,13 +1760,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2c",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab H2C",
       "source_machine_profile_name": "Bambu Lab H2C 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2C 0.2 nozzle.json",
       "print_profile_options": [
@@ -2218,7 +1779,6 @@
         "Bambu PLA Basic @BBL H2C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL H2C 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2232,13 +1792,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2c",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab H2C",
       "source_machine_profile_name": "Bambu Lab H2C 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2C 0.4 nozzle.json",
       "print_profile_options": [
@@ -2257,7 +1811,6 @@
         "Bambu PLA Basic @BBL H2C"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL H2C",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2271,13 +1824,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2c",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab H2C",
       "source_machine_profile_name": "Bambu Lab H2C 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2C 0.6 nozzle.json",
       "print_profile_options": [
@@ -2296,7 +1843,6 @@
         "Bambu PLA Basic @BBL H2C 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL H2C 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2C 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2310,13 +1856,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2c",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab H2C",
       "source_machine_profile_name": "Bambu Lab H2C 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2C 0.8 nozzle.json",
       "print_profile_options": [
@@ -2335,7 +1875,6 @@
         "Bambu PLA Basic @BBL H2C 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL H2C 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2C 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2349,14 +1888,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2d",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab H2D",
       "source_machine_profile_name": "Bambu Lab H2D 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2D 0.2 nozzle.json",
       "print_profile_options": [
@@ -2375,7 +1907,6 @@
         "Bambu PLA Basic @BBL H2D 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL H2D 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2D 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2389,14 +1920,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2d",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab H2D",
       "source_machine_profile_name": "Bambu Lab H2D 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2D 0.4 nozzle.json",
       "print_profile_options": [
@@ -2415,7 +1939,6 @@
         "Bambu PLA Basic @BBL H2D"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL H2D",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2D",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2429,14 +1952,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2d",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab H2D",
       "source_machine_profile_name": "Bambu Lab H2D 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2D 0.6 nozzle.json",
       "print_profile_options": [
@@ -2455,7 +1971,6 @@
         "Bambu PLA Basic @BBL H2D 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL H2D 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2D 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2469,14 +1984,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2d",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab H2D",
       "source_machine_profile_name": "Bambu Lab H2D 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2D 0.8 nozzle.json",
       "print_profile_options": [
@@ -2495,7 +2003,6 @@
         "Bambu PLA Basic @BBL H2D 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL H2D 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2D 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2509,14 +2016,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2d-pro",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab H2D Pro",
       "source_machine_profile_name": "Bambu Lab H2D Pro 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2D Pro 0.2 nozzle.json",
       "print_profile_options": [
@@ -2535,7 +2035,6 @@
         "Bambu PLA Basic @BBL H2DP 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL H2DP 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2DP 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2549,14 +2048,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2d-pro",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab H2D Pro",
       "source_machine_profile_name": "Bambu Lab H2D Pro 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2D Pro 0.4 nozzle.json",
       "print_profile_options": [
@@ -2575,7 +2067,6 @@
         "Bambu PLA Basic @BBL H2DP"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL H2DP",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2DP",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2589,14 +2080,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2d-pro",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab H2D Pro",
       "source_machine_profile_name": "Bambu Lab H2D Pro 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2D Pro 0.6 nozzle.json",
       "print_profile_options": [
@@ -2615,7 +2099,6 @@
         "Bambu PLA Basic @BBL H2DP 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL H2DP 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2DP 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2629,14 +2112,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2d-pro",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab H2D Pro",
       "source_machine_profile_name": "Bambu Lab H2D Pro 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2D Pro 0.8 nozzle.json",
       "print_profile_options": [
@@ -2655,7 +2131,6 @@
         "Bambu PLA Basic @BBL H2DP 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL H2DP 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2DP 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2669,14 +2144,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2s",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab H2S",
       "source_machine_profile_name": "Bambu Lab H2S 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2S 0.2 nozzle.json",
       "print_profile_options": [
@@ -2695,7 +2163,6 @@
         "Bambu PLA Basic @BBL H2S 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL H2S 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2S 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2709,14 +2176,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2s",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab H2S",
       "source_machine_profile_name": "Bambu Lab H2S 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2S 0.4 nozzle.json",
       "print_profile_options": [
@@ -2735,7 +2195,6 @@
         "Bambu PLA Basic @BBL H2S"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL H2S",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2S",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2749,14 +2208,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2s",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab H2S",
       "source_machine_profile_name": "Bambu Lab H2S 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2S 0.6 nozzle.json",
       "print_profile_options": [
@@ -2775,7 +2227,6 @@
         "Bambu PLA Basic @BBL H2S 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL H2S 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2S 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2789,14 +2240,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:h2s",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab H2S",
       "source_machine_profile_name": "Bambu Lab H2S 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab H2S 0.8 nozzle.json",
       "print_profile_options": [
@@ -2815,7 +2259,6 @@
         "Bambu PLA Basic @BBL H2S 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL H2S 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2S 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2829,15 +2272,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p1p",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab P1P",
       "source_machine_profile_name": "Bambu Lab P1P 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P1P 0.2 nozzle.json",
       "print_profile_options": [
@@ -2860,7 +2295,6 @@
         "Bambu PLA Basic @BBL P1P 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL P1P 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1P 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2874,15 +2308,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p1p",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab P1P",
       "source_machine_profile_name": "Bambu Lab P1P 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P1P 0.4 nozzle.json",
       "print_profile_options": [
@@ -2905,7 +2331,6 @@
         "Bambu PLA Basic @BBL P1P"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL P1P",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1P",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2919,15 +2344,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p1p",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab P1P",
       "source_machine_profile_name": "Bambu Lab P1P 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P1P 0.6 nozzle.json",
       "print_profile_options": [
@@ -2950,7 +2367,6 @@
         "Bambu PLA Basic @BBL P1P 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL P1P 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1P 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -2964,15 +2380,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p1p",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab P1P",
       "source_machine_profile_name": "Bambu Lab P1P 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P1P 0.8 nozzle.json",
       "print_profile_options": [
@@ -2995,7 +2403,6 @@
         "Bambu PLA Basic @BBL P1P"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL P1P 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1P",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3009,15 +2416,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p1s",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab P1S",
       "source_machine_profile_name": "Bambu Lab P1S 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P1S 0.2 nozzle.json",
       "print_profile_options": [
@@ -3040,7 +2439,6 @@
         "Bambu PLA Basic @BBL X1C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X1C 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3054,15 +2452,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p1s",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab P1S",
       "source_machine_profile_name": "Bambu Lab P1S 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P1S 0.4 nozzle.json",
       "print_profile_options": [
@@ -3085,7 +2475,6 @@
         "Bambu PLA Basic @BBL P1S 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X1C",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1S 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3099,15 +2488,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p1s",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab P1S",
       "source_machine_profile_name": "Bambu Lab P1S 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P1S 0.6 nozzle.json",
       "print_profile_options": [
@@ -3130,7 +2511,6 @@
         "Bambu PLA Basic @BBL P1S 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X1C 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1S 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3144,15 +2524,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p1s",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab P1S",
       "source_machine_profile_name": "Bambu Lab P1S 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P1S 0.8 nozzle.json",
       "print_profile_options": [
@@ -3175,7 +2547,6 @@
         "Bambu PLA Basic @BBL X1C 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X1C 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3189,14 +2560,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p2s",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab P2S",
       "source_machine_profile_name": "Bambu Lab P2S 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P2S 0.2 nozzle.json",
       "print_profile_options": [
@@ -3215,7 +2579,6 @@
         "Bambu PLA Basic @BBL P2S 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL P2S 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P2S 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3229,14 +2592,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p2s",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab P2S",
       "source_machine_profile_name": "Bambu Lab P2S 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P2S 0.4 nozzle.json",
       "print_profile_options": [
@@ -3255,7 +2611,6 @@
         "Bambu PLA Basic @BBL P2S"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL P2S",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P2S",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3269,14 +2624,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p2s",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab P2S",
       "source_machine_profile_name": "Bambu Lab P2S 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P2S 0.6 nozzle.json",
       "print_profile_options": [
@@ -3295,7 +2643,6 @@
         "Bambu PLA Basic @BBL P2S 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL P2S 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P2S 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3309,14 +2656,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p2s",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab P2S",
       "source_machine_profile_name": "Bambu Lab P2S 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab P2S 0.8 nozzle.json",
       "print_profile_options": [
@@ -3335,7 +2675,6 @@
         "Bambu PLA Basic @BBL P2S 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL P2S 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P2S 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3349,15 +2688,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab X1",
       "source_machine_profile_name": "Bambu Lab X1 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1 0.2 nozzle.json",
       "print_profile_options": [
@@ -3380,7 +2711,6 @@
         "Bambu PLA Basic @BBL X1C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X1C 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3394,15 +2724,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab X1",
       "source_machine_profile_name": "Bambu Lab X1 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1 0.4 nozzle.json",
       "print_profile_options": [
@@ -3425,7 +2747,6 @@
         "Bambu PLA Basic @BBL X1"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X1C",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3439,15 +2760,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab X1",
       "source_machine_profile_name": "Bambu Lab X1 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1 0.6 nozzle.json",
       "print_profile_options": [
@@ -3470,7 +2783,6 @@
         "Bambu PLA Basic @BBL X1"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X1 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3484,15 +2796,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab X1",
       "source_machine_profile_name": "Bambu Lab X1 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1 0.8 nozzle.json",
       "print_profile_options": [
@@ -3515,7 +2819,6 @@
         "Bambu PLA Basic @BBL X1"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X1 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3529,15 +2832,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1-carbon",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab X1 Carbon",
       "source_machine_profile_name": "Bambu Lab X1 Carbon 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1 Carbon 0.2 nozzle.json",
       "print_profile_options": [
@@ -3560,7 +2855,6 @@
         "Bambu PLA Basic @BBL X1C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X1C 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3574,15 +2868,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1-carbon",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab X1 Carbon",
       "source_machine_profile_name": "Bambu Lab X1 Carbon 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1 Carbon 0.4 nozzle.json",
       "print_profile_options": [
@@ -3605,7 +2891,6 @@
         "Bambu PLA Basic @BBL X1C"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X1C",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3619,15 +2904,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1-carbon",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab X1 Carbon",
       "source_machine_profile_name": "Bambu Lab X1 Carbon 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1 Carbon 0.6 nozzle.json",
       "print_profile_options": [
@@ -3650,7 +2927,6 @@
         "Bambu PLA Basic @BBL X1C 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X1C 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3664,15 +2940,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1-carbon",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab X1 Carbon",
       "source_machine_profile_name": "Bambu Lab X1 Carbon 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1 Carbon 0.8 nozzle.json",
       "print_profile_options": [
@@ -3695,7 +2963,6 @@
         "Bambu PLA Basic @BBL X1C 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X1C 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3709,15 +2976,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1e",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab X1E",
       "source_machine_profile_name": "Bambu Lab X1E 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1E 0.2 nozzle.json",
       "print_profile_options": [
@@ -3740,7 +2999,6 @@
         "Bambu PLA Basic @BBL X1C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X1C 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3754,15 +3012,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1e",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab X1E",
       "source_machine_profile_name": "Bambu Lab X1E 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1E 0.4 nozzle.json",
       "print_profile_options": [
@@ -3785,7 +3035,6 @@
         "Bambu PLA Basic @BBL X1C"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X1C",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3799,15 +3048,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1e",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab X1E",
       "source_machine_profile_name": "Bambu Lab X1E 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1E 0.6 nozzle.json",
       "print_profile_options": [
@@ -3830,7 +3071,6 @@
         "Bambu PLA Basic @BBL X1C"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X1C 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3844,15 +3084,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x1e",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab X1E",
       "source_machine_profile_name": "Bambu Lab X1E 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X1E 0.8 nozzle.json",
       "print_profile_options": [
@@ -3875,7 +3107,6 @@
         "Bambu PLA Basic @BBL X1C 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X1C 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3889,14 +3120,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x2d",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab X2D",
       "source_machine_profile_name": "Bambu Lab X2D 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X2D 0.2 nozzle.json",
       "print_profile_options": [
@@ -3915,7 +3139,6 @@
         "Bambu PLA Basic @BBL X2D 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X2D 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X2D 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3929,14 +3152,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x2d",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab X2D",
       "source_machine_profile_name": "Bambu Lab X2D 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X2D 0.4 nozzle.json",
       "print_profile_options": [
@@ -3955,7 +3171,6 @@
         "Bambu PLA Basic @BBL X2D 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X2D",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X2D 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -3969,14 +3184,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x2d",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab X2D",
       "source_machine_profile_name": "Bambu Lab X2D 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X2D 0.6 nozzle.json",
       "print_profile_options": [
@@ -3995,7 +3203,6 @@
         "Bambu PLA Basic @BBL X2D 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X2D 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X2D 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4009,14 +3216,7 @@
       "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:x2d",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab X2D",
       "source_machine_profile_name": "Bambu Lab X2D 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "02.08.02.61",
       "machine_profile_path": "profiles/BambuStudio/BBL/machine/Bambu Lab X2D 0.8 nozzle.json",
       "print_profile_options": [
@@ -4035,7 +3235,6 @@
         "Bambu PLA Basic @BBL X2D 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X2D 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X2D 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4049,12 +3248,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Elegoo Centauri",
       "source_machine_profile_name": "Elegoo Centauri 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/EC/Elegoo Centauri 0.2 nozzle.json",
       "print_profile_options": [
@@ -4073,7 +3267,6 @@
         "Elegoo PLA @EC"
       ],
       "default_print_profile_name": "0.10mm Standard @Elegoo C 0.2 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @EC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4087,12 +3280,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Elegoo Centauri",
       "source_machine_profile_name": "Elegoo Centauri 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/EC/Elegoo Centauri 0.4 nozzle.json",
       "print_profile_options": [
@@ -4111,7 +3299,6 @@
         "Elegoo PLA @EC"
       ],
       "default_print_profile_name": "0.20mm Standard @Elegoo C 0.4 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @EC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4125,12 +3312,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Elegoo Centauri",
       "source_machine_profile_name": "Elegoo Centauri 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/EC/Elegoo Centauri 0.6 nozzle.json",
       "print_profile_options": [
@@ -4149,7 +3331,6 @@
         "Elegoo PLA @EC"
       ],
       "default_print_profile_name": "0.30mm Standard @Elegoo C 0.6 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @EC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4163,12 +3344,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Elegoo Centauri",
       "source_machine_profile_name": "Elegoo Centauri 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/EC/Elegoo Centauri 0.8 nozzle.json",
       "print_profile_options": [
@@ -4187,7 +3363,6 @@
         "Elegoo PLA @EC"
       ],
       "default_print_profile_name": "0.40mm Standard @Elegoo C 0.8 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @EC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4201,12 +3376,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri-carbon",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Elegoo Centauri Carbon",
       "source_machine_profile_name": "Elegoo Centauri Carbon 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/ECC/Elegoo Centauri Carbon 0.2 nozzle.json",
       "print_profile_options": [
@@ -4225,7 +3395,6 @@
         "Elegoo PLA @ECC"
       ],
       "default_print_profile_name": "0.10mm Standard @Elegoo CC 0.2 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4239,12 +3408,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri-carbon",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Elegoo Centauri Carbon",
       "source_machine_profile_name": "Elegoo Centauri Carbon 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/ECC/Elegoo Centauri Carbon 0.4 nozzle.json",
       "print_profile_options": [
@@ -4263,7 +3427,6 @@
         "Elegoo PLA @ECC"
       ],
       "default_print_profile_name": "0.20mm Standard @Elegoo CC 0.4 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4277,12 +3440,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri-carbon",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Elegoo Centauri Carbon",
       "source_machine_profile_name": "Elegoo Centauri Carbon 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/ECC/Elegoo Centauri Carbon 0.6 nozzle.json",
       "print_profile_options": [
@@ -4301,7 +3459,6 @@
         "Elegoo PLA @ECC"
       ],
       "default_print_profile_name": "0.30mm Standard @Elegoo CC 0.6 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4315,12 +3472,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri-carbon",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Elegoo Centauri Carbon",
       "source_machine_profile_name": "Elegoo Centauri Carbon 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/ECC/Elegoo Centauri Carbon 0.8 nozzle.json",
       "print_profile_options": [
@@ -4339,7 +3491,6 @@
         "Elegoo PLA @ECC"
       ],
       "default_print_profile_name": "0.40mm Standard @Elegoo CC 0.8 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4353,12 +3504,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri-carbon-2",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Elegoo Centauri Carbon 2",
       "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/ECC2/Elegoo Centauri Carbon 2 0.2 nozzle.json",
       "print_profile_options": [
@@ -4377,7 +3523,6 @@
         "Elegoo PLA @ECC2"
       ],
       "default_print_profile_name": "0.10mm Standard @Elegoo CC2 0.2 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC2",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4391,12 +3536,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri-carbon-2",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Elegoo Centauri Carbon 2",
       "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/ECC2/Elegoo Centauri Carbon 2 0.4 nozzle.json",
       "print_profile_options": [
@@ -4419,7 +3559,6 @@
         "Elegoo PLA @ECC2"
       ],
       "default_print_profile_name": "0.20mm Standard @Elegoo CC2 0.4 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC2",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4433,12 +3572,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri-carbon-2",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Elegoo Centauri Carbon 2",
       "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/ECC2/Elegoo Centauri Carbon 2 0.6 nozzle.json",
       "print_profile_options": [
@@ -4457,7 +3591,6 @@
         "Elegoo PLA @ECC2"
       ],
       "default_print_profile_name": "0.30mm Standard @Elegoo CC2 0.6 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC2",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4471,12 +3604,7 @@
       "slicer_id": "ElegooSlicer",
       "machine_uid": "elegoo:centauri-carbon-2",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Elegoo Centauri Carbon 2",
       "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:textured-pei"
-      ],
       "application_version": "1.5.3.5",
       "machine_profile_path": "profiles/ElegooSlicer/Elegoo/machine/ECC2/Elegoo Centauri Carbon 2 0.8 nozzle.json",
       "print_profile_options": [
@@ -4495,7 +3623,6 @@
         "Elegoo PLA @ECC2"
       ],
       "default_print_profile_name": "0.40mm Standard @Elegoo CC2 0.8 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC2",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -4509,16 +3636,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:ad5x",
       "nozzle_uid": "nozzle:0.25mm",
-      "machine_display_name": "Flashforge AD5X",
       "source_machine_profile_name": "Flashforge AD5X 0.25 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/FlashForge AD5X 0.25 nozzle.json",
       "print_profile_options": [
@@ -4615,16 +3733,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:ad5x",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Flashforge AD5X",
       "source_machine_profile_name": "Flashforge AD5X 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge AD5X 0.4 nozzle.json",
       "print_profile_options": [
@@ -4737,16 +3846,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:creator-5",
       "nozzle_uid": "nozzle:0.25mm",
-      "machine_display_name": "Flashforge Creator 5",
       "source_machine_profile_name": "Flashforge Creator 5 0.25 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge Creator 5 0.25 nozzle.json",
       "print_profile_options": [
@@ -4883,16 +3983,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:creator-5",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Flashforge Creator 5",
       "source_machine_profile_name": "Flashforge Creator 5 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge Creator 5 0.4 nozzle.json",
       "print_profile_options": [
@@ -5121,16 +4212,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:creator-5-pro",
       "nozzle_uid": "nozzle:0.25mm",
-      "machine_display_name": "Flashforge Creator 5 Pro",
       "source_machine_profile_name": "Flashforge Creator 5 Pro 0.25 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge Creator 5 Pro 0.25 nozzle.json",
       "print_profile_options": [
@@ -5267,16 +4349,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:creator-5-pro",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Flashforge Creator 5 Pro",
       "source_machine_profile_name": "Flashforge Creator 5 Pro 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge Creator 5 Pro 0.4 nozzle.json",
       "print_profile_options": [
@@ -5505,9 +4578,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:guider-3-ultra",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Flashforge Guider 3 Ultra",
       "source_machine_profile_name": "Flashforge Guider 3 Ultra 0.4 Nozzle",
-      "supported_build_plate_uids": [],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge Guider 3 Ultra 0.4 Nozzle.json",
       "print_profile_options": [
@@ -5526,7 +4597,6 @@
         "Flashforge Generic PLA @G3U"
       ],
       "default_print_profile_name": "0.20mm Standard @Flashforge G3U 0.4 Nozzle",
-      "default_filament_profile_name": "Flashforge Generic PLA @G3U",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -5540,16 +4610,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:guider4",
       "nozzle_uid": "nozzle:0.25mm",
-      "machine_display_name": "Flashforge Guider4",
       "source_machine_profile_name": "Flashforge Guider4 0.25 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge Guider4 0.25 nozzle.json",
       "print_profile_options": [
@@ -5642,16 +4703,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:guider4",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Flashforge Guider4",
       "source_machine_profile_name": "Flashforge Guider4 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge Guider4 0.4 nozzle.json",
       "print_profile_options": [
@@ -5792,16 +4844,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:guider4-pro",
       "nozzle_uid": "nozzle:0.25mm",
-      "machine_display_name": "Flashforge Guider4 Pro",
       "source_machine_profile_name": "Flashforge Guider4 Pro 0.25 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge Guider4 Pro 0.25 nozzle.json",
       "print_profile_options": [
@@ -5906,16 +4949,7 @@
       "slicer_id": "FlashStudio",
       "machine_uid": "flashforge:guider4-pro",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Flashforge Guider4 Pro",
       "source_machine_profile_name": "Flashforge Guider4 Pro 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "1.7.15",
       "machine_profile_path": "profiles/FlashStudio/Flashforge/machine/Flashforge Guider4 Pro 0.4 nozzle.json",
       "print_profile_options": [
@@ -6072,16 +5106,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:a1",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab A1",
       "source_machine_profile_name": "Bambu Lab A1 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab A1 0.2 nozzle.json",
       "print_profile_options": [
@@ -6104,7 +5129,6 @@
         "Bambu PLA Basic @BBL A1 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL A1 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6118,16 +5142,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:a1",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab A1",
       "source_machine_profile_name": "Bambu Lab A1 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab A1 0.4 nozzle.json",
       "print_profile_options": [
@@ -6150,7 +5165,6 @@
         "Bambu PLA Basic @BBL A1"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL A1",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6164,16 +5178,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:a1",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab A1",
       "source_machine_profile_name": "Bambu Lab A1 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab A1 0.6 nozzle.json",
       "print_profile_options": [
@@ -6196,7 +5201,6 @@
         "Bambu PLA Basic @BBL A1"
       ],
       "default_print_profile_name": "0.30mm Strength @BBL A1 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6210,16 +5214,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:a1",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab A1",
       "source_machine_profile_name": "Bambu Lab A1 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab A1 0.8 nozzle.json",
       "print_profile_options": [
@@ -6242,7 +5237,6 @@
         "Bambu PLA Basic @BBL A1"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL A1 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6256,14 +5250,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:a1-mini",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab A1 mini",
       "source_machine_profile_name": "Bambu Lab A1 mini 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab A1 mini 0.2 nozzle.json",
       "print_profile_options": [
@@ -6286,7 +5273,6 @@
         "Bambu PLA Basic @BBL A1M 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL A1M 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1M 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6300,14 +5286,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:a1-mini",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab A1 mini",
       "source_machine_profile_name": "Bambu Lab A1 mini 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab A1 mini 0.4 nozzle.json",
       "print_profile_options": [
@@ -6330,7 +5309,6 @@
         "Bambu PLA Basic @BBL A1M"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL A1M",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1M",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6344,14 +5322,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:a1-mini",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab A1 mini",
       "source_machine_profile_name": "Bambu Lab A1 mini 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab A1 mini 0.6 nozzle.json",
       "print_profile_options": [
@@ -6374,7 +5345,6 @@
         "Bambu PLA Basic @BBL A1M"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL A1M 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1M",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6388,14 +5358,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:a1-mini",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab A1 mini",
       "source_machine_profile_name": "Bambu Lab A1 mini 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab A1 mini 0.8 nozzle.json",
       "print_profile_options": [
@@ -6418,7 +5381,6 @@
         "Bambu PLA Basic @BBL A1M"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL A1M 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL A1M",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6432,14 +5394,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2d",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab H2D",
       "source_machine_profile_name": "Bambu Lab H2D 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2D 0.2 nozzle.json",
       "print_profile_options": [
@@ -6458,7 +5413,6 @@
         "Bambu PLA Basic @BBL H2D 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL H2D 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2D 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6472,14 +5426,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2d",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab H2D",
       "source_machine_profile_name": "Bambu Lab H2D 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2D 0.4 nozzle.json",
       "print_profile_options": [
@@ -6498,7 +5445,6 @@
         "Bambu PLA Basic @BBL H2D"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL H2D",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2D",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6512,14 +5458,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2d",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab H2D",
       "source_machine_profile_name": "Bambu Lab H2D 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2D 0.6 nozzle.json",
       "print_profile_options": [
@@ -6538,7 +5477,6 @@
         "Bambu PLA Basic @BBL H2D 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL H2D 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2D 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6552,14 +5490,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2d",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab H2D",
       "source_machine_profile_name": "Bambu Lab H2D 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2D 0.8 nozzle.json",
       "print_profile_options": [
@@ -6578,7 +5509,6 @@
         "Bambu PLA Basic @BBL H2D 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL H2D 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2D 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6592,14 +5522,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2d-pro",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab H2D Pro",
       "source_machine_profile_name": "Bambu Lab H2D Pro 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2D Pro 0.2 nozzle.json",
       "print_profile_options": [
@@ -6618,7 +5541,6 @@
         "Bambu PLA Basic @BBL H2DP 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL H2DP 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2DP 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6632,14 +5554,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2d-pro",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab H2D Pro",
       "source_machine_profile_name": "Bambu Lab H2D Pro 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2D Pro 0.4 nozzle.json",
       "print_profile_options": [
@@ -6658,7 +5573,6 @@
         "Bambu PLA Basic @BBL H2DP"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL H2DP",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2DP",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -6672,14 +5586,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2d-pro",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab H2D Pro",
       "source_machine_profile_name": "Bambu Lab H2D Pro 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2D Pro 0.6 nozzle.json",
       "print_profile_options": [
@@ -7148,14 +6055,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2d-pro",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab H2D Pro",
       "source_machine_profile_name": "Bambu Lab H2D Pro 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2D Pro 0.8 nozzle.json",
       "print_profile_options": [
@@ -7174,7 +6074,6 @@
         "Bambu PLA Basic @BBL H2DP 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL H2DP 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2DP 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7188,14 +6087,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2s",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab H2S",
       "source_machine_profile_name": "Bambu Lab H2S 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2S 0.2 nozzle.json",
       "print_profile_options": [
@@ -7214,7 +6106,6 @@
         "Bambu PLA Basic @BBL H2S 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL H2S 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2S 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7228,14 +6119,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2s",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab H2S",
       "source_machine_profile_name": "Bambu Lab H2S 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2S 0.4 nozzle.json",
       "print_profile_options": [
@@ -7254,7 +6138,6 @@
         "Bambu PLA Basic @BBL H2S"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL H2S",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2S",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7268,14 +6151,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2s",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab H2S",
       "source_machine_profile_name": "Bambu Lab H2S 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2S 0.6 nozzle.json",
       "print_profile_options": [
@@ -7294,7 +6170,6 @@
         "Bambu PLA Basic @BBL H2S 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL H2S 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2S 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7308,14 +6183,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:h2s",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab H2S",
       "source_machine_profile_name": "Bambu Lab H2S 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab H2S 0.8 nozzle.json",
       "print_profile_options": [
@@ -7334,7 +6202,6 @@
         "Bambu PLA Basic @BBL H2S 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL H2S 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL H2S 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7348,16 +6215,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p1p",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab P1P",
       "source_machine_profile_name": "Bambu Lab P1P 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P1P 0.2 nozzle.json",
       "print_profile_options": [
@@ -7380,7 +6238,6 @@
         "Bambu PLA Basic @BBL P1P 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL P1P 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1P 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7394,16 +6251,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p1p",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab P1P",
       "source_machine_profile_name": "Bambu Lab P1P 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P1P 0.4 nozzle.json",
       "print_profile_options": [
@@ -7426,7 +6274,6 @@
         "Bambu PLA Basic @BBL P1P"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL P1P",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1P",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7440,16 +6287,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p1p",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab P1P",
       "source_machine_profile_name": "Bambu Lab P1P 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P1P 0.6 nozzle.json",
       "print_profile_options": [
@@ -7472,7 +6310,6 @@
         "Bambu PLA Basic @BBL P1P"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL P1P 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1P",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7486,16 +6323,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p1p",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab P1P",
       "source_machine_profile_name": "Bambu Lab P1P 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P1P 0.8 nozzle.json",
       "print_profile_options": [
@@ -7518,7 +6346,6 @@
         "Bambu PLA Basic @BBL P1P"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL P1P 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P1P",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7532,16 +6359,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p1s",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab P1S",
       "source_machine_profile_name": "Bambu Lab P1S 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P1S 0.2 nozzle.json",
       "print_profile_options": [
@@ -7564,7 +6382,6 @@
         "Bambu PLA Basic @BBL X1C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X1C 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7578,16 +6395,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p1s",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab P1S",
       "source_machine_profile_name": "Bambu Lab P1S 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P1S 0.4 nozzle.json",
       "print_profile_options": [
@@ -7610,7 +6418,6 @@
         "Bambu PLA Basic @BBL X1C"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X1C",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7624,16 +6431,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p1s",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab P1S",
       "source_machine_profile_name": "Bambu Lab P1S 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P1S 0.6 nozzle.json",
       "print_profile_options": [
@@ -7656,7 +6454,6 @@
         "Bambu PLA Basic @BBL X1C"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X1C 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7670,16 +6467,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p1s",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab P1S",
       "source_machine_profile_name": "Bambu Lab P1S 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P1S 0.8 nozzle.json",
       "print_profile_options": [
@@ -7702,7 +6490,6 @@
         "Bambu PLA Basic @BBL X1C 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X1C 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7716,14 +6503,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p2s",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab P2S",
       "source_machine_profile_name": "Bambu Lab P2S 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P2S 0.2 nozzle.json",
       "print_profile_options": [
@@ -7742,7 +6522,6 @@
         "Bambu PLA Basic @BBL P2S 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL P2S 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P2S 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7756,14 +6535,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p2s",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab P2S",
       "source_machine_profile_name": "Bambu Lab P2S 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P2S 0.4 nozzle.json",
       "print_profile_options": [
@@ -7782,7 +6554,6 @@
         "Bambu PLA Basic @BBL P2S"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL P2S",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P2S",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7796,14 +6567,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p2s",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab P2S",
       "source_machine_profile_name": "Bambu Lab P2S 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P2S 0.6 nozzle.json",
       "print_profile_options": [
@@ -7822,7 +6586,6 @@
         "Bambu PLA Basic @BBL P2S 0.6 nozzle"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL P2S 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P2S 0.6 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7836,14 +6599,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:p2s",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab P2S",
       "source_machine_profile_name": "Bambu Lab P2S 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab P2S 0.8 nozzle.json",
       "print_profile_options": [
@@ -7862,7 +6618,6 @@
         "Bambu PLA Basic @BBL P2S 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL P2S 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL P2S 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7876,16 +6631,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab X1",
       "source_machine_profile_name": "Bambu Lab X1 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1 0.2 nozzle.json",
       "print_profile_options": [
@@ -7908,7 +6654,6 @@
         "Bambu PLA Basic @BBL X1C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X1C 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7922,16 +6667,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab X1",
       "source_machine_profile_name": "Bambu Lab X1 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1 0.4 nozzle.json",
       "print_profile_options": [
@@ -7954,7 +6690,6 @@
         "Bambu PLA Basic @BBL X1"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X1C",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -7968,16 +6703,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab X1",
       "source_machine_profile_name": "Bambu Lab X1 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1 0.6 nozzle.json",
       "print_profile_options": [
@@ -8000,7 +6726,6 @@
         "Bambu PLA Basic @BBL X1"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X1 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8014,16 +6739,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab X1",
       "source_machine_profile_name": "Bambu Lab X1 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1 0.8 nozzle.json",
       "print_profile_options": [
@@ -8046,7 +6762,6 @@
         "Bambu PLA Basic @BBL X1"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X1 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8060,16 +6775,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1-carbon",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab X1 Carbon",
       "source_machine_profile_name": "Bambu Lab X1 Carbon 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1 Carbon 0.2 nozzle.json",
       "print_profile_options": [
@@ -8092,7 +6798,6 @@
         "Bambu PLA Basic @BBL X1C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X1C 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8106,16 +6811,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1-carbon",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab X1 Carbon",
       "source_machine_profile_name": "Bambu Lab X1 Carbon 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1 Carbon 0.4 nozzle.json",
       "print_profile_options": [
@@ -8138,7 +6834,6 @@
         "Bambu PLA Basic @BBL X1C"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X1C",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8152,16 +6847,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1-carbon",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab X1 Carbon",
       "source_machine_profile_name": "Bambu Lab X1 Carbon 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1 Carbon 0.6 nozzle.json",
       "print_profile_options": [
@@ -8184,7 +6870,6 @@
         "Bambu PLA Basic @BBL X1C"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X1C 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8198,16 +6883,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1-carbon",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab X1 Carbon",
       "source_machine_profile_name": "Bambu Lab X1 Carbon 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1 Carbon 0.8 nozzle.json",
       "print_profile_options": [
@@ -8230,7 +6906,6 @@
         "Bambu PLA Basic @BBL X1C 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X1C 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8244,16 +6919,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1e",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab X1E",
       "source_machine_profile_name": "Bambu Lab X1E 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1E 0.2 nozzle.json",
       "print_profile_options": [
@@ -8276,7 +6942,6 @@
         "Bambu PLA Basic @BBL X1C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X1C 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8290,16 +6955,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1e",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab X1E",
       "source_machine_profile_name": "Bambu Lab X1E 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1E 0.4 nozzle.json",
       "print_profile_options": [
@@ -8322,7 +6978,6 @@
         "Bambu PLA Basic @BBL X1C"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X1C",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8336,16 +6991,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1e",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab X1E",
       "source_machine_profile_name": "Bambu Lab X1E 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1E 0.6 nozzle.json",
       "print_profile_options": [
@@ -8368,7 +7014,6 @@
         "Bambu PLA Basic @BBL X1C"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X1C 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8382,16 +7027,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x1e",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab X1E",
       "source_machine_profile_name": "Bambu Lab X1E 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X1E 0.8 nozzle.json",
       "print_profile_options": [
@@ -8414,7 +7050,6 @@
         "Bambu PLA Basic @BBL X1C 0.8 nozzle"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X1C 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X1C 0.8 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8428,15 +7063,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x2d",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Bambu Lab X2D",
       "source_machine_profile_name": "Bambu Lab X2D 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X2D 0.2 nozzle.json",
       "print_profile_options": [
@@ -8455,7 +7082,6 @@
         "Bambu PLA Basic @BBL X2D 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @BBL X2D 0.2 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X2D 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8469,15 +7095,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x2d",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Bambu Lab X2D",
       "source_machine_profile_name": "Bambu Lab X2D 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X2D 0.4 nozzle.json",
       "print_profile_options": [
@@ -8496,7 +7114,6 @@
         "Bambu PLA Basic @BBL X2D 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @BBL X2D",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X2D 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8510,15 +7127,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x2d",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Bambu Lab X2D",
       "source_machine_profile_name": "Bambu Lab X2D 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X2D 0.6 nozzle.json",
       "print_profile_options": [
@@ -8537,7 +7146,6 @@
         "Bambu PLA Basic @BBL X2D"
       ],
       "default_print_profile_name": "0.30mm Standard @BBL X2D 0.6 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X2D",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8551,15 +7159,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "bambu-lab:x2d",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Bambu Lab X2D",
       "source_machine_profile_name": "Bambu Lab X2D 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/BBL/machine/Bambu Lab X2D 0.8 nozzle.json",
       "print_profile_options": [
@@ -8578,7 +7178,6 @@
         "Bambu PLA Basic @BBL X2D"
       ],
       "default_print_profile_name": "0.40mm Standard @BBL X2D 0.8 nozzle",
-      "default_filament_profile_name": "Bambu PLA Basic @BBL X2D",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8592,16 +7191,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Elegoo Centauri",
       "source_machine_profile_name": "Elegoo Centauri 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/EC/Elegoo Centauri 0.2 nozzle.json",
       "print_profile_options": [
@@ -8620,7 +7210,6 @@
         "Elegoo PLA @EC"
       ],
       "default_print_profile_name": "0.10mm Standard @Elegoo C 0.2 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @EC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8634,16 +7223,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Elegoo Centauri",
       "source_machine_profile_name": "Elegoo Centauri 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/EC/Elegoo Centauri 0.4 nozzle.json",
       "print_profile_options": [
@@ -8662,7 +7242,6 @@
         "Elegoo PLA @EC"
       ],
       "default_print_profile_name": "0.20mm Standard @Elegoo C 0.4 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @EC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8676,16 +7255,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Elegoo Centauri",
       "source_machine_profile_name": "Elegoo Centauri 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/EC/Elegoo Centauri 0.6 nozzle.json",
       "print_profile_options": [
@@ -8704,7 +7274,6 @@
         "Elegoo PLA @EC"
       ],
       "default_print_profile_name": "0.30mm Standard @Elegoo C 0.6 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @EC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8718,16 +7287,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Elegoo Centauri",
       "source_machine_profile_name": "Elegoo Centauri 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/EC/Elegoo Centauri 0.8 nozzle.json",
       "print_profile_options": [
@@ -8746,7 +7306,6 @@
         "Elegoo PLA @EC"
       ],
       "default_print_profile_name": "0.40mm Standard @Elegoo C 0.8 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @EC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8760,16 +7319,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri-carbon",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Elegoo Centauri Carbon",
       "source_machine_profile_name": "Elegoo Centauri Carbon 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/ECC/Elegoo Centauri Carbon 0.2 nozzle.json",
       "print_profile_options": [
@@ -8788,7 +7338,6 @@
         "Elegoo PLA @ECC"
       ],
       "default_print_profile_name": "0.10mm Standard @Elegoo CC 0.2 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8802,16 +7351,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri-carbon",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Elegoo Centauri Carbon",
       "source_machine_profile_name": "Elegoo Centauri Carbon 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/ECC/Elegoo Centauri Carbon 0.4 nozzle.json",
       "print_profile_options": [
@@ -8830,7 +7370,6 @@
         "Elegoo PLA @ECC"
       ],
       "default_print_profile_name": "0.20mm Standard @Elegoo CC 0.4 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8844,16 +7383,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri-carbon",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Elegoo Centauri Carbon",
       "source_machine_profile_name": "Elegoo Centauri Carbon 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/ECC/Elegoo Centauri Carbon 0.6 nozzle.json",
       "print_profile_options": [
@@ -8872,7 +7402,6 @@
         "Elegoo PLA @ECC"
       ],
       "default_print_profile_name": "0.30mm Standard @Elegoo CC 0.6 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8886,16 +7415,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri-carbon",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Elegoo Centauri Carbon",
       "source_machine_profile_name": "Elegoo Centauri Carbon 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/ECC/Elegoo Centauri Carbon 0.8 nozzle.json",
       "print_profile_options": [
@@ -8914,7 +7434,6 @@
         "Elegoo PLA @ECC"
       ],
       "default_print_profile_name": "0.40mm Standard @Elegoo CC 0.8 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8928,16 +7447,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri-carbon-2",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Elegoo Centauri Carbon 2",
       "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.2 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/ECC2/Elegoo Centauri Carbon 2 0.2 nozzle.json",
       "print_profile_options": [
@@ -8956,7 +7466,6 @@
         "Elegoo PLA @ECC2"
       ],
       "default_print_profile_name": "0.10mm Standard @Elegoo CC2 0.2 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC2",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -8970,16 +7479,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri-carbon-2",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Elegoo Centauri Carbon 2",
       "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.4 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/ECC2/Elegoo Centauri Carbon 2 0.4 nozzle.json",
       "print_profile_options": [
@@ -8998,7 +7498,6 @@
         "Elegoo PLA @ECC2"
       ],
       "default_print_profile_name": "0.20mm Standard @Elegoo CC2 0.4 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC2",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9012,16 +7511,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri-carbon-2",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Elegoo Centauri Carbon 2",
       "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.6 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/ECC2/Elegoo Centauri Carbon 2 0.6 nozzle.json",
       "print_profile_options": [
@@ -9040,7 +7530,6 @@
         "Elegoo PLA @ECC2"
       ],
       "default_print_profile_name": "0.30mm Standard @Elegoo CC2 0.6 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC2",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9054,16 +7543,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "elegoo:centauri-carbon-2",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Elegoo Centauri Carbon 2",
       "source_machine_profile_name": "Elegoo Centauri Carbon 2 0.8 nozzle",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Elegoo/machine/ECC2/Elegoo Centauri Carbon 2 0.8 nozzle.json",
       "print_profile_options": [
@@ -9082,7 +7562,6 @@
         "Elegoo PLA @ECC2"
       ],
       "default_print_profile_name": "0.40mm Standard @Elegoo CC2 0.8 nozzle",
-      "default_filament_profile_name": "Elegoo PLA @ECC2",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9096,16 +7575,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "snapmaker:u1",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Snapmaker U1",
       "source_machine_profile_name": "Snapmaker U1 (0.4 nozzle)",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "compatibility_project": {
         "path": "compatibility-projects/orca-2.2.4-snapmaker-u1-0.4.json",
         "source_slicer_id": "OrcaSlicer",
@@ -9410,16 +7880,7 @@
       "slicer_id": "OrcaSlicer",
       "machine_uid": "snapmaker:u1",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Snapmaker U1",
       "source_machine_profile_name": "Snapmaker U1 (0.6 nozzle)",
-      "supported_build_plate_uids": [
-        "plate:cool",
-        "plate:engineering",
-        "plate:smooth-pei",
-        "plate:textured-pei",
-        "plate:textured-cool",
-        "plate:supertack"
-      ],
       "application_version": "2.4.2",
       "machine_profile_path": "profiles/OrcaSlicer/Snapmaker/machine/Snapmaker U1 (0.6 nozzle).json",
       "print_profile_options": [
@@ -9460,7 +7921,6 @@
       "slicer_id": "QIDIStudio",
       "machine_uid": "qidi:q2",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Q2",
       "source_machine_profile_name": "Q2 0.2 nozzle",
       "application_version": "02.07.02.60",
       "machine_profile_path": "profiles/QIDIStudio/Q Series/machine/Qidi Q2 0.2 nozzle.json",
@@ -9480,7 +7940,6 @@
         "QIDI PLA Rapido @Qidi Q2 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @Q2 0.2 nozzle",
-      "default_filament_profile_name": "QIDI PLA Rapido @Qidi Q2 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9494,7 +7953,6 @@
       "slicer_id": "QIDIStudio",
       "machine_uid": "qidi:q2",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Q2",
       "source_machine_profile_name": "Q2 0.4 nozzle",
       "application_version": "02.07.02.60",
       "machine_profile_path": "profiles/QIDIStudio/Q Series/machine/Qidi Q2 0.4 nozzle.json",
@@ -9518,7 +7976,6 @@
         "QIDI PLA Rapido @Qidi Q2 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @Q2",
-      "default_filament_profile_name": "QIDI PLA Rapido @Qidi Q2 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9532,7 +7989,6 @@
       "slicer_id": "QIDIStudio",
       "machine_uid": "qidi:q2c",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Q2C",
       "source_machine_profile_name": "Q2C 0.2 nozzle",
       "application_version": "02.07.02.60",
       "machine_profile_path": "profiles/QIDIStudio/Q Series/machine/Qidi Q2C 0.2 nozzle.json",
@@ -9552,7 +8008,6 @@
         "QIDI PLA Rapido @Qidi Q2C 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @Q2C 0.2 nozzle",
-      "default_filament_profile_name": "QIDI PLA Rapido @Qidi Q2C 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9566,7 +8021,6 @@
       "slicer_id": "QIDIStudio",
       "machine_uid": "qidi:q2c",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Q2C",
       "source_machine_profile_name": "Q2C 0.4 nozzle",
       "application_version": "02.07.02.60",
       "machine_profile_path": "profiles/QIDIStudio/Q Series/machine/Qidi Q2C 0.4 nozzle.json",
@@ -9586,7 +8040,6 @@
         "QIDI PLA Rapido @Qidi Q2C 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @Q2C",
-      "default_filament_profile_name": "QIDI PLA Rapido @Qidi Q2C 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9600,7 +8053,6 @@
       "slicer_id": "QIDIStudio",
       "machine_uid": "qidi:x-max-4",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "X-Max 4",
       "source_machine_profile_name": "X-Max 4 0.2 nozzle",
       "application_version": "02.07.02.60",
       "machine_profile_path": "profiles/QIDIStudio/X 4 Series/machine/Qidi X-Max 4 0.2 nozzle.json",
@@ -9620,7 +8072,6 @@
         "QIDI PLA Rapido @Qidi X-Max 4 0.2 nozzle"
       ],
       "default_print_profile_name": "0.10mm Standard @X-Max 4 0.2 nozzle",
-      "default_filament_profile_name": "QIDI PLA Rapido @Qidi X-Max 4 0.2 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9634,7 +8085,6 @@
       "slicer_id": "QIDIStudio",
       "machine_uid": "qidi:x-max-4",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "X-Max 4",
       "source_machine_profile_name": "X-Max 4 0.4 nozzle",
       "application_version": "02.07.02.60",
       "machine_profile_path": "profiles/QIDIStudio/X 4 Series/machine/Qidi X-Max 4 0.4 nozzle.json",
@@ -9654,7 +8104,6 @@
         "QIDI PLA Rapido @Qidi X-Max 4 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @X-Max 4",
-      "default_filament_profile_name": "QIDI PLA Rapido @Qidi X-Max 4 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9668,7 +8117,6 @@
       "slicer_id": "QIDIStudio",
       "machine_uid": "qidi:x-plus-5",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "X-Plus 5",
       "source_machine_profile_name": "X-Plus 5 0.4 nozzle",
       "application_version": "02.07.02.60",
       "machine_profile_path": "profiles/QIDIStudio/X 5 Series/machine/Qidi X-Plus 5 0.4 nozzle.json",
@@ -9688,7 +8136,6 @@
         "QIDI PLA Rapido @Qidi X-Plus 5 0.4 nozzle"
       ],
       "default_print_profile_name": "0.20mm Standard @X-Plus 5",
-      "default_filament_profile_name": "QIDI PLA Rapido @Qidi X-Plus 5 0.4 nozzle",
       "availability": {
         "machine": "available",
         "process": "available",
@@ -9702,11 +8149,7 @@
       "slicer_id": "SnapmakerOrca",
       "machine_uid": "snapmaker:u1",
       "nozzle_uid": "nozzle:0.2mm",
-      "machine_display_name": "Snapmaker U1",
       "source_machine_profile_name": "Snapmaker U1 (0.2 nozzle)",
-      "supported_build_plate_uids": [
-        "plate:textured-pei"
-      ],
       "application_version": "2.3.6",
       "machine_profile_path": "profiles/SnapmakerOrca/Snapmaker/machine/Snapmaker U1 (0.2 nozzle).json",
       "print_profile_options": [
@@ -9811,11 +8254,7 @@
       "slicer_id": "SnapmakerOrca",
       "machine_uid": "snapmaker:u1",
       "nozzle_uid": "nozzle:0.4mm",
-      "machine_display_name": "Snapmaker U1",
       "source_machine_profile_name": "Snapmaker U1 (0.4 nozzle)",
-      "supported_build_plate_uids": [
-        "plate:textured-pei"
-      ],
       "application_version": "2.3.6",
       "machine_profile_path": "profiles/SnapmakerOrca/Snapmaker/machine/Snapmaker U1 (0.4 nozzle).json",
       "print_profile_options": [
@@ -10052,11 +8491,7 @@
       "slicer_id": "SnapmakerOrca",
       "machine_uid": "snapmaker:u1",
       "nozzle_uid": "nozzle:0.6mm",
-      "machine_display_name": "Snapmaker U1",
       "source_machine_profile_name": "Snapmaker U1 (0.6 nozzle)",
-      "supported_build_plate_uids": [
-        "plate:textured-pei"
-      ],
       "application_version": "2.3.6",
       "machine_profile_path": "profiles/SnapmakerOrca/Snapmaker/machine/Snapmaker U1 (0.6 nozzle).json",
       "print_profile_options": [
@@ -10209,11 +8644,7 @@
       "slicer_id": "SnapmakerOrca",
       "machine_uid": "snapmaker:u1",
       "nozzle_uid": "nozzle:0.8mm",
-      "machine_display_name": "Snapmaker U1",
       "source_machine_profile_name": "Snapmaker U1 (0.8 nozzle)",
-      "supported_build_plate_uids": [
-        "plate:textured-pei"
-      ],
       "application_version": "2.3.6",
       "machine_profile_path": "profiles/SnapmakerOrca/Snapmaker/machine/Snapmaker U1 (0.8 nozzle).json",
       "print_profile_options": [

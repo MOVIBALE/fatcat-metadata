@@ -275,7 +275,12 @@ def _load_target(slicer_id: str) -> dict[str, Any]:
 
 def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str, Any],
                   source_paths: set[str], links: dict[str, dict[str, str]]) -> dict[str, Any]:
-    entry = dict(row)
+    # Display and plate policy belong to the source map/canonical bindings.
+    # The runtime index records only source identity and preset selection.
+    entry = {
+        key: value for key, value in row.items()
+        if key not in {"machine_display_name", "supported_build_plate_uids"}
+    }
     entry["application_version"] = target["target_contract"]["application_version"]
     machine_path = _select_machine(catalog, row["source_machine_profile_name"])
     if machine_path is None:
@@ -345,19 +350,12 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
         if not machine_process_names and len(target_processes) == 1
         else None
     )
-    default_material = (
-        machine_material_names[0]
-        if len(machine_material_names) == 1
-        else None
-    )
     if machine_material_names:
         # Preserve the native order: slicers use these names as preferred
         # defaults by material slot, with the first name as the fallback.
         entry["default_filament_profile_names"] = machine_material_names
     if default_process in available_processes:
         entry["default_print_profile_name"] = default_process
-    if default_material in available_materials:
-        entry["default_filament_profile_name"] = default_material
     missing = []
     if not available_processes:
         reason = (

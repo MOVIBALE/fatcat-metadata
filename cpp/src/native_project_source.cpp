@@ -102,10 +102,6 @@ const json &required_array(const json &object, const char *key,
     return *found;
 }
 
-json read_profile(const std::filesystem::path &data_root, const std::string &path) {
-    return read_json(safe_path(data_root, path), "native profile");
-}
-
 std::string linked_profile_path(const json &index, const std::string &profile_path,
                                 const std::string &kind,
                                 const std::string &profile_name) {
@@ -123,61 +119,79 @@ std::string linked_profile_path(const json &index, const std::string &profile_pa
     return edges.at(reference_key).get<std::string>();
 }
 
-json resolve_profile(const std::filesystem::path &data_root, const json &index,
-                     const std::string &profile_path,
-                     std::vector<std::string> &ancestry) {
-    if (std::find(ancestry.begin(), ancestry.end(), profile_path) != ancestry.end() ||
-        ancestry.size() >= 48) {
-        invalid("cyclic or excessively deep native profile chain at " + profile_path);
-    }
-    ancestry.push_back(profile_path);
-    const json source = read_profile(data_root, profile_path);
-    json result = json::object();
+class NativeProfileCatalog {
+public:
+    explicit NativeProfileCatalog(const std::filesystem::path &data_root)
+        : data_root_(data_root), index_(read_index(data_root)) {}
 
-    const auto inherits = source.find("inherits");
-    if (inherits != source.end() && !inherits->is_null() &&
-        !(inherits->is_string() && inherits->get<std::string>().empty())) {
-        if (!inherits->is_string()) {
-            invalid("native profile inherits field must be text: " + profile_path);
+    const json &index() const { return index_; }
+
+    const json &read(const std::string &profile_path) {
+        const auto found = profiles_.find(profile_path);
+        if (found != profiles_.end()) return found->second;
+        return profiles_.emplace(profile_path, read_json(
+            safe_path(data_root_, profile_path), "native profile")).first->second;
+    }
+
+    json resolve(const std::string &profile_path) {
+        std::vector<std::string> ancestry;
+        return resolve(profile_path, ancestry);
+    }
+
+private:
+    // Raw files live only for this public call. Resolve each chain normally so
+    // cycle/depth checks and include precedence remain independent of reuse.
+    std::filesystem::path data_root_;
+    json index_;
+    std::map<std::string, json> profiles_;
+
+    json resolve(const std::string &profile_path,
+                 std::vector<std::string> &ancestry) {
+        if (std::find(ancestry.begin(), ancestry.end(), profile_path) != ancestry.end() ||
+            ancestry.size() >= 48) {
+            invalid("cyclic or excessively deep native profile chain at " + profile_path);
         }
-        const auto name = inherits->get<std::string>();
-        result.update(resolve_profile(
-            data_root, index,
-            linked_profile_path(index, profile_path, "inherits", name), ancestry));
-    }
+        ancestry.push_back(profile_path);
+        const json &source = read(profile_path);
+        json result = json::object();
 
-    const auto includes = source.find("include");
-    if (includes != source.end() && !includes->is_null()) {
-        std::vector<std::string> names;
-        if (includes->is_string()) {
-            names.push_back(includes->get<std::string>());
-        } else if (includes->is_array()) {
-            for (const auto &include : *includes) {
-                if (!include.is_string() || include.get<std::string>().empty()) {
-                    invalid("native profile include must contain preset names: " + profile_path);
-                }
-                names.push_back(include.get<std::string>());
+        const auto inherits = source.find("inherits");
+        if (inherits != source.end() && !inherits->is_null() &&
+            !(inherits->is_string() && inherits->get<std::string>().empty())) {
+            if (!inherits->is_string()) {
+                invalid("native profile inherits field must be text: " + profile_path);
             }
-        } else {
-            invalid("native profile include must be text or an array: " + profile_path);
+            const auto name = inherits->get<std::string>();
+            result.update(resolve(
+                linked_profile_path(index_, profile_path, "inherits", name), ancestry));
         }
-        for (const auto &name : names) {
-            result.update(resolve_profile(
-                data_root, index,
-                linked_profile_path(index, profile_path, "include", name), ancestry));
+
+        const auto includes = source.find("include");
+        if (includes != source.end() && !includes->is_null()) {
+            std::vector<std::string> names;
+            if (includes->is_string()) {
+                names.push_back(includes->get<std::string>());
+            } else if (includes->is_array()) {
+                for (const auto &include : *includes) {
+                    if (!include.is_string() || include.get<std::string>().empty()) {
+                        invalid("native profile include must contain preset names: " + profile_path);
+                    }
+                    names.push_back(include.get<std::string>());
+                }
+            } else {
+                invalid("native profile include must be text or an array: " + profile_path);
+            }
+            for (const auto &name : names) {
+                result.update(resolve(
+                    linked_profile_path(index_, profile_path, "include", name), ancestry));
+            }
         }
+
+        result.update(source);
+        ancestry.pop_back();
+        return result;
     }
-
-    result.update(source);
-    ancestry.pop_back();
-    return result;
-}
-
-json resolve_profile(const std::filesystem::path &data_root, const json &index,
-                     const std::string &profile_path) {
-    std::vector<std::string> ancestry;
-    return resolve_profile(data_root, index, profile_path, ancestry);
-}
+};
 
 bool structural_profile_key(const std::string &key) {
     static const std::set<std::string> keys = {
@@ -665,8 +679,8 @@ std::optional<std::string> preferred_material_profile(
 }
 
 std::vector<SelectedMaterialProfile> select_material_profiles(
-    const json &request, const json &target, const json &source, const json &index,
-    const std::filesystem::path &data_root, const std::string &machine_uid,
+    const json &request, const json &target, const json &source,
+    NativeProfileCatalog &catalog, const std::string &machine_uid,
     const std::string &nozzle_uid, const json &materials, const json &plate,
     bool allow_retained = false) {
     const std::size_t material_count = materials.size();
@@ -686,7 +700,7 @@ std::vector<SelectedMaterialProfile> select_material_profiles(
         if (cached != resolved_profiles.end()) return cached->second;
         const auto &option = find_profile_option(material_options, name, "native material source");
         const auto path = required_string(option, "path", "native material source");
-        return resolved_profiles.emplace(name, resolve_profile(data_root, index, path)).first->second;
+        return resolved_profiles.emplace(name, catalog.resolve(path)).first->second;
     };
 
     std::vector<std::string> defaults;
@@ -959,7 +973,8 @@ json compose_builtin_project(const json &input_request, const json &canonical,
         invalid("request slicer/version does not match the pinned target data");
     }
 
-    const json index = read_index(data_root);
+    NativeProfileCatalog catalog(data_root);
+    const json &index = catalog.index();
     const auto matches = matching_source_rows(index, slicer_id, application_version,
                                               machine_uid, nozzle_uid);
     if (matches.size() != 1) {
@@ -994,7 +1009,7 @@ json compose_builtin_project(const json &input_request, const json &canonical,
         if (process_name != required_string(record, "source_profile_name", "compatibility source")) {
             invalid("requested process does not match the recorded compatibility source");
         }
-        const auto payload = read_profile(data_root, required_string(record, "path", "compatibility source"));
+        const auto &payload = catalog.read(required_string(record, "path", "compatibility source"));
         provenance = payload.at("source");
         for (const auto *key : {"source_slicer_id", "source_application_version", "source_profile_name"}) {
             if (provenance.at(key) != record.at(key)) invalid("compatibility provenance differs from source index");
@@ -1011,11 +1026,11 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     } else {
         const auto &options = profile_options(source, "print_profile_options", "native source");
         const auto &option = find_profile_option(options, process_name, "native process source");
-        process = resolve_profile(data_root, index, required_string(option, "path", "native process source"));
+        process = catalog.resolve(required_string(option, "path", "native process source"));
     }
 
     const auto machine_path = required_string(source, "machine_profile_path", "native source");
-    const json machine = resolve_profile(data_root, index, machine_path);
+    const json machine = catalog.resolve(machine_path);
     json plate_project = json::object();
     if (compatibility) merge_profile_settings(plate_project, process);
     merge_profile_settings(plate_project, machine, true);
@@ -1037,7 +1052,7 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     std::vector<SelectedMaterialProfile> selected_materials;
     if (!retained_materials) {
         selected_materials = select_material_profiles(
-            input_request, target, source, index, data_root, machine_uid, nozzle_uid, materials, plate, allow_retained);
+            input_request, target, source, catalog, machine_uid, nozzle_uid, materials, plate, allow_retained);
         if (selected_materials.empty() && allow_retained) retained_materials = true;
     }
     if (retained_materials) {
@@ -1172,7 +1187,8 @@ std::string native_project_source_catalog(
     std::string_view application_version,
     const std::filesystem::path &data_root) {
     try {
-        const auto index = read_index(data_root);
+        NativeProfileCatalog catalog(data_root);
+        const auto &index = catalog.index();
         json sources = json::array();
         for (const auto &source : index.at("sources")) {
             if (!source.is_object() ||
@@ -1182,7 +1198,7 @@ std::string native_project_source_catalog(
             }
             const auto machine_path = required_string(
                 source, "machine_profile_path", "native source");
-            const auto machine = resolve_profile(data_root, index, machine_path);
+            const auto machine = catalog.resolve(machine_path);
             json hardware = json::object();
             for (const auto *key : {"printer_model", "nozzle_diameter"}) {
                 if (machine.contains(key)) hardware[key] = machine.at(key);

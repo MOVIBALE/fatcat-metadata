@@ -49,6 +49,14 @@ that declaration and records its incompatibility, then discovers instantiated
 materials in the same native catalogue whose inherited compatibility names the
 exact machine. It copies their real inheritance/include closure unchanged.
 
+The generated index keeps native source identities, ordered material defaults,
+preset options and exact inheritance links. Display names and supported plate
+policy remain in `native-source-map.json` and the generated canonical/target
+bindings; do not duplicate them in source rows. A single material default uses
+the ordered `default_filament_profile_names` array too. Runtime profile reads
+are reused only within one composition/catalog call, so later calls reload
+updated files and inheritance cycle/depth checks remain active.
+
 OrcaSlicer 2.4.2 U1 0.4 mm has no native process. Its recorded complete Orca
 2.2.4 project supplies the process. For Textured PEI, the native 2.4.2
 `Snapmaker PLA @U1` profile has a zero plate temperature and cannot be selected;
