@@ -2682,6 +2682,9 @@
       "native_schema_defaults": {
         "source": "https://raw.githubusercontent.com/OrcaSlicer/OrcaSlicer/v2.4.2/src/libslic3r/PrintConfig.cpp",
         "values": {
+          "filament_extruder_variant": [
+            "Direct Drive Standard"
+          ],
           "first_x_layer_fan_speed": [
             "0"
           ]
@@ -2759,6 +2762,7 @@
             "filament_unloading_speed",
             "filament_unloading_speed_start",
             "filament_vendor",
+            "first_x_layer_fan_speed",
             "full_fan_speed_layer",
             "hot_plate_temp",
             "hot_plate_temp_initial_layer",

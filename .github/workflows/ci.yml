@@ -15,28 +15,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-latest
-            python-version: "3.12"
-          - os: ubuntu-latest
-            python-version: "3.13"
-          - os: ubuntu-latest
-            python-version: "3.14"
-          - os: macos-latest
-            python-version: "3.14"
-          - os: windows-latest
-            python-version: "3.14"
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install --upgrade pip
-      - run: python -m pip install .
+      - name: Build wheel
+        run: python -m pip wheel . --no-deps --wheel-dir dist
+      - name: Install the built wheel
+        run: python -m pip install --no-index --find-links dist fatcat-metadata
       - run: python "${{ github.workspace }}/scripts/check_installed_package.py"
         working-directory: ${{ runner.temp }}
       - run: python -m unittest discover -s "${{ github.workspace }}/cpp/tests" -p "test_*.py" -v
         working-directory: ${{ runner.temp }}
+      - name: Save the verified wheel
+        uses: actions/upload-artifact@v7
+        with:
+          name: fatcat-metadata-${{ runner.os }}-${{ runner.arch }}-cp${{ matrix.python-version }}
+          path: dist/*.whl
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
 
   cpp:
     name: C++ ${{ matrix.build_type }} (${{ matrix.os }})
@@ -48,9 +50,13 @@ jobs:
         build_type: [Debug, Release]
     steps:
       - uses: actions/checkout@v7
-      - run: cmake -S cpp -B build -DFATCAT_BUILD_PYTHON=OFF -DFATCAT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      - run: cmake -S cpp -B build -DFATCAT_BUILD_PYTHON=OFF -DFATCAT_BUILD_TESTS=ON -DFATCAT_INSTALL_CPP=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
       - run: cmake --build build --config ${{ matrix.build_type }} --parallel 2
       - run: ctest --test-dir build --output-on-failure -C ${{ matrix.build_type }}
+      - run: cmake --install build --config ${{ matrix.build_type }} --prefix "${{ runner.temp }}/fatcat-sdk"
+      - run: cmake -S cpp/examples/out_of_tree_consumer -B build-installed-consumer -DFATCAT_CONSUME_INSTALLED=ON -DCMAKE_PREFIX_PATH="${{ runner.temp }}/fatcat-sdk" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      - run: cmake --build build-installed-consumer --config ${{ matrix.build_type }} --parallel 2
+      - run: ctest --test-dir build-installed-consumer --output-on-failure -C ${{ matrix.build_type }} --no-tests=error
 
   cpp-non-c-locale:
     name: C++ comma-decimal locale (Linux)
@@ -86,3 +92,5 @@ jobs:
       - run: python -m pip install . "neroued-3mf==0.4.0"
       - run: python cpp/examples/python_neroued_consumer/write_example.py --output "$RUNNER_TEMP/fatcat-consumer-example.3mf"
       - run: python cpp/examples/python_neroued_consumer/verify_3mf.py "$RUNNER_TEMP/fatcat-consumer-example.3mf"
+      - run: python cpp/examples/python_neroued_consumer/minimal.py --output "$RUNNER_TEMP/fatcat-minimal-example.3mf"
+      - run: python cpp/examples/python_neroued_consumer/verify_3mf.py "$RUNNER_TEMP/fatcat-minimal-example.3mf"

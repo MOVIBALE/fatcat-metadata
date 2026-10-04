@@ -1,11 +1,9 @@
 #include "fatcat/project_settings.h"
 
 #include <algorithm>
-#include <cmath>
 #include <cctype>
 #include <cstdint>
 #include <iterator>
-#include <limits>
 #include <map>
 #include <optional>
 #include <set>
@@ -17,89 +15,21 @@
 
 #include <nlohmann/json.hpp>
 
-#include "fatcat/wipe_tower.h"
+#include "json_object.h"
+
 #include "fatcat/source_project_settings.h"
 #include "difference_index.h"
 #include "filament_projection.h"
+#include "project_settings_internal.h"
+#include "project_settings_merge.h"
+#include "project_settings_overrides.h"
 
 namespace fatcat {
 namespace {
 
-using json = nlohmann::json;
+using namespace detail::project_settings_internal;
 using detail::difference_tokens;
 using detail::render_difference_tokens;
-
-[[noreturn]] void invalid(std::string message) {
-    throw ProjectSettingsError(std::move(message));
-}
-
-json parse_json(std::string_view text, std::string_view name) {
-    bool duplicate_key = false;
-    std::string duplicate_name;
-    std::vector<std::set<std::string>> object_keys;
-    const json::parser_callback_t callback =
-        [&](int, json::parse_event_t event, json &parsed) {
-            if (event == json::parse_event_t::object_start) {
-                object_keys.emplace_back();
-            } else if (event == json::parse_event_t::object_end) {
-                if (!object_keys.empty()) {
-                    object_keys.pop_back();
-                }
-            } else if (event == json::parse_event_t::key &&
-                       !object_keys.empty()) {
-                const auto key = parsed.get<std::string>();
-                if (!object_keys.back().insert(key).second) {
-                    duplicate_key = true;
-                    duplicate_name = key;
-                    return false;
-                }
-            }
-            return true;
-        };
-    try {
-        json parsed = json::parse(text, callback, true, false);
-        if (duplicate_key) {
-            invalid("duplicate JSON field in " + std::string(name) + ": " +
-                    duplicate_name);
-        }
-        if (!parsed.is_object()) {
-            invalid(std::string(name) + " must be a JSON object");
-        }
-        return parsed;
-    } catch (const ProjectSettingsError &) {
-        throw;
-    } catch (const json::exception &error) {
-        invalid("invalid " + std::string(name) + " JSON: " + error.what());
-    }
-}
-
-const json &required_member(const json &object, std::string_view key,
-                            std::string_view context) {
-    if (!object.contains(key)) {
-        invalid(std::string(context) + " is missing required field '" +
-                std::string(key) + "'");
-    }
-    return object.at(key);
-}
-
-std::string required_string(const json &object, std::string_view key,
-                            std::string_view context) {
-    const json &value = required_member(object, key, context);
-    if (!value.is_string() || value.get<std::string>().empty()) {
-        invalid(std::string(context) + "." + std::string(key) +
-                " must be non-empty text");
-    }
-    return value.get<std::string>();
-}
-
-bool contains_string(const json &array, const std::string &value) {
-    if (!array.is_array()) {
-        return false;
-    }
-    return std::any_of(array.begin(), array.end(), [&](const json &item) {
-        return item.is_string() && item.get<std::string>() == value;
-    });
-}
 
 const json &find_binding(const json &root, std::string_view array_key,
                          const std::string &first_key, const std::string &first,
@@ -190,6 +120,7 @@ void validate_request_keys(const json &request) {
         "filament_source_slots",
         "disable_cut_retraction",
         "merge_sources",
+        "merge_default_project",
         "hardware_mode",
         "source_materials",
         "process_settings",
@@ -201,59 +132,6 @@ void validate_request_keys(const json &request) {
     for (const auto &[key, ignored] : request.items()) {
         if (allowed.find(key) == allowed.end()) {
             invalid("request contains unsupported field '" + key + "'");
-        }
-    }
-}
-
-std::vector<std::string> string_array(const json &value,
-                                      std::string_view context,
-                                      bool allow_empty = true) {
-    if (!value.is_array()) {
-        invalid(std::string(context) + " must be an array");
-    }
-    std::vector<std::string> values;
-    values.reserve(value.size());
-    for (const json &item : value) {
-        if (!item.is_string() || (!allow_empty && item.get<std::string>().empty())) {
-            invalid(std::string(context) + " must contain text values");
-        }
-        values.push_back(item.get<std::string>());
-    }
-    return values;
-}
-
-std::vector<std::string> required_string_array(const json &object,
-                                               std::string_view key,
-                                               std::string_view context) {
-    return string_array(required_member(object, key, context),
-                        std::string(context) + "." + std::string(key), false);
-}
-
-void validate_slots(const json &project, std::size_t &slot_count) {
-    const auto ids = required_string_array(project, "filament_settings_id", "project");
-    const auto types = required_string_array(project, "filament_type", "project");
-    slot_count = ids.size();
-    if (slot_count == 0) {
-        invalid("project filament_settings_id must contain at least one slot");
-    }
-    if (types.size() != slot_count) {
-        invalid("project.filament_type slots must match filament_settings_id");
-    }
-
-    // Only fields with an explicit per-slot contract are aligned here. Vendor
-    // and compatible-printer descriptions are allowed to be absent or empty.
-    for (const auto &key : {std::string("filament_ids"),
-                            std::string("filament_vendor"),
-                            std::string("filament_compatible_printers"),
-                            std::string("filament_colour"),
-                            std::string("filament_multi_colour")}) {
-        if (!project.contains(key)) {
-            continue;
-        }
-        const auto values = string_array(
-            project.at(key), "project." + key, key != "filament_ids");
-        if (values.size() != slot_count) {
-            invalid("project." + key + " slots must match filament_settings_id");
         }
     }
 }
@@ -321,17 +199,6 @@ void prepare_registry_only_native_project(json &project,
     // The registry machine preset carries only process differences, whereas
     // the project snapshot uses process + N material entries + machine tail.
     expand_difference_index();
-}
-
-void validate_source_hardware(const json &project, const json &machine) {
-    if (!project.contains("printer_model") ||
-        project.at("printer_model") != required_member(machine, "printer_model", "machine")) {
-        invalid("source project machine model does not match the exact target machine");
-    }
-    if (!project.contains("nozzle_diameter") ||
-        project.at("nozzle_diameter") != required_member(machine, "nozzle_diameter", "machine")) {
-        invalid("source project machine/nozzle does not match the exact target nozzle");
-    }
 }
 
 void select_first_slot_variants(json &project, const json &machine,
@@ -672,401 +539,6 @@ void validate_canonical_selection(const json &canonical,
     find_binding(canonical, "build_plates", "build_plate_uid", plate_uid);
 }
 
-void validate_preserved_build_plate(const json &project, const json &plate) {
-    if (!project.contains("curr_bed_type")) {
-        return;
-    }
-    if (!project.at("curr_bed_type").is_string()) {
-        invalid("project.curr_bed_type must be text in preserve_template mode");
-    }
-    const std::string target_plate = required_string(plate, "project_value", "build plate");
-    if (project.at("curr_bed_type").get<std::string>() != target_plate) {
-        invalid("preserve_template build plate conflicts with the selected target plate");
-    }
-}
-
-double parse_numeric_token(const std::string &value, std::string_view field) {
-    double number = 0.0;
-    if (!detail::parse_finite_decimal_string(value, number)) {
-        invalid("request." + std::string(field) +
-                " must be a finite numeric string");
-    }
-    return number;
-}
-
-double numeric_value(const std::string &value, std::string_view field) {
-    return parse_numeric_token(value, field);
-}
-
-json normalized_numeric_value(const std::string &raw, std::string_view field) {
-    const double number = parse_numeric_token(raw, field);
-    if (number == 0.0 && !raw.empty() && raw.front() == '-') {
-        // Keep the sign until A2 formats the value so -0 follows its contract.
-        return json::parse("-0.0");
-    }
-    return json(number);
-}
-
-void validate_positive_number(const json &request, const std::string &key) {
-    if (!request.at(key).is_string()) {
-        invalid("request." + key + " must be text");
-    }
-    if (!(numeric_value(request.at(key).get<std::string>(), key) > 0.0)) {
-        invalid("request." + key + " must be finite and positive");
-    }
-}
-
-void validate_density(const json &request) {
-    const std::string value = request.at("sparse_infill_density").get<std::string>();
-    if (value.empty()) {
-        invalid("request.sparse_infill_density must be a finite percentage");
-    }
-    const bool percent = value.back() == '%';
-    const std::string numeric = percent ? value.substr(0, value.size() - 1) : value;
-    const double density = numeric_value(numeric, "sparse_infill_density");
-    if (density < 0.0 || density > 100.0) {
-        invalid("request.sparse_infill_density must be between 0% and 100%");
-    }
-}
-
-void apply_scalar_overrides(json &project, const json &request,
-                            std::vector<std::string> &changed_keys) {
-    static const std::vector<std::string> scalar_keys = {
-        "layer_height",
-        "initial_layer_print_height",
-        "initial_layer_height",
-        "line_width",
-        "initial_layer_line_width",
-        "inner_wall_line_width",
-        "outer_wall_line_width",
-        "top_surface_line_width",
-        "sparse_infill_line_width",
-        "internal_solid_infill_line_width",
-        "support_line_width",
-        "wall_loops",
-        "top_shell_layers",
-        "bottom_shell_layers",
-        "bottom_surface_pattern",
-        "elefant_foot_compensation",
-        "sparse_infill_density",
-        "sparse_infill_pattern",
-        "print_speed",
-        "travel_speed",
-        "enable_support",
-        "single_extruder_multi_material",
-        "precise_outer_wall",
-        "brim_type",
-        "brim_width",
-        "wall_generator",
-        "skirt_loops",
-        "skirt_distance",
-        "skirt_height",
-        "draft_shield",
-    };
-    for (const auto &key : scalar_keys) {
-        if (!request.contains(key)) {
-            continue;
-        }
-        if (!request.at(key).is_string()) {
-            invalid("request." + key + " must be text");
-        }
-        if (key == "layer_height" || key == "initial_layer_print_height" ||
-            key == "initial_layer_height") {
-            validate_positive_number(request, key);
-        } else if (key == "sparse_infill_density") {
-            validate_density(request);
-        } else if (key == "sparse_infill_pattern" &&
-                   request.at(key).get<std::string>().empty()) {
-            invalid("request.sparse_infill_pattern must be non-empty text");
-        } else if (key == "brim_type" && request.at(key).get<std::string>().empty()) {
-            invalid("request.brim_type must be non-empty text");
-        } else if (key == "brim_width") {
-            const double width = numeric_value(request.at(key).get<std::string>(), key);
-            if (width < 0.0) {
-                invalid("request.brim_width must be finite and non-negative");
-            }
-        }
-        project[key] = request.at(key);
-        changed_keys.push_back(key);
-    }
-}
-
-json target_tower_dialect(const json &target) {
-    const json &tower = required_member(
-        required_member(target, "package_dialect", "target data"),
-        "wipe_tower", "package dialect");
-    return {
-        {"enabled_key", required_string(tower, "enabled_key", "wipe tower dialect")},
-        {"x_key", required_string(tower, "x_key", "wipe tower dialect")},
-        {"y_key", required_string(tower, "y_key", "wipe tower dialect")},
-        {"width_key", required_string(tower, "width_key", "wipe tower dialect")},
-        {"rotation_key", required_string(tower, "rotation_key", "wipe tower dialect")},
-        {"process_difference_key",
-         required_string(tower, "process_difference_key", "wipe tower dialect")},
-    };
-}
-
-std::string scalar_tower_settings(const json &request) {
-    json settings = json::object();
-    if (request.contains("enable_prime_tower")) {
-        const json &value = request.at("enable_prime_tower");
-        if (!value.is_string()) {
-            invalid("request.enable_prime_tower must be text");
-        }
-        const auto enabled = value.get<std::string>();
-        if (enabled != "0" && enabled != "1") {
-            invalid("request.enable_prime_tower must be exactly 0 or 1");
-        }
-        settings["enabled"] = enabled == "1";
-    }
-    if (request.contains("prime_tower_width")) {
-        const auto &value = request.at("prime_tower_width");
-        if (!value.is_string()) {
-            invalid("request.prime_tower_width must be text");
-        }
-        const auto raw = value.get<std::string>();
-        if (!(numeric_value(raw, "prime_tower_width") > 0.0)) {
-            invalid("request.prime_tower_width must be finite and positive");
-        }
-        settings["width_mm"] = normalized_numeric_value(raw, "prime_tower_width");
-    }
-    if (request.contains("wipe_tower_rotation_angle")) {
-        const auto &value = request.at("wipe_tower_rotation_angle");
-        if (!value.is_string()) {
-            invalid("request.wipe_tower_rotation_angle must be text");
-        }
-        const auto raw = value.get<std::string>();
-        settings["rotation_deg"] =
-            normalized_numeric_value(raw, "wipe_tower_rotation_angle");
-    }
-    return settings.dump();
-}
-
-std::pair<std::size_t, std::size_t> coordinate_sizes(const json &project,
-                                                     const json &dialect) {
-    const std::string x_key = required_string(dialect, "x_key", "wipe tower dialect");
-    const std::string y_key = required_string(dialect, "y_key", "wipe tower dialect");
-    const bool has_x = project.contains(x_key);
-    const bool has_y = project.contains(y_key);
-    if (has_x != has_y) {
-        invalid("wipe tower x/y coordinate arrays must be provided together");
-    }
-    if (!has_x) {
-        return {0, 0};
-    }
-    if (!project.at(x_key).is_array() || !project.at(y_key).is_array()) {
-        invalid("wipe tower x/y coordinate fields must be arrays");
-    }
-    const auto x_size = project.at(x_key).size();
-    const auto y_size = project.at(y_key).size();
-    if (x_size != y_size) {
-        invalid("wipe tower x/y coordinate plate counts differ");
-    }
-    return {x_size, y_size};
-}
-
-std::string position_tower_settings(std::size_t plate_index,
-                                    const std::string &x_value,
-                                    const std::string &y_value) {
-    const json settings = {
-        {"positions", json::array({{{"plate_index", plate_index},
-                                     {"x_mm", normalized_numeric_value(x_value, "wipe_tower_x")},
-                                     {"y_mm", normalized_numeric_value(y_value, "wipe_tower_y")}}})}};
-    return settings.dump();
-}
-
-void prepare_tower_difference_index(json &project, const json &target,
-                                    std::size_t slot_count, bool merging_sources) {
-    const json &snapshot = required_member(
-        required_member(target, "package_dialect", "target data"),
-        "filament_snapshot", "package dialect");
-    const std::string key =
-        required_string(snapshot, "difference_list_key", "filament snapshot");
-    const json &offset_value =
-        required_member(snapshot, "filament_slot_offset", "filament snapshot");
-    const json &trailing_value =
-        required_member(snapshot, "trailing_entry_count", "filament snapshot");
-    if (!offset_value.is_number_unsigned() || !trailing_value.is_number_unsigned()) {
-        invalid("filament snapshot entry counts must be non-negative integers");
-    }
-    const std::size_t expected =
-        merging_sources && snapshot.value("merged_difference_list_singleton", false) &&
-                (!project.contains(key) || project.at(key).size() <= 1)
-            ? 1
-            : offset_value.get<std::size_t>() + slot_count +
-                  trailing_value.get<std::size_t>();
-    if (!project.contains(key)) {
-        project[key] = json::array();
-        for (std::size_t index = 0; index < expected; ++index) {
-            project[key].push_back("");
-        }
-        return;
-    }
-    if (project.at(key).is_array() && project.at(key).empty()) {
-        project[key] = json::array();
-        for (std::size_t index = 0; index < expected; ++index) {
-            project[key].push_back("");
-        }
-        return;
-    }
-    const auto entries = string_array(project.at(key), "project." + key);
-    if (entries.size() != expected) {
-        invalid("filament snapshot difference-list entry count does not match the slot layout");
-    }
-}
-
-bool is_signed_integer_zero(const json &value) {
-    return value.is_number_integer() && !value.is_number_unsigned() &&
-           value.get<std::int64_t>() == 0;
-}
-
-void normalize_typed_positions(json &positions) {
-    if (!positions.is_array()) {
-        invalid("request.wipe_tower_positions must be an array");
-    }
-    for (auto &position : positions) {
-        if (!position.is_object()) {
-            continue;
-        }
-        const auto plate_it = position.find("plate_index");
-        if (plate_it != position.end() && is_signed_integer_zero(*plate_it)) {
-            // JSON 0 is stored as unsigned by nlohmann/json; signed integer 0
-            // here is the lexical -0 that A2 intentionally rejects.
-            invalid("wipe tower request: wipe tower plate_index must be a nonnegative integer");
-        }
-        for (const auto key : {std::string("x_mm"), std::string("y_mm")}) {
-            const auto value_it = position.find(key);
-            if (value_it != position.end() && is_signed_integer_zero(*value_it)) {
-                *value_it = json::parse("-0.0");
-            }
-        }
-    }
-}
-
-void apply_tower_patch(json &project, const std::string &settings_json,
-                       const json &dialect) {
-    try {
-        project = parse_json(
-            patch_wipe_tower(project.dump(), settings_json, dialect.dump()),
-            "patched project settings");
-    } catch (const WipeTowerError &error) {
-        invalid(std::string("wipe tower request: ") + error.what());
-    }
-}
-
-void apply_tower_overrides(json &project, const json &request,
-                           const json &target, bool record_process_differences = true) {
-    detail::apply_source_tower_defaults(project, target);
-    json dialect = target_tower_dialect(target);
-    if (!record_process_differences) dialect["record_process_differences"] = false;
-    const bool has_scalar = request.contains("enable_prime_tower") ||
-                            request.contains("prime_tower_width") ||
-                            request.contains("wipe_tower_rotation_angle");
-    const bool has_xy = request.contains("wipe_tower_x") ||
-                        request.contains("wipe_tower_y");
-    const bool has_positions = request.contains("wipe_tower_positions");
-    if (has_xy && has_positions) {
-        invalid("request cannot combine wipe_tower_positions with wipe_tower_x/y");
-    }
-
-    if ((has_scalar || has_xy || has_positions) &&
-        request.value("hardware_mode", "target_binding") != "preserve_source") {
-        std::size_t slot_count = 0;
-        validate_slots(project, slot_count);
-        prepare_tower_difference_index(project, target, slot_count,
-                                       request.contains("merge_sources"));
-    }
-
-    if (has_scalar) {
-        apply_tower_patch(project, scalar_tower_settings(request), dialect);
-    }
-
-    const auto [existing_x_size, existing_y_size] = coordinate_sizes(project, dialect);
-    if (has_xy) {
-        if (!request.contains("wipe_tower_x") || !request.contains("wipe_tower_y")) {
-            invalid("request wipe_tower_x and wipe_tower_y must be provided together");
-        }
-        const auto x_values = string_array(request.at("wipe_tower_x"),
-                                           "request.wipe_tower_x");
-        const auto y_values = string_array(request.at("wipe_tower_y"),
-                                           "request.wipe_tower_y");
-        if (x_values.size() != y_values.size()) {
-            invalid("request wipe tower x/y coordinate counts differ");
-        }
-        if (existing_x_size != existing_y_size ||
-            (existing_x_size != x_values.size() && existing_x_size != 0) ||
-            (existing_x_size == 0 && x_values.size() > 1)) {
-            invalid("request wipe tower coordinate count must match existing plates");
-        }
-        for (std::size_t index = 0; index < x_values.size(); ++index) {
-            // Validate every requested token, including untouched tail slots. Only
-            // changed slots are sent to A2 so their original text is retained.
-            parse_numeric_token(x_values[index], "wipe_tower_x");
-            parse_numeric_token(y_values[index], "wipe_tower_y");
-            const auto current_x = existing_x_size == 0
-                                       ? std::string()
-                                       : project.at(dialect.at("x_key").get<std::string>())
-                                             .at(index)
-                                             .get<std::string>();
-            const auto current_y = existing_y_size == 0
-                                       ? std::string()
-                                       : project.at(dialect.at("y_key").get<std::string>())
-                                             .at(index)
-                                             .get<std::string>();
-            if (existing_x_size == 0 || x_values[index] != current_x ||
-                y_values[index] != current_y) {
-                apply_tower_patch(project,
-                                  position_tower_settings(index, x_values[index],
-                                                          y_values[index]),
-                                  dialect);
-            }
-        }
-    }
-
-    if (has_positions) {
-        json positions = request.at("wipe_tower_positions");
-        normalize_typed_positions(positions);
-        json settings = json::object();
-        settings["positions"] = positions;
-        apply_tower_patch(project, settings.dump(), dialect);
-    }
-}
-
-void apply_colour_overrides(json &project, const json &request,
-                            std::size_t slot_count,
-                            std::vector<std::string> &changed_keys) {
-    for (const auto &key : {std::string("filament_colour"),
-                            std::string("filament_multi_colour")}) {
-        if (!request.contains(key)) {
-            continue;
-        }
-        const auto requested = string_array(request.at(key), "request." + key, false);
-        if (requested.empty()) {
-            invalid("request." + key + " must contain at least one slot");
-        }
-        if (requested.size() > slot_count) {
-            invalid("request." + key + " has more slots than filament_settings_id");
-        }
-        if (!project.contains(key)) {
-            if (key == "filament_colour" && requested.size() != slot_count) {
-                invalid("project.filament_colour is missing; provide all material slots");
-            }
-            project[key] = json::array();
-            for (std::size_t index = 0; index < slot_count; ++index) {
-                project[key].push_back("");
-            }
-        }
-        json &destination = project[key];
-        if (!destination.is_array() || destination.size() != slot_count) {
-            invalid("project." + key + " slots must match filament_settings_id");
-        }
-        for (std::size_t index = 0; index < requested.size(); ++index) {
-            destination.at(index) = requested[index];
-        }
-        changed_keys.push_back(key);
-    }
-}
-
 struct NativeMaterialSlot {
     const json *binding;
     const json *parameter_set;
@@ -1352,20 +824,6 @@ void update_differences(json &project, const json &dialect,
     project[key] = entries;
 }
 
-void record_machine_override(json &project, const json &snapshot,
-                              std::size_t slot_count, const std::string &field) {
-    const auto key = required_string(snapshot, "difference_list_key", "filament snapshot");
-    const auto offset = required_member(snapshot, "filament_slot_offset", "filament snapshot").get<std::size_t>();
-    const auto trailing = required_member(snapshot, "trailing_entry_count", "filament snapshot").get<std::size_t>();
-    if (trailing == 0) {
-        invalid("filament snapshot has no machine entry for the requested machine override");
-    }
-    auto &entry = project.at(key).at(offset + slot_count);
-    auto tokens = difference_tokens(entry.get<std::string>());
-    tokens.insert(field);
-    entry = render_difference_tokens(tokens);
-}
-
 void apply_selected_default_material(json &project, const json &dialect,
                                      const FilamentSelection &selection) {
     const auto selected = std::find_if(selection.material_sources.begin(), selection.material_sources.end(),
@@ -1459,585 +917,6 @@ void apply_cut_retraction_policy(json &project, const json &dialect,
             record_machine_override(project, snapshot, slot_count, key);
         }
     }
-}
-
-struct MergeSourceSlot {
-    std::uint64_t source_slot_id = 0;
-    std::size_t source_slot_index = 0;
-    std::uint64_t output_slot_id = 0;
-    std::size_t output_slot_index = 0;
-    std::string slot_name;
-    std::string material_id;
-    std::string preview_color;
-};
-
-struct MergeProjectSource {
-    std::string source_id;
-    json project;
-    std::size_t slot_count = 0;
-    std::vector<MergeSourceSlot> slots;
-};
-
-struct MergedLogicalSlot {
-    std::uint64_t slot_id = 0;
-    std::size_t output_index = 0;
-    std::string slot_name;
-    std::string material_id;
-    std::string preview_color;
-};
-
-struct MergedProjectResult {
-    json project;
-    json logical_slots;
-    std::size_t slot_count = 0;
-};
-
-struct MergeProjectInputs {
-    std::vector<MergeProjectSource> sources;
-    std::map<std::uint64_t, MergedLogicalSlot> logical_by_id;
-    std::map<std::size_t, std::uint64_t> id_by_output_index;
-    std::vector<std::map<std::uint64_t, std::size_t>> source_index_by_slot;
-};
-
-json source_slot_mappings(const MergeProjectInputs &inputs) {
-    json mappings = json::array();
-    for (const auto &source : inputs.sources) {
-        json mapping = {{"source_id", source.source_id}, {"slots", json::array()}};
-        for (const auto &slot : source.slots) {
-            mapping["slots"].push_back({{"source_slot_id", slot.source_slot_id},
-                {"source_slot_index", slot.source_slot_index},
-                {"output_slot_id", slot.output_slot_id},
-                {"output_slot_index", slot.output_slot_index}});
-        }
-        mappings.push_back(std::move(mapping));
-    }
-    return mappings;
-}
-
-const json &merge_required_array(const json &object, std::string_view key,
-                                std::string_view context) {
-    const json &value = required_member(object, key, context);
-    if (!value.is_array() || value.empty()) {
-        invalid(std::string(context) + "." + std::string(key) +
-                " must be a non-empty array");
-    }
-    return value;
-}
-
-const json &merge_required_object(const json &object, std::string_view key,
-                                 std::string_view context) {
-    const json &value = required_member(object, key, context);
-    if (!value.is_object()) {
-        invalid(std::string(context) + "." + std::string(key) + " must be an object");
-    }
-    return value;
-}
-
-std::uint64_t merge_required_id(const json &object, std::string_view key,
-                               std::string_view context) {
-    const json &value = required_member(object, key, context);
-    if (value.is_number_unsigned()) return value.get<std::uint64_t>();
-    if (value.is_number_integer()) {
-        const auto signed_value = value.get<std::int64_t>();
-        if (signed_value >= 0) return static_cast<std::uint64_t>(signed_value);
-    }
-    invalid(std::string(context) + "." + std::string(key) +
-            " must be a non-negative integer");
-}
-
-MergeProjectInputs collect_merge_project_inputs(
-    const json &first_project, const json &request, const json &dialect,
-    const json &machine, const json &plate, bool qidi_q2_merge) {
-    const json &source_inputs = merge_required_array(request, "merge_sources", "request");
-
-    MergeProjectInputs result;
-    result.sources.reserve(source_inputs.size());
-    result.source_index_by_slot.resize(source_inputs.size());
-    for (std::size_t source_index = 0; source_index < source_inputs.size(); ++source_index) {
-        const json &source_input = source_inputs.at(source_index);
-        const std::string context = "request.merge_sources[" +
-                                    std::to_string(source_index) + "]";
-        if (!source_input.is_object()) invalid(context + " must be an object");
-        if ((source_index == 0) == source_input.contains("project_settings")) {
-            invalid(context + (source_index == 0
-                                   ? " must use the base project argument"
-                                   : " must include project_settings"));
-        }
-
-        MergeProjectSource source;
-        source.source_id = required_string(source_input, "source_id", context);
-        if (source.source_id.empty()) invalid(context + ".source_id must not be empty");
-        for (const auto &existing : result.sources) {
-            if (existing.source_id == source.source_id) {
-                invalid("request.merge_sources contains duplicate source_id '" +
-                        source.source_id + "'");
-            }
-        }
-        source.project = source_index == 0
-                             ? first_project
-                             : merge_required_object(source_input, "project_settings", context);
-        if (qidi_q2_merge) {
-            // Q2 single exports retain the template's wider material arrays
-            // when the active palette uses fewer slots.
-            const std::size_t native_slot_count = required_string_array(
-                source.project, "filament_settings_id", context).size();
-            const json &snapshot = required_member(dialect, "filament_snapshot",
-                                                   "package dialect");
-            for (const auto &rule : merge_required_array(snapshot, "array_rules",
-                                                         "filament snapshot")) {
-                if (required_string(rule, "selection", "filament array rule") != "default" ||
-                    required_member(rule, "group_size", "filament array rule") != 1) {
-                    continue;
-                }
-                for (const auto &key : required_string_array(rule, "keys", "filament array rule")) {
-                    if (source.project.contains(key) && source.project.at(key).is_array() &&
-                        source.project.at(key).size() > native_slot_count) {
-                        source.project[key].erase(source.project[key].begin() + native_slot_count,
-                                                  source.project[key].end());
-                    }
-                }
-            }
-            const std::string difference_key = required_string(
-                snapshot, "difference_list_key", "filament snapshot");
-            if (source.project.contains(difference_key) &&
-                source.project.at(difference_key).is_array() &&
-                source.project.at(difference_key).size() == 1) {
-                for (std::size_t index = 0; index <= native_slot_count; ++index) {
-                    source.project[difference_key].push_back("");
-                }
-            }
-        }
-        validate_slots(source.project, source.slot_count);
-        validate_source_hardware(source.project, machine);
-        validate_preserved_build_plate(source.project, plate);
-
-        const json &slot_inputs = merge_required_array(source_input, "slots", context);
-        std::set<std::uint64_t> source_slot_ids;
-        std::set<std::size_t> source_slot_indexes;
-        for (std::size_t slot_index = 0; slot_index < slot_inputs.size(); ++slot_index) {
-            const json &slot_input = slot_inputs.at(slot_index);
-            const std::string slot_context = context + ".slots[" +
-                                             std::to_string(slot_index) + "]";
-            if (!slot_input.is_object()) invalid(slot_context + " must be an object");
-            MergeSourceSlot slot;
-            slot.source_slot_id = merge_required_id(slot_input, "source_slot_id", slot_context);
-            slot.source_slot_index = slot_input.contains("source_slot_index")
-                                         ? static_cast<std::size_t>(merge_required_id(
-                                               slot_input, "source_slot_index", slot_context))
-                                         : slot_index;
-            slot.output_slot_id = slot.source_slot_id;
-            if (slot.source_slot_index >= source.slot_count) {
-                invalid(slot_context + " source slot index is outside the project arrays");
-            }
-            slot.slot_name = required_string(slot_input, "slot_name", slot_context);
-            slot.material_id = required_string(slot_input, "material_id", slot_context);
-            slot.preview_color = required_string(slot_input, "preview_color", slot_context);
-            if (!source_slot_ids.insert(slot.source_slot_id).second ||
-                !source_slot_indexes.insert(slot.source_slot_index).second) {
-                invalid(context + " contains a duplicate source or output slot mapping");
-            }
-
-            const MergedLogicalSlot identity{
-                slot.output_slot_id, 0, slot.slot_name,
-                slot.material_id, slot.preview_color};
-            const auto existing = result.logical_by_id.find(slot.output_slot_id);
-            if (existing == result.logical_by_id.end()) {
-                result.logical_by_id.emplace(slot.output_slot_id, identity);
-            } else if (existing->second.material_id != slot.material_id ||
-                       existing->second.preview_color != slot.preview_color) {
-                invalid("merged output slot " + std::to_string(slot.output_slot_id) +
-                        " has conflicting material_id or color in source " +
-                        source.source_id);
-            }
-            result.source_index_by_slot[source_index][slot.output_slot_id] =
-                slot.source_slot_index;
-            source.slots.push_back(std::move(slot));
-        }
-        result.sources.push_back(std::move(source));
-    }
-
-    const std::size_t output_count = result.logical_by_id.size();
-    std::size_t output_index = 0;
-    for (auto &[slot_id, identity] : result.logical_by_id) {
-        identity.output_index = output_index;
-        result.id_by_output_index.emplace(output_index++, slot_id);
-    }
-    for (auto &source : result.sources) {
-        for (auto &slot : source.slots) {
-            slot.output_slot_index = result.logical_by_id.at(slot.output_slot_id).output_index;
-        }
-    }
-
-    const json &snapshot = required_member(dialect, "filament_snapshot", "package dialect");
-    const json &rules = merge_required_array(snapshot, "array_rules", "filament snapshot");
-    std::set<std::string> slot_array_keys;
-    for (const auto &rule : rules) {
-        for (const auto &key : required_string_array(rule, "keys", "filament array rule")) {
-            if (!slot_array_keys.insert(key).second) {
-                invalid("target filament array rules contain duplicate key '" + key + "'");
-            }
-        }
-    }
-    const std::string difference_key =
-        required_string(snapshot, "difference_list_key", "filament snapshot");
-    return result;
-}
-
-std::size_t merge_group_width(const json &project, const std::string &key,
-                              std::size_t slot_count, std::size_t group_size,
-                              bool matrix, bool variable_group,
-                              const std::string &source_id) {
-    const json &value = required_member(project, key, "merge source " + source_id);
-    if (!value.is_array()) {
-        invalid("merge source " + source_id + "." + key + " must be an array");
-    }
-    const std::size_t base_width = matrix ? slot_count * slot_count : slot_count;
-    if (value.size() == base_width) return 1;
-    if (group_size > 1 && value.size() == base_width * group_size) return group_size;
-    if (variable_group && base_width > 0 && !value.empty() &&
-        value.size() % base_width == 0) {
-        return value.size() / base_width;
-    }
-    invalid("merge source " + source_id + "." + key +
-            " does not match the target's declared slot shape");
-}
-
-MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
-                                               const json &dialect) {
-    const std::size_t output_count = inputs.logical_by_id.size();
-    json project = inputs.sources.front().project;
-    std::vector<std::set<std::string>> colour_overrides(output_count);
-    const json &snapshot = required_member(dialect, "filament_snapshot", "package dialect");
-    const json &rules = merge_required_array(snapshot, "array_rules", "filament snapshot");
-    const json merged_preserve_first_source_keys = snapshot.value(
-        "merged_preserve_first_source_keys", json::array());
-
-    for (const auto &rule : rules) {
-        const std::string selection = required_string(rule, "selection", "filament array rule");
-        const auto group_value = required_member(rule, "group_size", "filament array rule");
-        if (!group_value.is_number_unsigned() || group_value.get<std::size_t>() == 0) {
-            invalid("filament array rule group_size must be a positive integer");
-        }
-        const std::size_t group_size = group_value.get<std::size_t>();
-        if (selection != "default" && selection != "default_or_group" &&
-            selection != "group" && selection != "matrix" && selection != "slot_index") {
-            invalid("unsupported target filament array selection '" + selection + "'");
-        }
-
-        for (const auto &key : required_string_array(rule, "keys", "filament array rule")) {
-            const bool material_group = required_member(
-                rule, "material_source_override", "filament array rule").get<bool>();
-            if (contains_string(merged_preserve_first_source_keys, key)) {
-                continue;
-            }
-            bool any_source_has_key = false;
-            for (const auto &source : inputs.sources) {
-                any_source_has_key = any_source_has_key || source.project.contains(key);
-            }
-            if (key == "filament_colour") {
-                json colors = json::array();
-                for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
-                    const auto slot_id = inputs.id_by_output_index.at(output_index);
-                    const auto &identity = inputs.logical_by_id.at(slot_id);
-                    colors.push_back(identity.preview_color);
-                    for (std::size_t source_index = 0;
-                         source_index < inputs.sources.size(); ++source_index) {
-                        const auto mapped = inputs.source_index_by_slot[source_index].find(slot_id);
-                        if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
-                        const auto &source = inputs.sources[source_index];
-                        if (!source.project.contains(key)) {
-                            colour_overrides[output_index].insert(key);
-                            continue;
-                        }
-                        const json &source_colors = source.project.at(key);
-                        if (!source_colors.is_array() || mapped->second >= source_colors.size()) {
-                            invalid("merge source " + source.source_id +
-                                    "." + key + " does not contain a mapped source slot");
-                        }
-                        if (source_colors.at(mapped->second) != identity.preview_color) {
-                            colour_overrides[output_index].insert(key);
-                        }
-                    }
-                }
-                project[key] = std::move(colors);
-                continue;
-            }
-            if (!any_source_has_key) {
-                project.erase(key);
-                continue;
-            }
-
-            if (selection == "slot_index") {
-                std::optional<std::size_t> output_width;
-                for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
-                    const auto slot_id = inputs.id_by_output_index.at(output_index);
-                    for (std::size_t source_index = 0;
-                         source_index < inputs.sources.size(); ++source_index) {
-                        const auto mapped = inputs.source_index_by_slot[source_index].find(slot_id);
-                        if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
-                        const auto &source = inputs.sources[source_index];
-                        if (!source.project.contains(key)) {
-                            invalid("merged source " + source.source_id +
-                                    " is missing slot index field " + key);
-                        }
-                        const auto width = merge_group_width(
-                            source.project, key, source.slot_count, group_size, false,
-                            material_group && selection == "default_or_group",
-                            source.source_id);
-                        if (output_width && *output_width != width) {
-                            invalid("merged source slot field " + key +
-                                    " has different variant counts");
-                        }
-                        output_width = width;
-                    }
-                }
-                const std::size_t width = output_width.value_or(group_size);
-                json values = json::array();
-                for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
-                    for (std::size_t variant = 0; variant < width; ++variant) {
-                        values.push_back(std::to_string(output_index + 1));
-                    }
-                }
-                project[key] = std::move(values);
-                continue;
-            }
-
-            if (selection == "matrix") {
-                std::optional<std::size_t> output_width;
-                json values = json::array();
-                for (std::size_t row = 0; row < output_count; ++row) {
-                    const auto row_id = inputs.id_by_output_index.at(row);
-                    for (std::size_t column = 0; column < output_count; ++column) {
-                        const auto column_id = inputs.id_by_output_index.at(column);
-                        std::optional<std::vector<json>> chosen;
-                        std::string chosen_source;
-                        for (std::size_t source_index = 0;
-                             source_index < inputs.sources.size(); ++source_index) {
-                            const auto row_source = inputs.source_index_by_slot[source_index].find(row_id);
-                            const auto column_source = inputs.source_index_by_slot[source_index].find(column_id);
-                            if (row_source == inputs.source_index_by_slot[source_index].end() ||
-                                column_source == inputs.source_index_by_slot[source_index].end()) {
-                                continue;
-                            }
-                            const auto &source = inputs.sources[source_index];
-                            if (!source.project.contains(key)) {
-                                invalid("merged source " + source.source_id +
-                                        " is missing matrix field " + key);
-                            }
-                            const auto width = merge_group_width(
-                                source.project, key, source.slot_count, group_size, true, false,
-                                source.source_id);
-                            if (output_width && *output_width != width) {
-                                invalid("merged source matrix field " + key +
-                                        " has different variant counts");
-                            }
-                            if (!output_width) {
-                                values = json::array_t(output_count * output_count * width);
-                            }
-                            output_width = width;
-                            const json &matrix = source.project.at(key);
-                            std::vector<json> candidate;
-                            for (std::size_t nozzle = 0; nozzle < width; ++nozzle) {
-                                const auto index = nozzle * source.slot_count * source.slot_count +
-                                                   row_source->second * source.slot_count + column_source->second;
-                                candidate.push_back(matrix.at(index));
-                            }
-                            if (chosen && *chosen != candidate) {
-                                invalid("merged source conflict for " + key +
-                                        " at global slots " + std::to_string(row_id) +
-                                        " and " + std::to_string(column_id) + " between " +
-                                        chosen_source + " and " + source.source_id);
-                            }
-                            chosen = std::move(candidate);
-                            chosen_source = source.source_id;
-                        }
-                        if (!chosen) {
-                            invalid("no source contains both global slots needed for merged matrix " +
-                                    key);
-                        }
-                        for (std::size_t nozzle = 0; nozzle < chosen->size(); ++nozzle) {
-                            const auto index = nozzle * output_count * output_count + row * output_count + column;
-                            values.at(index) = chosen->at(nozzle);
-                        }
-                    }
-                }
-                project[key] = std::move(values);
-                continue;
-            }
-
-            std::optional<std::size_t> output_width;
-            std::vector<std::vector<json>> merged_values(output_count);
-            std::vector<std::string> chosen_sources(output_count);
-            for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
-                const auto output_id = inputs.id_by_output_index.at(output_index);
-                for (std::size_t source_index = 0;
-                     source_index < inputs.sources.size(); ++source_index) {
-                    const auto mapped = inputs.source_index_by_slot[source_index].find(output_id);
-                    if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
-                    const auto &source = inputs.sources[source_index];
-                    if (!source.project.contains(key)) {
-                        invalid("merged source " + source.source_id +
-                                " is missing slot field " + key + " for global slot " +
-                                std::to_string(output_id));
-                    }
-                    const json &array = source.project.at(key);
-                    const bool broadcast_singleton =
-                        rule.value("broadcast_singleton", false) &&
-                        array.is_array() && array.size() == 1;
-                    const auto width = broadcast_singleton ? 1 : merge_group_width(
-                        source.project, key, source.slot_count, group_size, false,
-                        material_group && selection == "default_or_group",
-                        source.source_id);
-                    if (output_width && *output_width != width) {
-                        invalid("merged source slot field " + key +
-                                " has different variant counts");
-                    }
-                    output_width = width;
-                    std::vector<json> candidate;
-                    for (std::size_t variant = 0; variant < width; ++variant) {
-                        json value = array.at(
-                            broadcast_singleton ? 0 : mapped->second * width + variant);
-                        // A source may store a real multi-colour description here.
-                        // Only a mirror of its plain preview colour follows a new
-                        // global preview colour; independent source values survive.
-                        if (key == "filament_multi_colour" &&
-                            source.project.contains("filament_colour") &&
-                            value == source.project.at("filament_colour").at(mapped->second)) {
-                            const auto &colour = inputs.logical_by_id.at(output_id).preview_color;
-                            if (value != colour) colour_overrides[output_index].insert(key);
-                            value = colour;
-                        }
-                        candidate.push_back(std::move(value));
-                    }
-                    if (!merged_values[output_index].empty() &&
-                        merged_values[output_index] != candidate) {
-                        invalid("merged source conflict for " + key + " at global slot " +
-                                std::to_string(output_id) + " between " +
-                                chosen_sources[output_index] + " and " + source.source_id);
-                    }
-                    if (merged_values[output_index].empty()) {
-                        merged_values[output_index] = std::move(candidate);
-                        chosen_sources[output_index] = source.source_id;
-                    }
-                }
-                if (merged_values[output_index].empty()) {
-                    invalid("no source supplies " + key + " for merged global slot " +
-                            std::to_string(output_id));
-                }
-            }
-            json values = json::array();
-            for (const auto &slot_values : merged_values) {
-                for (const auto &value : slot_values) values.push_back(value);
-            }
-            project[key] = std::move(values);
-        }
-    }
-
-    const auto offset_value = required_member(snapshot, "filament_slot_offset",
-                                              "filament snapshot");
-    const auto trailing_value = required_member(snapshot, "trailing_entry_count",
-                                                "filament snapshot");
-    if (!offset_value.is_number_unsigned() || !trailing_value.is_number_unsigned()) {
-        invalid("filament snapshot offsets must be non-negative integers");
-    }
-    const std::size_t offset = offset_value.get<std::size_t>();
-    const std::size_t trailing = trailing_value.get<std::size_t>();
-    const std::string difference_key =
-        required_string(snapshot, "difference_list_key", "filament snapshot");
-    bool any_differences = false;
-    for (const auto &source : inputs.sources) {
-        any_differences = any_differences || source.project.contains(difference_key);
-    }
-    // Older Flash projects use one shared entry; native exports retain the
-    // process + material slots + machine tail and use the regular remapping.
-    const bool singleton_differences =
-        snapshot.value("merged_difference_list_singleton", false) &&
-        std::all_of(inputs.sources.begin(), inputs.sources.end(),
-                    [&](const MergeProjectSource &source) {
-                        const auto entries = source.project.find(difference_key);
-                        return entries != source.project.end() && entries->is_array() &&
-                               entries->size() == 1;
-                    });
-    if (any_differences && singleton_differences) {
-        project[difference_key] = inputs.sources.front().project.at(difference_key);
-    } else if (any_differences) {
-        std::vector<std::string> prefix;
-        std::vector<std::string> tail;
-        bool have_baseline = false;
-        std::vector<std::optional<std::set<std::string>>> slot_differences(output_count);
-        for (const auto &source : inputs.sources) {
-            if (!source.project.contains(difference_key)) {
-                invalid("merged source " + source.source_id +
-                        " is missing slot difference registrations");
-            }
-            const auto entries = string_array(source.project.at(difference_key),
-                                              "merge source " + difference_key);
-            if (entries.size() != offset + source.slot_count + trailing) {
-                invalid("merge source " + source.source_id + " has a mismatched " +
-                        difference_key + " slot count");
-            }
-            std::vector<std::string> current_prefix(entries.begin(), entries.begin() + offset);
-            std::vector<std::string> current_tail(entries.end() - trailing, entries.end());
-            if (!have_baseline) {
-                prefix = std::move(current_prefix);
-                tail = std::move(current_tail);
-                have_baseline = true;
-            } else if (prefix != current_prefix || tail != current_tail) {
-                invalid("merged sources have different process or machine-tail difference entries");
-            }
-            for (const auto &slot : source.slots) {
-                auto &chosen = slot_differences[slot.output_slot_index];
-                const auto tokens = difference_tokens(entries.at(offset + slot.source_slot_index));
-                if (chosen && *chosen != tokens) {
-                    invalid("merged source conflict for " + difference_key +
-                            " at global slot " + std::to_string(slot.output_slot_id));
-                }
-                chosen = tokens;
-            }
-        }
-        json differences = json::array();
-        for (const auto &entry : prefix) differences.push_back(entry);
-        for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
-            if (!slot_differences[output_index]) {
-                invalid("no source supplies difference registrations for merged slot " +
-                        std::to_string(inputs.id_by_output_index.at(output_index)));
-            }
-            auto tokens = *slot_differences[output_index];
-            tokens.insert(colour_overrides[output_index].begin(),
-                          colour_overrides[output_index].end());
-            differences.push_back(render_difference_tokens(tokens));
-        }
-        for (const auto &entry : tail) differences.push_back(entry);
-        project[difference_key] = std::move(differences);
-    }
-
-    if (!snapshot.value("merged_preserve_default_filament_profile", false) &&
-        project.contains("default_filament_profile") &&
-        project.contains("filament_settings_id") &&
-        project.at("filament_settings_id").is_array() &&
-        !project.at("filament_settings_id").empty()) {
-        const json original = project.at("default_filament_profile");
-        const json identity = project.at("filament_settings_id").at(0);
-        if (original.is_array() && !original.empty()) {
-            project["default_filament_profile"][0] = identity;
-        } else if (original.is_string()) {
-            project["default_filament_profile"] = identity;
-        }
-        if (project.at("default_filament_profile") != original && any_differences) {
-            record_machine_override(project, snapshot, output_count,
-                                    "default_filament_profile");
-        }
-    }
-
-    json logical_slots = json::array();
-    for (std::size_t index = 0; index < output_count; ++index) {
-        const auto &slot = inputs.logical_by_id.at(inputs.id_by_output_index.at(index));
-        logical_slots.push_back({{"slot_id", slot.slot_id},
-                                 {"slot_name", slot.slot_name},
-                                 {"preview_color", slot.preview_color},
-                                 {"material_id", slot.material_id}});
-    }
-    return {std::move(project), std::move(logical_slots), output_count};
 }
 
 json effective_summary(const json &project, const std::string &material_mode,
@@ -2164,8 +1043,7 @@ json compose_preserved_source(json project, const json &request, const json &tar
     json mappings = json::array();
     json logical_slots = json::array();
     if (merging) {
-        const auto &filament_snapshot = required_member(
-            dialect, "filament_snapshot", "package dialect");
+        required_member(dialect, "filament_snapshot", "package dialect");
         // Compare actual source hardware, including every physical nozzle and
         // bed field; a canonical machine binding is deliberately not involved.
         for (const auto &source : request.at("merge_sources")) {
@@ -2180,34 +1058,18 @@ json compose_preserved_source(json project, const json &request, const json &tar
         }
         const json machine = {{"printer_model", required_member(project, "printer_model", "source project")},
                               {"nozzle_diameter", required_member(project, "nozzle_diameter", "source project")}};
-        project = detail::prepare_source_merge_project(project, filament_snapshot);
-        json merge_request = request;
-        for (auto &source : merge_request.at("merge_sources")) {
-            if (source.contains("project_settings")) {
-                source["project_settings"] = detail::prepare_source_merge_project(
-                    source.at("project_settings"), filament_snapshot);
-            }
-        }
-        const json merge_dialect = detail::source_merge_dialect(dialect, project);
-        const auto inputs = collect_merge_project_inputs(project, merge_request, merge_dialect,
-                                                         machine, plate, false);
-        auto merged = compose_merged_slot_arrays(inputs, merge_dialect);
+        auto merged = detail::merge_project_settings(
+            std::move(project), request, dialect, machine, plate);
         project = std::move(merged.project);
         logical_slots = std::move(merged.logical_slots);
-        mappings = source_slot_mappings(inputs);
+        mappings = std::move(merged.source_slot_mappings);
     }
     project = detail::compose_source_project(project, request, target);
     if (request.contains("build_plate_uid")) project["curr_bed_type"] = plate.at("project_value");
     std::vector<std::string> changed;
-    apply_scalar_overrides(project, request, changed);
+    detail::apply_scalar_overrides(project, request, changed);
     json tower_dialect = required_member(dialect, "wipe_tower", "package dialect");
-    const auto slicer = target.at("target_contract").at("slicer_id").get<std::string>();
-    const bool u1 = (slicer == "OrcaSlicer" || slicer == "SnapmakerOrca") &&
-                    project.value("printer_model", "") == "Snapmaker U1";
-    if (u1) {
-        project.erase("inherits_group");
-    }
-    apply_tower_overrides(project, request, target);
+    detail::apply_tower_overrides(project, request, target);
     auto summary = effective_summary(project, "preserve_template", "", "",
                                       plate.value("build_plate_uid", ""));
     summary["hardware_mode"] = "preserve_source";
@@ -2222,14 +1084,18 @@ json compose_preserved_source(json project, const json &request, const json &tar
 
 }  // namespace
 
+nlohmann::json detail::resolve_source_plate(const json &project, const json &request, const json &target) {
+    return source_plate(project, request, target);
+}
+
 std::string compose_project_settings(std::string_view base_project_json,
                                      std::string_view request_json,
                                      std::string_view canonical_json,
                                      std::string_view target_json) {
-    json project = parse_json(base_project_json, "base project settings");
-    json request = parse_json(request_json, "project settings request");
-    const json canonical = parse_json(canonical_json, "canonical data");
-    const json target = parse_json(target_json, "target data");
+    json project = detail::parse_json_object<ProjectSettingsError>(base_project_json, "base project settings");
+    json request = detail::parse_json_object<ProjectSettingsError>(request_json, "project settings request");
+    const json canonical = detail::parse_json_object<ProjectSettingsError>(canonical_json, "canonical data");
+    const json target = detail::parse_json_object<ProjectSettingsError>(target_json, "target data");
     validate_request_keys(request);
     if (request.value("hardware_mode", "target_binding") == "auto" &&
         project.contains("printer_settings_id")) {
@@ -2300,21 +1166,18 @@ std::string compose_project_settings(std::string_view base_project_json,
     json mappings = json::array();
     std::size_t slot_count = 0;
     if (merging_sources) {
-        const bool qidi_q2_merge = slicer_id == "QIDIStudio" &&
-                                   machine_uid == "qidi:q2" &&
-                                   nozzle_uid == "nozzle:0.4mm";
-        const auto inputs = collect_merge_project_inputs(
-            project, request, dialect, machine, plate,
-            qidi_q2_merge);
-        auto merged = compose_merged_slot_arrays(inputs, dialect);
+        // Hardware binding does not change the already-composed material shape.
+        // Derive the merge plan from actual source fields, as preserve_source does.
+        auto merged = detail::merge_project_settings(
+            std::move(project), request, dialect, machine, plate);
         project = std::move(merged.project);
-        if (qidi_q2_merge && !project.contains("curr_bed_type")) {
+        if (!project.contains("curr_bed_type")) {
             project["curr_bed_type"] = required_string(
                 plate, "project_value", "build plate");
         }
         merged_logical_slots = std::move(merged.logical_slots);
         slot_count = merged.slot_count;
-        mappings = source_slot_mappings(inputs);
+        mappings = std::move(merged.source_slot_mappings);
     } else {
         validate_source_hardware(project, machine);
         prepare_registry_only_native_project(project, machine, material_mode, request);
@@ -2344,7 +1207,7 @@ std::string compose_project_settings(std::string_view base_project_json,
         // printer/process identity, geometry, or the source format version.
         project["curr_bed_type"] = required_string(plate, "project_value", "build plate");
     }
-    apply_scalar_overrides(project, request, changed_keys);
+    detail::apply_scalar_overrides(project, request, changed_keys);
     if (material_mode == "target_native_preset") {
         apply_target_native_materials(project, materials, machine);
         clear_native_differences(project, dialect, slot_count, materials, request);
@@ -2352,8 +1215,8 @@ std::string compose_project_settings(std::string_view base_project_json,
     } else if (material_source_selected) {
         apply_selected_default_material(project, dialect, selection);
     }
-    apply_tower_overrides(project, request, target);
-    apply_colour_overrides(project, request, slot_count, changed_keys);
+    detail::apply_tower_overrides(project, request, target);
+    detail::apply_colour_overrides(project, request, slot_count, changed_keys);
     if (material_mode == "target_native_preset") {
         record_native_colour_overrides(project, request, dialect);
     }
@@ -2363,19 +1226,6 @@ std::string compose_project_settings(std::string_view base_project_json,
     update_differences(project, dialect, slot_count, changed_keys, merging_sources);
 
     json wipe_tower_dialect = required_member(dialect, "wipe_tower", "package dialect");
-    if (slicer_id == "SnapmakerOrca" && machine_uid == "snapmaker:u1" &&
-        nozzle_uid == "nozzle:0.4mm" && material_mode == "target_native_preset") {
-        // Snapmaker Orca 2.3.6 stores one process entry, one entry per
-        // filament slot, and one trailing entry in different_settings_to_system.
-        // Preserve those GUI-saved differences; only inheritance-group
-        // metadata is absent from the native U1 project.
-        project.erase("inherits_group");
-        project["small_area_infill_flow_compensation_model"] = json::array();
-        project["version"] = required_string(contract, "saved_project_format_version",
-                                               "target contract");
-        project["default_print_profile"] = required_string(
-            machine, "default_print_profile", "machine binding");
-    }
 
     detail::apply_source_flush_defaults(project, request, target);
     json result = metadata_result(project, dialect, plate,

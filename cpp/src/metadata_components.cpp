@@ -1,4 +1,5 @@
 #include "fatcat/metadata_components.h"
+#include "supported_targets.h"
 
 #include <algorithm>
 #include <charconv>
@@ -16,6 +17,8 @@
 #include <vector>
 
 #include <nlohmann/json.hpp>
+
+#include "json_object.h"
 #include <tinyxml2.h>
 
 #include "fatcat/wipe_tower.h"
@@ -27,46 +30,6 @@ using json = nlohmann::json;
 
 [[noreturn]] void invalid(std::string message) {
     throw MetadataComponentsError(std::move(message));
-}
-
-json parse_json(std::string_view text, std::string_view name) {
-    bool duplicate_key = false;
-    std::string duplicate_name;
-    std::vector<std::set<std::string>> object_keys;
-    const json::parser_callback_t callback =
-        [&](int, json::parse_event_t event, json &parsed) {
-            if (event == json::parse_event_t::object_start) {
-                object_keys.emplace_back();
-            } else if (event == json::parse_event_t::object_end) {
-                if (!object_keys.empty()) {
-                    object_keys.pop_back();
-                }
-            } else if (event == json::parse_event_t::key &&
-                       !object_keys.empty()) {
-                const auto key = parsed.get<std::string>();
-                if (!object_keys.back().insert(key).second) {
-                    duplicate_key = true;
-                    duplicate_name = key;
-                    return false;
-                }
-            }
-            return true;
-        };
-    try {
-        json parsed = json::parse(text, callback, true, false);
-        if (duplicate_key) {
-            invalid("duplicate JSON field in " + std::string(name) + ": " +
-                    duplicate_name);
-        }
-        if (!parsed.is_object()) {
-            invalid(std::string(name) + " must be a JSON object");
-        }
-        return parsed;
-    } catch (const MetadataComponentsError &) {
-        throw;
-    } catch (const json::exception &error) {
-        invalid("invalid " + std::string(name) + " JSON: " + error.what());
-    }
 }
 
 const json &required_member(const json &object, std::string_view key,
@@ -404,6 +367,109 @@ struct ResourcePartPlan {
     std::string model_field;
     json relationship;
 };
+
+class MetadataParts {
+public:
+    void add_text(const std::string &role, const std::string &path,
+                  const std::string &media_type, const std::string &content) {
+        add(role, path, media_type, "content", content);
+    }
+
+    void add_resource(const ResourcePartPlan &resource) {
+        add(resource.role, resource.path, resource.media_type,
+            "resource_role", resource.role);
+    }
+
+    const std::string *path(const std::string &role) const {
+        const auto found = paths_by_role_.find(role);
+        return found == paths_by_role_.end() ? nullptr : &found->second;
+    }
+
+    json take_parts() { return std::move(parts_); }
+
+private:
+    json parts_ = json::array();
+    std::map<std::string, std::string> paths_by_role_;
+    std::set<std::string> paths_;
+
+    void add(const std::string &role, const std::string &path,
+             const std::string &media_type, const char *payload_key,
+             const std::string &payload) {
+        if (!paths_by_role_.emplace(role, path).second ||
+            !paths_.insert(path).second) {
+            invalid("metadata component plan contains a duplicate part role or path");
+        }
+        parts_.push_back({{"role", role}, {"path", path},
+                          {"media_type", media_type}, {payload_key, payload}});
+    }
+};
+
+bool component_is_included(const json &plan, const std::string &name,
+                           std::size_t object_count) {
+    return plan.contains(name) &&
+           object_count >= plan.at(name).value("min_objects", std::size_t{1});
+}
+
+json build_metadata_relationships(const json &plan, std::size_t object_count,
+                                 const std::vector<ResourcePartPlan> &resources,
+                                 const MetadataParts &parts) {
+    std::set<std::string> defined_roles = {
+        "model_settings", "project_settings", "slice_info", "wipe_tower_placement"};
+    for (const auto *name : {"plate_summary", "filament_sequence",
+                             "cut_information", "layer_config_ranges"}) {
+        if (component_is_included(plan, name, object_count)) defined_roles.insert(name);
+    }
+    if (plan.contains("custom_gcode_per_layer")) defined_roles.insert("custom_gcode_per_layer");
+    for (const auto &resource : resources) defined_roles.insert(resource.role);
+
+    const json &relationship_plan = required_object(
+        plan, "model_relationships", "target metadata components");
+    const auto source = required_text(relationship_plan, "source", "target model relationships", true);
+    const auto type = required_text(relationship_plan, "type", "target model relationships");
+    const auto id_prefix = required_text(relationship_plan, "id_prefix", "target model relationships");
+    const json &related_roles = required_array(
+        relationship_plan, "part_roles", "target model relationships", true);
+    json relationships = json::array();
+    std::size_t index = 0;
+    for (const auto &role_value : related_roles) {
+        if (!role_value.is_string()) {
+            invalid("target model relationship part_roles entries must be text");
+        }
+        const std::string role = role_value.get<std::string>();
+        if (plan.contains(role) && !component_is_included(plan, role, object_count)) continue;
+        if (defined_roles.count(role) == 0) {
+            invalid("target model relationship references an unknown metadata part role");
+        }
+        const auto *path = parts.path(role);
+        if (path == nullptr) continue;
+        relationships.push_back({{"source", source}, {"id", id_prefix + std::to_string(index++)},
+                                 {"type", type}, {"target", "/" + *path}});
+    }
+    for (const auto &resource : resources) {
+        if (!resource.relationship.is_null()) relationships.push_back(resource.relationship);
+    }
+    return relationships;
+}
+
+json build_metadata_build_items(const std::vector<ModelInput> &models, const json &plan) {
+    json properties = json::object();
+    if (plan.contains("build_item_properties")) {
+        properties = required_object(plan, "build_item_properties", "target metadata components");
+        for (const auto &[key, value] : properties.items()) {
+            if (!value.is_string()) invalid("target build_item_properties values must be text");
+            validate_xml10_text(value.get<std::string>(), "target build_item_properties." + key);
+        }
+    }
+    json items = json::array();
+    for (const auto &model : models) {
+        json object_ids = json::array();
+        for (const auto &part : model.parts) object_ids.push_back(part.part_id);
+        items.push_back({{"model_index", model.model_index}, {"assembly_id", model.assembly_id},
+                         {"object_ids", std::move(object_ids)}, {"transform", model.assemble_transform},
+                         {"offset", model.assemble_offset}, {"properties", properties}});
+    }
+    return items;
+}
 
 std::vector<ResourcePartPlan> parse_resource_part_plan(const json &components,
                                                        const json &request) {
@@ -1519,11 +1585,51 @@ json validated_target_root(const json &dialect) {
             {"merge_policy", merge_policy}};
 }
 
+std::pair<std::string, std::string> resolve_metadata_bed(const json &project, const json &plate) {
+    const std::string project_bed = optional_text(project, "curr_bed_type", "project settings");
+    const std::string requested_bed = optional_text(plate, "bed_type", "request.plate");
+    if (project_bed.empty() && requested_bed.empty()) {
+        invalid("project settings or request.plate must provide bed_type");
+    }
+    if (!project_bed.empty() && !requested_bed.empty() && project_bed != requested_bed) {
+        invalid("project and model metadata bed_type values conflict");
+    }
+    const std::string bed_type = project_bed.empty() ? requested_bed : project_bed;
+    const std::string bed_type_field = project_bed.empty()
+                                           ? "request.plate.bed_type"
+                                           : "project.curr_bed_type";
+    return {bed_type, bed_type_field};
+}
+
+void validate_merged_source_identity(const std::vector<ModelInput> &models,
+                                     const json &dialect, const json &root) {
+    const json &source_identity = dialect.contains("merged_source_identity")
+        ? required_object(dialect, "merged_source_identity", "package dialect")
+        : required_object(dialect, "source_identity", "package dialect");
+    const std::string identity_name = required_text(
+        source_identity, "name", "package dialect.source_identity");
+    const std::string identity_value = required_text(
+        source_identity, "value", "package dialect.source_identity");
+    const auto current_identity = std::find_if(
+        root.at("metadata").begin(), root.at("metadata").end(),
+        [&](const json &item) { return item.at("name") == identity_name; });
+    for (const auto &model : models) {
+        const auto found = model.source_root_metadata.find(identity_name);
+        if (found == model.source_root_metadata.end() ||
+            (found->get<std::string>() != identity_value &&
+             (current_identity == root.at("metadata").end() ||
+              *found != current_identity->at("value")))) {
+            invalid(model.context + " source identity does not match target " +
+                    identity_name + "=" + identity_value);
+        }
+    }
+}
+
 }  // namespace
 
 std::string serialize_layer_config_ranges(std::string_view data_json,
                                           double fine_layer_height_mm) {
-    const json input = parse_json(data_json, "layer range data");
+    const json input = detail::parse_json_object<MetadataComponentsError>(data_json, "layer range data");
     const json project = {{"layer_height", fine_layer_height_mm}};
     const json plan = {{"option_fields", {
         {"default_extruder_key", "extruder"}, {"default_extruder_value", "0"},
@@ -1535,9 +1641,9 @@ std::string serialize_layer_config_ranges(std::string_view data_json,
 std::string compose_model_metadata(std::string_view project_json,
                                    std::string_view request_json,
                                    std::string_view target_json) {
-    const json project = parse_json(project_json, "project settings");
-    const json request = parse_json(request_json, "metadata request");
-    const json target = parse_json(target_json, "target data");
+    const json project = detail::parse_json_object<MetadataComponentsError>(project_json, "project settings");
+    const json request = detail::parse_json_object<MetadataComponentsError>(request_json, "metadata request");
+    const json target = detail::parse_json_object<MetadataComponentsError>(target_json, "target data");
     const json &slot_values = required_array(project, "filament_settings_id",
                                              "project settings");
     const std::size_t slot_count = slot_values.size();
@@ -1545,13 +1651,7 @@ std::string compose_model_metadata(std::string_view project_json,
     const json &contract = required_object(target, "target_contract", "target data");
     const auto slicer_id = required_text(contract, "slicer_id", "target contract");
     const auto version = required_text(contract, "application_version", "target contract");
-    if (!((slicer_id == "BambuStudio" && version == "02.08.02.61") ||
-          (slicer_id == "OrcaSlicer" && version == "2.4.2") ||
-          (slicer_id == "QIDIStudio" && version == "02.07.02.60") ||
-          (slicer_id == "ElegooSlicer" && version == "1.5.3.5") ||
-          (slicer_id == "AnycubicSlicerNext" && version == "2.0.0.2") ||
-          (slicer_id == "FlashStudio" && version == "1.7.15") ||
-          (slicer_id == "SnapmakerOrca" && version == "2.3.6"))) {
+    if (!detail::supports_target(slicer_id, version)) {
         invalid("unsupported metadata target slicer/version: " + slicer_id + "/" + version);
     }
     if (required_text(request, "slicer_id", "metadata request") != slicer_id ||
@@ -1594,50 +1694,14 @@ std::string compose_model_metadata(std::string_view project_json,
             "request.output_options.emit_lumina_merged_slots_json requires merged objects");
     }
     const auto object_count = models.size();
-    const auto component_is_included = [&](const char *name) {
-        return component_plan.contains(name) &&
-               object_count >= component_plan.at(name).value("min_objects", std::size_t{1});
-    };
     const std::vector<ResourcePartPlan> resource_plan =
         parse_resource_part_plan(component_plan, request);
     const json model_resources = build_model_resource_paths(resource_plan);
     const json content_types = validate_content_types(component_plan);
     const json &plate = required_object(request, "plate", "request");
-    const std::string project_bed = optional_text(project, "curr_bed_type", "project settings");
-    const std::string requested_bed = optional_text(plate, "bed_type", "request.plate");
-    if (project_bed.empty() && requested_bed.empty()) {
-        invalid("project settings or request.plate must provide bed_type");
-    }
-    if (!project_bed.empty() && !requested_bed.empty() && project_bed != requested_bed) {
-        invalid("project and model metadata bed_type values conflict");
-    }
-    const std::string bed_type = project_bed.empty() ? requested_bed : project_bed;
-    const std::string bed_type_field = project_bed.empty()
-                                           ? "request.plate.bed_type"
-                                           : "project.curr_bed_type";
+    const auto [bed_type, bed_type_field] = resolve_metadata_bed(project, plate);
     const json root = validated_target_root(dialect);
-    if (multi_model) {
-        const json &source_identity = dialect.contains("merged_source_identity")
-            ? required_object(dialect, "merged_source_identity", "package dialect")
-            : required_object(dialect, "source_identity", "package dialect");
-        const std::string identity_name = required_text(
-            source_identity, "name", "package dialect.source_identity");
-        const std::string identity_value = required_text(
-            source_identity, "value", "package dialect.source_identity");
-        const auto current_identity = std::find_if(
-            root.at("metadata").begin(), root.at("metadata").end(),
-            [&](const json &item) { return item.at("name") == identity_name; });
-        for (const auto &model : models) {
-            const auto found = model.source_root_metadata.find(identity_name);
-            if (found == model.source_root_metadata.end() ||
-                (found->get<std::string>() != identity_value &&
-                 (current_identity == root.at("metadata").end() ||
-                  *found != current_identity->at("value")))) {
-                invalid(model.context + " source identity does not match target " +
-                        identity_name + "=" + identity_value);
-            }
-        }
-    }
+    if (multi_model) validate_merged_source_identity(models, dialect, root);
     const std::string model_xml = multi_model
                                       ? build_merged_model_settings(
                                             models, bed_type, model_resources, slot_count,
@@ -1650,32 +1714,19 @@ std::string compose_model_metadata(std::string_view project_json,
 
     const std::string settings_media_type = required_text(
         component_plan, "settings_media_type", "target metadata components");
-    json package_parts = json::array();
-    std::map<std::string, std::string> part_paths_by_role;
-    std::set<std::string> part_paths;
-    auto add_text_part = [&](const std::string &role, const std::string &path,
-                             const std::string &media_type,
-                             const std::string &content) {
-        if (!part_paths_by_role.emplace(role, path).second ||
-            !part_paths.insert(path).second) {
-            invalid("metadata component plan contains a duplicate part role or path");
-        }
-        package_parts.push_back({{"role", role},
-                                 {"path", path},
-                                 {"media_type", media_type},
-                                 {"content", content}});
-    };
-    add_text_part("model_settings", model_path, settings_media_type, model_xml);
-    add_text_part("project_settings", project_path, settings_media_type,
-                  std::string(project_json));
-    add_text_part("slice_info", slice_path, settings_media_type, slice_xml);
+    MetadataParts package_parts;
+    package_parts.add_text("model_settings", model_path, settings_media_type, model_xml);
+    package_parts.add_text("project_settings", project_path, settings_media_type,
+                           std::string(project_json));
+    package_parts.add_text("slice_info", slice_path, settings_media_type, slice_xml);
 
     const json &component_inputs = required_object(
         request, "component_inputs", "metadata request");
-    if (component_is_included("plate_summary") && component_inputs.contains("plate_summary")) {
+    if (component_is_included(component_plan, "plate_summary", object_count) &&
+        component_inputs.contains("plate_summary")) {
         const json &summary_plan = required_object(
             component_plan, "plate_summary", "target metadata components");
-        add_text_part(
+        package_parts.add_text(
             "plate_summary",
             required_text(summary_plan, "path", "target plate summary"),
             required_text(summary_plan, "media_type", "target plate summary"),
@@ -1688,14 +1739,14 @@ std::string compose_model_metadata(std::string_view project_json,
     if (component_inputs.contains("wipe_tower_placement")) {
         const json &wipe_input = required_object(
             component_inputs, "wipe_tower_placement", "request.component_inputs");
-        add_text_part(
+        package_parts.add_text(
             "wipe_tower_placement",
             required_text(wipe_plan, "path", "target wipe tower placement"),
             required_text(wipe_plan, "media_type", "target wipe tower placement"),
             wipe_input.dump(2, ' ', false));
     }
 
-    if (component_is_included("filament_sequence")) {
+    if (component_is_included(component_plan, "filament_sequence", object_count)) {
         const json &sequence_plan = required_object(
             component_plan, "filament_sequence", "target metadata components");
         const auto plate_key = required_text(
@@ -1710,17 +1761,17 @@ std::string compose_model_metadata(std::string_view project_json,
             }
         }
         const json sequence = {{plate_key, std::move(plate_sequence)}};
-        add_text_part(
+        package_parts.add_text(
             "filament_sequence",
             required_text(sequence_plan, "path", "target filament sequence"),
             required_text(sequence_plan, "media_type", "target filament sequence"),
             sequence.dump());
     }
 
-    if (component_is_included("cut_information")) {
+    if (component_is_included(component_plan, "cut_information", object_count)) {
         const json &cut_plan = required_object(
             component_plan, "cut_information", "target metadata components");
-        add_text_part(
+        package_parts.add_text(
             "cut_information",
             required_text(cut_plan, "path", "target cut information"),
             required_text(cut_plan, "media_type", "target cut information"),
@@ -1730,7 +1781,7 @@ std::string compose_model_metadata(std::string_view project_json,
     if (component_plan.contains("custom_gcode_per_layer")) {
         const json &custom_plan = required_object(
             component_plan, "custom_gcode_per_layer", "target metadata components");
-        add_text_part(
+        package_parts.add_text(
             "custom_gcode_per_layer",
             required_text(custom_plan, "path", "target custom gcode per layer"),
             required_text(custom_plan, "media_type", "target custom gcode per layer"),
@@ -1742,20 +1793,20 @@ std::string compose_model_metadata(std::string_view project_json,
             component_plan, "layer_config_ranges", "target metadata components");
         const std::string content = build_merged_layer_config_ranges(models, layer_plan, slot_count);
         if (!content.empty()) {
-            add_text_part(
+            package_parts.add_text(
                 "layer_config_ranges",
                 required_text(layer_plan, "path", "target layer config ranges"),
                 required_text(layer_plan, "media_type", "target layer config ranges"),
                 content);
         }
-    } else if (!multi_model && component_inputs.contains("layer_config_ranges") &&
+    } else if (component_inputs.contains("layer_config_ranges") &&
                !component_inputs.at("layer_config_ranges").is_null()) {
         const json &layer_plan = required_object(
             component_plan, "layer_config_ranges", "target metadata components");
         const std::string content = build_layer_config_ranges(
             component_inputs.at("layer_config_ranges"), project, layer_plan);
         if (!content.empty()) {
-            add_text_part(
+            package_parts.add_text(
                 "layer_config_ranges",
                 required_text(layer_plan, "path", "target layer config ranges"),
                 required_text(layer_plan, "media_type", "target layer config ranges"),
@@ -1763,100 +1814,13 @@ std::string compose_model_metadata(std::string_view project_json,
         }
     }
 
-    std::set<std::string> defined_roles = {
-        "model_settings", "project_settings", "slice_info",
-        "wipe_tower_placement"};
-    if (component_is_included("plate_summary")) defined_roles.insert("plate_summary");
-    if (component_plan.contains("custom_gcode_per_layer")) {
-        defined_roles.insert("custom_gcode_per_layer");
-    }
-    for (const auto *optional_component :
-         {"filament_sequence", "cut_information", "layer_config_ranges"}) {
-        if (component_is_included(optional_component)) {
-            defined_roles.insert(optional_component);
-        }
-    }
-    json package_relationships = json::array();
     for (const auto &resource : resource_plan) {
-        defined_roles.insert(resource.role);
-        if (!part_paths_by_role.emplace(resource.role, resource.path).second ||
-            !part_paths.insert(resource.path).second) {
-            invalid("metadata component plan contains a duplicate part role or path");
-        }
-        package_parts.push_back({{"role", resource.role},
-                                 {"path", resource.path},
-                                 {"media_type", resource.media_type},
-                                 {"resource_role", resource.role}});
-        if (!resource.relationship.is_null()) {
-            package_relationships.push_back(resource.relationship);
-        }
+        package_parts.add_resource(resource);
     }
-
-    const json &model_relationship_plan = required_object(
-        component_plan, "model_relationships", "target metadata components");
-    const auto relationship_source = required_text(
-        model_relationship_plan, "source", "target model relationships", true);
-    const auto relationship_type = required_text(
-        model_relationship_plan, "type", "target model relationships");
-    const auto relationship_id_prefix = required_text(
-        model_relationship_plan, "id_prefix", "target model relationships");
-    const json &related_roles = required_array(
-        model_relationship_plan, "part_roles", "target model relationships", true);
-    json relationships = json::array();
-    std::size_t relationship_index = 0;
-    for (const auto &role_value : related_roles) {
-        if (!role_value.is_string()) {
-            invalid("target model relationship part_roles entries must be text");
-        }
-        const std::string role = role_value.get<std::string>();
-        if (component_plan.contains(role) && !component_is_included(role.c_str())) {
-            continue;
-        }
-        if (defined_roles.find(role) == defined_roles.end()) {
-            invalid("target model relationship references an unknown metadata part role");
-        }
-        const auto part = part_paths_by_role.find(role);
-        if (part == part_paths_by_role.end()) {
-            continue;
-        }
-        relationships.push_back({{"source", relationship_source},
-                                 {"id", relationship_id_prefix +
-                                            std::to_string(relationship_index++)},
-                                 {"type", relationship_type},
-                                 {"target", "/" + part->second}});
-    }
-    for (const auto &relationship : package_relationships) {
-        relationships.push_back(relationship);
-    }
-
-    json build_items = json::array();
-    if (multi_model) {
-        json build_item_properties = json::object();
-        if (component_plan.contains("build_item_properties")) {
-            build_item_properties = required_object(
-                component_plan, "build_item_properties", "target metadata components");
-            for (const auto &[key, value] : build_item_properties.items()) {
-                if (!value.is_string()) {
-                    invalid("target build_item_properties values must be text");
-                }
-                validate_xml10_text(value.get<std::string>(),
-                                    "target build_item_properties." + key);
-            }
-        }
-        for (const auto &model : models) {
-            json object_ids = json::array();
-            for (const auto &part : model.parts) object_ids.push_back(part.part_id);
-            build_items.push_back({{"model_index", model.model_index},
-                                   {"assembly_id", model.assembly_id},
-                                   {"object_ids", std::move(object_ids)},
-                                   {"transform", model.assemble_transform},
-                                   {"offset", model.assemble_offset},
-                                   {"properties", build_item_properties}});
-        }
-    }
-
-    json output = {{"parts", std::move(package_parts)},
-                   {"relationships", std::move(relationships)},
+    const auto relationships = build_metadata_relationships(
+        component_plan, object_count, resource_plan, package_parts);
+    json output = {{"parts", package_parts.take_parts()},
+                   {"relationships", relationships},
                    {"content_types", content_types},
                    {"root_model", root},
                    {"settings_parts", {{"model_settings", model_path},
@@ -1864,7 +1828,7 @@ std::string compose_model_metadata(std::string_view project_json,
                                         {"slice_info", slice_path}}},
                    {"project_bed_type", bed_type},
                    {"model_settings_bed_type", bed_type}};
-    if (multi_model) output["build_items"] = std::move(build_items);
+    if (multi_model) output["build_items"] = build_metadata_build_items(models, component_plan);
     return output.dump();
 }
 

@@ -10,19 +10,55 @@ The Python package includes the C++ extension, target translation data, native
 project profile snapshots, and a small optional adapter for the Neroued 3MF
 writer. The core package does not require Neroued.
 
+The normal path is: generator facts → Fat Cat configuration/metadata → writer.
+Native sources and explicitly recorded compatibility sources retain their actual
+provenance; see [compatibility notes](docs/COMPATIBILITY.md).
+
 ## Install and use
 
-Python 3.12–3.14 and a C++17 toolchain are required. From a source checkout:
+Python 3.12–3.14 is supported. To install from a source checkout, use a C++17
+toolchain:
 
 ```bash
 python -m pip install .
 ```
 
-The public extension module is `fatcat_metadata`. Its main entry points are
-`compose_project_settings`, `compose_model_metadata`, and `patch_wipe_tower`.
-See [`cpp/tests/test_binding.py`](cpp/tests/test_binding.py) for small calls and
-[`cpp/examples/python_neroued_consumer/`](cpp/examples/python_neroued_consumer/)
-for a complete writer example.
+To install without compiling C++, download a wheel from a successful
+[CI run](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml).
+Select the run for the source commit you want, then its artifact for your
+operating system, architecture and Python version. Sign in to GitHub, unzip
+the artifact and install its `.whl` file:
+
+```bash
+python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
+```
+
+CI builds Python 3.12/3.13/3.14 wheels on Linux x64, macOS ARM64 and Windows
+x64. Each job installs and checks the same wheel it uploads. These are CI
+artifacts retained for 30 days, not a package-index release. The wheel tags must
+match your interpreter and platform; Linux artifacts use the runner's native
+platform tag and do not promise portability across older Linux distributions.
+All current builds remain version 0.1.0, so keep the source commit with the
+downloaded artifact. For other platforms or an expired artifact, use the source
+installation above.
+
+The installed extension exposes `__source_revision__` and `__source_dirty__` so
+you can identify a 0.1.0 build without its downloaded filename. The revision is
+the actual build checkout (a pull-request CI run may build a merge revision),
+and the dirty flag records its state when CMake configured it. A source archive
+without Git reports `"unknown"` and `None`, rather than claiming an exact commit.
+`metadata_target(slicer_id)` reports the packaged target's application version.
+
+The public extension module is `fatcat_metadata`. Its recommended Python
+entry points are `compose_project_settings(request)` and
+`compose_model_metadata(project, model_request)`, using dictionaries. Existing
+JSON-string calls remain supported. The wheel includes editor/type hints.
+
+Start with [the API guide](docs/API.md) and the
+[minimal independent example](cpp/examples/python_neroued_consumer/minimal.py), then the
+[complete independent generator](cpp/examples/python_neroued_consumer/).
+The [C++ guide](cpp/README.md) covers source and installed SDK consumption;
+[maintenance instructions](docs/MAINTAINERS.md) cover source-data refreshes.
 
 ## Build and verify
 

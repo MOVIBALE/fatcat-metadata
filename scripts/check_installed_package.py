@@ -11,17 +11,6 @@ from pathlib import Path
 import sys
 
 
-EXPECTED_TARGETS = {
-    "BambuStudio": "02.08.02.61",
-    "OrcaSlicer": "2.4.2",
-    "QIDIStudio": "02.07.02.60",
-    "ElegooSlicer": "1.5.3.5",
-    "AnycubicSlicerNext": "2.0.0.2",
-    "FlashStudio": "1.7.15",
-    "SnapmakerOrca": "2.3.6",
-}
-
-
 def main() -> int:
     import fatcat_metadata
     import fatcat_metadata_neroued
@@ -31,6 +20,8 @@ def main() -> int:
     ).resolve()
     module_path = Path(fatcat_metadata.__file__).resolve()
     module_root = module_path.parent
+    if not (module_root / "fatcat_metadata-stubs/__init__.pyi").is_file():
+        raise SystemExit("Python interface type hints were not packaged")
     if module_path.is_relative_to(source_root):
         raise SystemExit(f"import resolved inside source checkout: {module_path}")
     if Path.cwd().resolve().is_relative_to(source_root):
@@ -68,15 +59,26 @@ def main() -> int:
         raise SystemExit("wheel COPYRIGHT.md is missing Fat Cat copyright information")
 
     data_root = module_root / "fatcat_metadata_data"
+    relative_manifest = Path("translations/supported-targets.json")
+    manifest = json.loads((data_root / relative_manifest).read_text(encoding="utf-8"))
+    source_manifest = source_root / "compatibility/current-src" / relative_manifest
+    if manifest != json.loads(source_manifest.read_text(encoding="utf-8")):
+        raise SystemExit("installed support manifest differs from the source checkout")
+    expected_targets = {
+        target["slicer_id"]: target["application_version"]
+        for target in manifest["targets"]
+    }
     target_root = data_root / "translations" / "targets"
     target_paths = sorted(target_root.glob("*.json"))
+    if {path.name for path in target_paths} != {target["filename"] for target in manifest["targets"]}:
+        raise SystemExit("installed target filenames differ from the support manifest")
     actual_targets = {}
     for target_path in target_paths:
         target = json.loads(target_path.read_text(encoding="utf-8"))
         contract = target["target_contract"]
         actual_targets[contract["slicer_id"]] = contract["application_version"]
-    if actual_targets != EXPECTED_TARGETS:
-        raise SystemExit(f"installed targets differ from the seven pinned targets: {actual_targets}")
+    if actual_targets != expected_targets:
+        raise SystemExit(f"installed targets differ from the support manifest: {actual_targets}")
     if not (data_root / "translations" / "canonical.json").is_file():
         raise SystemExit("canonical machine translation data is missing from the wheel")
 
@@ -84,7 +86,7 @@ def main() -> int:
     source_index_path = source_root_data / "source-index.json"
     source_index = json.loads(source_index_path.read_text(encoding="utf-8"))
     actual_slicers = {row["slicer_id"] for row in source_index["sources"]}
-    if actual_slicers != set(EXPECTED_TARGETS):
+    if actual_slicers != set(expected_targets):
         raise SystemExit(f"native source index does not cover all targets: {actual_slicers}")
     missing_profiles = [
         name for name in source_index["profile_files"]
@@ -92,6 +94,22 @@ def main() -> int:
     ]
     if missing_profiles:
         raise SystemExit(f"native source index refers to missing profile files: {missing_profiles[:5]}")
+    for row in source_index['sources']:
+        record = row.get('compatibility_project')
+        if record is None:
+            continue
+        path = source_root_data / record['path']
+        if hashlib.sha256(path.read_bytes()).hexdigest() != record['source_sha256']:
+            raise SystemExit('installed compatibility source content hash mismatch')
+        payload = json.loads(path.read_text(encoding='utf-8'))
+        for key in ('machine_uid', 'nozzle_uid'):
+            if payload['source'][key] != row[key]:
+                raise SystemExit('installed compatibility source hardware identity mismatch')
+        for key in ('source_slicer_id', 'source_application_version', 'source_profile_name'):
+            if payload['source'][key] != record[key]:
+                raise SystemExit('installed compatibility source provenance mismatch')
+        if not (data_root / record['license_file']).is_file():
+            raise SystemExit('compatibility source license is missing')
 
     manifest_path = data_root / "licenses" / "third-party" / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -107,6 +125,7 @@ def main() -> int:
     print(f"module_file={module_path}")
     print(f"working_directory={Path.cwd().resolve()}")
     print(f"target_count={len(actual_targets)} native_profile_count={len(source_index['profile_files'])}")
+    print(f"compatibility_project_count={len(source_index.get('compatibility_project_files', []))}")
     print(f"third_party_license_count={len(manifest['files'])}")
     print("distribution_license_files=LICENSE,NOTICE.md,COPYRIGHT.md")
     return 0

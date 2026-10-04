@@ -1,0 +1,11 @@
+{
+  "targets": [
+    {"slicer_id": "BambuStudio", "application_version": "02.08.02.61", "filename": "bambu-studio-02.08.02.61.json", "template_import": true},
+    {"slicer_id": "OrcaSlicer", "application_version": "2.4.2", "filename": "orca-slicer-2.4.2.json", "template_import": true},
+    {"slicer_id": "QIDIStudio", "application_version": "02.07.02.60", "filename": "qidi-studio-02.07.02.60.json", "template_import": true},
+    {"slicer_id": "ElegooSlicer", "application_version": "1.5.3.5", "filename": "elegoo-slicer-1.5.3.5.json", "template_import": true},
+    {"slicer_id": "AnycubicSlicerNext", "application_version": "2.0.0.2", "filename": "anycubic-slicer-next-2.0.0.2.json", "template_import": true},
+    {"slicer_id": "FlashStudio", "application_version": "1.7.15", "filename": "flash-studio-1.7.15.json", "template_import": false},
+    {"slicer_id": "SnapmakerOrca", "application_version": "2.3.6", "filename": "snapmaker-orca-2.3.6.json", "template_import": true}
+  ]
+}
