@@ -1,0 +1,9 @@
+#pragma once
+
+namespace fatcat::detail {
+
+inline constexpr const char *source_revision = "@FATCAT_SOURCE_REVISION@";
+// -1 means Git source state was unavailable when CMake configured this build.
+inline constexpr int source_dirty = @FATCAT_SOURCE_DIRTY@;
+
+}  // namespace fatcat::detail

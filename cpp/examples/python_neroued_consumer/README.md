@@ -1,5 +1,25 @@
 # Python consumer example
 
+Start with [`minimal.py`](minimal.py): three steps in one short file, using the
+installed dictionary API and no Lumina imports. After installing the packages
+below, run:
+
+```bash
+python cpp/examples/python_neroued_consumer/minimal.py --output /tmp/fatcat-cube.3mf
+```
+
+The generator supplies target/material identities, actual meshes, writer object
+IDs, material indexes and placement. FatCat supplies project settings and the
+metadata description; the optional adapter registers it with Neroued, which
+writes once. Cube geometry/placement helpers are reused from `write_example.py`;
+they are example generator code, not required SDK imports. No thumbnails or
+Lumina extensions are needed for this sample. Replace those helpers with your
+own meshes and their corresponding part facts when building another generator.
+
+`write_example.py` is the complete command-line version with custom source,
+placement and production-layout options. Both examples use the same writer
+layout and generator geometry.
+
 This example creates a 20 mm cube and writes a 3MF using Fat Cat's metadata
 composer and the public Neroued 0.4.0 writer API:
 

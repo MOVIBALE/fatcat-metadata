@@ -158,6 +158,8 @@ class _MetadataDescription(TypedDict):
 
 
 __version__: str
+__source_revision__: str
+__source_dirty__: bool | None
 __fatcat_cpp_extension__: bool
 __fatcat_project_settings__: bool
 

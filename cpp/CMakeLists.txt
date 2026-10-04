@@ -13,6 +13,34 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
 file(READ ${FATCAT_SUPPORTED_TARGETS_FILE} FATCAT_SUPPORTED_TARGETS_JSON)
 configure_file(cmake/supported_targets.h.in generated/supported_targets.h @ONLY)
 
+# Record the actual checkout used by this build. Archives without Git must not
+# pretend to have a known revision or a clean source tree.
+set(FATCAT_SOURCE_REVISION "unknown")
+set(FATCAT_SOURCE_DIRTY -1)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../.git")
+    find_package(Git QUIET)
+    if(Git_FOUND)
+        execute_process(COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
+            RESULT_VARIABLE FATCAT_GIT_RESULT
+            OUTPUT_VARIABLE FATCAT_GIT_REVISION OUTPUT_STRIP_TRAILING_WHITESPACE)
+        if(FATCAT_GIT_RESULT EQUAL 0)
+            set(FATCAT_SOURCE_REVISION "${FATCAT_GIT_REVISION}")
+            execute_process(COMMAND "${GIT_EXECUTABLE}" status --porcelain
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
+                RESULT_VARIABLE FATCAT_STATUS_RESULT
+                OUTPUT_VARIABLE FATCAT_GIT_STATUS OUTPUT_STRIP_TRAILING_WHITESPACE)
+            if(FATCAT_STATUS_RESULT EQUAL 0)
+                set(FATCAT_SOURCE_DIRTY 0)
+                if(FATCAT_GIT_STATUS)
+                    set(FATCAT_SOURCE_DIRTY 1)
+                endif()
+            endif()
+        endif()
+    endif()
+endif()
+configure_file(cmake/build_info.h.in generated/build_info.h @ONLY)
+
 option(FATCAT_BUILD_PYTHON "Build the Python extension" ON)
 option(FATCAT_BUILD_TESTS "Build the standalone C++ tests" ON)
 option(FATCAT_INSTALL_CPP "Install the standalone C++ SDK and its public data" OFF)
@@ -76,6 +104,8 @@ endif()
 add_library(fatcat_metadata_core STATIC
     src/metadata_components.cpp
     src/project_settings.cpp
+    src/project_settings_merge.cpp
+    src/project_settings_overrides.cpp
     src/native_project_source.cpp
     src/source_project_settings.cpp
     src/source_material_slots.cpp

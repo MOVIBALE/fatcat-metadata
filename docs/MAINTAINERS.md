@@ -1,5 +1,16 @@
 # Maintaining native slicer sources
 
+## Composition owners
+
+`cpp/src/project_settings.cpp` validates selection and coordinates native
+materials, slot projection and final summaries. Its private merge implementation
+in `project_settings_merge.cpp` prepares all sources once and owns merged slot
+arrays, transitions, differences and mappings. Both preserved-source and bound
+hardware paths call that same implementation. `project_settings_overrides.cpp`
+owns explicit scalar, colour and wipe-tower overrides. Shared project field
+contracts remain private in `project_settings_internal.h`; none of these files
+introduces an installed public API or a generator dependency.
+
 The native source updater is `scripts/sync_native_project_sources.py`. It reads
 the profile files installed by each supported macOS slicer release and checks
 the exact `CFBundleShortVersionString` in its app bundle before it writes any

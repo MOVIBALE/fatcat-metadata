@@ -92,3 +92,5 @@ jobs:
       - run: python -m pip install . "neroued-3mf==0.4.0"
       - run: python cpp/examples/python_neroued_consumer/write_example.py --output "$RUNNER_TEMP/fatcat-consumer-example.3mf"
       - run: python cpp/examples/python_neroued_consumer/verify_3mf.py "$RUNNER_TEMP/fatcat-consumer-example.3mf"
+      - run: python cpp/examples/python_neroued_consumer/minimal.py --output "$RUNNER_TEMP/fatcat-minimal-example.3mf"
+      - run: python cpp/examples/python_neroued_consumer/verify_3mf.py "$RUNNER_TEMP/fatcat-minimal-example.3mf"

@@ -42,12 +42,20 @@ All current builds remain version 0.1.0, so keep the source commit with the
 downloaded artifact. For other platforms or an expired artifact, use the source
 installation above.
 
+The installed extension exposes `__source_revision__` and `__source_dirty__` so
+you can identify a 0.1.0 build without its downloaded filename. The revision is
+the actual build checkout (a pull-request CI run may build a merge revision),
+and the dirty flag records its state when CMake configured it. A source archive
+without Git reports `"unknown"` and `None`, rather than claiming an exact commit.
+`metadata_target(slicer_id)` reports the packaged target's application version.
+
 The public extension module is `fatcat_metadata`. Its recommended Python
 entry points are `compose_project_settings(request)` and
 `compose_model_metadata(project, model_request)`, using dictionaries. Existing
 JSON-string calls remain supported. The wheel includes editor/type hints.
 
 Start with [the API guide](docs/API.md) and the
+[minimal independent example](cpp/examples/python_neroued_consumer/minimal.py), then the
 [complete independent generator](cpp/examples/python_neroued_consumer/).
 The [C++ guide](cpp/README.md) covers source and installed SDK consumption;
 [maintenance instructions](docs/MAINTAINERS.md) cover source-data refreshes.

@@ -17,6 +17,7 @@
 #include "fatcat/template_assembly.h"
 #include "fatcat/wipe_tower.h"
 #include "supported_targets.h"
+#include "build_info.h"
 
 namespace py = pybind11;
 
@@ -105,6 +106,9 @@ PYBIND11_MODULE(fatcat_metadata, module) {
     module.doc() =
         "C++17 core for Fat Cat 3MF project and slicer metadata components.";
     module.attr("__version__") = FATCAT_METADATA_VERSION;
+    module.attr("__source_revision__") = fatcat::detail::source_revision;
+    module.attr("__source_dirty__") = fatcat::detail::source_dirty < 0
+        ? py::object(py::none()) : py::object(py::bool_(fatcat::detail::source_dirty != 0));
     module.attr("__fatcat_cpp_extension__") = true;
     module.attr("__fatcat_project_settings__") = true;
 

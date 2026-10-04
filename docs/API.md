@@ -69,7 +69,9 @@ can be empty. For merged models, supply `objects` instead of the single-model
 fields; each object's `model_index` follows the final one-based build order,
 with source XML, part/slot mappings and actual placement.
 
-The [complete independent generator](../cpp/examples/python_neroued_consumer/)
+The [minimal example](../cpp/examples/python_neroued_consumer/minimal.py)
+shows the three integration steps without the complete CLI's options. The
+[complete independent generator](../cpp/examples/python_neroued_consumer/)
 shows both requests and registers the description with
 `fatcat_metadata_neroued`, then writes the builder once.
 
@@ -87,6 +89,13 @@ Read-only `metadata_target`, `native_project_source_catalog` and
 template import, slot extraction, layout reading and `patch_wipe_tower` are
 advanced JSON/XML operations; their existing signatures are listed in the
 installed stub and public headers.
+
+For build provenance, read `__version__`, `__source_revision__` and
+`__source_dirty__` from the installed extension. The revision records the build
+checkout and the flag is `True` for local changes, `False` for clean Git sources,
+or `None` when unavailable. Git-free source archives report revision `"unknown"`.
+These identify the library build; `metadata_target(slicer_id)` and the returned
+`process_source`/`material_source` identify the selected configuration sources.
 
 `assemble_project_template` and `assemble_machine_registry_template` remain
 published historical interfaces. New native-source generators use the two
