@@ -11,6 +11,33 @@ Use `python -m fatcat_metadata_examples.write_example` for the complete command
 below. Source paths remain supported. Query target/material/plate choices with
 the installed `fatcat` command; see [first use](../../../docs/FIRST_USE.md).
 
+## Custom process across slicers
+
+[`showcase.py`](showcase.py) exports the same teal 20 mm PLA cube for a selected
+target. [`showcase_process.json`](showcase_process.json) supplies editable layer,
+width, wall, shell, infill and brim settings. The wheel installs both files:
+
+```bash
+python -m fatcat_metadata_examples.showcase \
+  --slicer OrcaSlicer --machine bambu-lab:a1-mini --output orca-a1-mini.3mf
+python -m fatcat_metadata_examples.showcase \
+  --slicer BambuStudio --machine bambu-lab:p1s --output bambu-p1s.3mf
+```
+
+Use `--process-json my-process.json` to supply your own process values,
+`--colour`/`--name` for material colour/model names, and `--help` for target
+options. Query exact machine/profile identities using `fatcat catalog` and
+`fatcat choices`. The example chooses the packaged version of that slicer;
+it does not read whichever application happens to be installed.
+
+The adjacent `.settings.json` records the request, final composition and model
+facts. Each target needs a separate export. FatCat supplies metadata, the
+example supplies geometry, and Neroued writes once. The example also supplies
+Flash Studio's required slice UUID and requested plate summary facts.
+The [GUI montage and result matrix](../../../docs/SHOWCASE.md) cover seven
+applications and eight representative combinations, including observed import
+notices and plate-label differences. File generation alone is not GUI acceptance.
+
 Start with [`minimal.py`](minimal.py): three steps in one short file, using the
 installed dictionary API and no Lumina imports. After installing the packages
 below, run:

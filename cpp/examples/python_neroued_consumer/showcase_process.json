@@ -1,0 +1,18 @@
+{
+  "layer_height": "0.16",
+  "initial_layer_height": "0.24",
+  "initial_layer_print_height": "0.24",
+  "line_width": "0.44",
+  "initial_layer_line_width": "0.5",
+  "outer_wall_line_width": "0.42",
+  "inner_wall_line_width": "0.45",
+  "wall_loops": "3",
+  "top_shell_layers": "5",
+  "bottom_shell_layers": "4",
+  "sparse_infill_density": "25%",
+  "sparse_infill_pattern": "gyroid",
+  "brim_type": "outer_only",
+  "brim_width": "3",
+  "enable_support": "0",
+  "enable_prime_tower": "0"
+}

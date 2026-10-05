@@ -149,6 +149,15 @@ requests and source projects. With a local wheel path, installing
 
 可用完整示例命令的 `--help` 查询自定义请求和来源工程选项。
 
+For a richer example, use the installed `showcase` command with OrcaSlicer or
+Bambu Studio. It reads an editable process JSON and keeps the same geometry
+across targets. See the [seven-slicer GUI demonstration](SHOWCASE.md) for the
+commands, exact application versions and observed limitations.
+
+更多参数示例可使用随包的 `showcase` 命令，选择 OrcaSlicer 或 Bambu Studio。
+它读取可编辑的工艺 JSON，并在不同目标间复用同一几何。
+详见[七款软件真实 GUI 演示](SHOWCASE.md)的命令、准确版本及观察限制。
+
 ## Why use it? / 适用场景
 
 - A new image/model generator supplies its palette and geometry; FatCat resolves
