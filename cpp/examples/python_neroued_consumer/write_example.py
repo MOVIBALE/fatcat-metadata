@@ -129,8 +129,12 @@ def _cube_material(request: dict[str, Any], project: dict[str, Any]) -> tuple[st
     return project['filament_settings_id'][0], project['filament_colour'][0]
 
 
-def _create_builder(placement: tuple[float, float, float],
-                    material: tuple[str, str], production: bool = False) -> tuple[n3mf.DocumentBuilder, int, int]:
+def _create_builder(
+    placement: tuple[float, float, float],
+    material: tuple[str, str],
+    production: bool = False,
+    name: str = "Consumer cube",
+) -> tuple[n3mf.DocumentBuilder, int, int]:
     import neroued_3mf as n3mf
 
     builder = n3mf.DocumentBuilder()
@@ -142,7 +146,7 @@ def _create_builder(placement: tuple[float, float, float],
         [n3mf.BaseMaterial(material[0], n3mf.Color.from_hex(material[1]))]
     )
     object_id = builder.add_mesh_object(
-        "Consumer cube", _cube_mesh(), material_group_id, 0
+        name, _cube_mesh(), material_group_id, 0
     )
     builder.set_object_uuid(object_id, str(uuid.uuid4()))
     builder.set_component_transform(object_id, n3mf.Transform.identity())
@@ -156,7 +160,8 @@ def _create_builder(placement: tuple[float, float, float],
         # Original 0.4.0 preserves material groups in core model resources.
         # Its production serialization omits them; use its public core assembly API.
         assembly_id = builder.add_component_object(
-            "Consumer cube assembly", [n3mf.Component(object_id, n3mf.Transform.identity())])
+            name + " assembly", [n3mf.Component(object_id, n3mf.Transform.identity())]
+        )
         builder.set_object_uuid(assembly_id, str(uuid.uuid4()))
         builder.add_build_item(assembly_id, n3mf.Transform.translation(*placement),
                                uuid=str(uuid.uuid4()))

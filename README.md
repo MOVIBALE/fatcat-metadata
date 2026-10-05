@@ -18,6 +18,23 @@ It can be used independently of Lumina or any other application.
 Use it to discover native choices, generate a model without Lumina, preserve
 user-project tuning, or compose merged material slots through the same core.
 
+## See the same custom process in seven slicers
+
+One 20 mm cube, one shared process JSON, and eight target-specific exports:
+OrcaSlicer with Bambu A1 mini/P1S, Bambu Studio with P1S, and five other native
+slicers. The installed example changes layer height, widths, walls, shells,
+gyroid infill and brim settings. Each shown project was actually opened and
+sliced in the application; the animation uses enlarged GUI keyframes and
+compresses waiting time.
+
+![Custom process metadata opened and sliced in seven native applications](docs/images/custom-process-slicers.gif)
+
+[Reproduce the exports and read the observed results](docs/SHOWCASE.md).
+All eight representative projects sliced successfully. Bambu/Snapmaker import
+notices and QIDI/Anycubic plate-label differences are recorded there. This is
+evidence for the listed combinations, rather than all printers or physical
+print quality. A separate 3MF is composed for each target.
+
 ## Project status
 
 The current version is **0.1.0**, an early public SDK. Install from source or
@@ -235,6 +252,7 @@ acceptance. See [validation scope](docs/VALIDATION.md) for what each check estab
 | --- | --- |
 | [API](docs/API.md) | Settings/metadata requests, dictionary and JSON calls, and build provenance. |
 | [First result](docs/FIRST_USE.md) | Installed CLI, choice discovery and the complete cube example. |
+| [Custom process showcase](docs/SHOWCASE.md) | Seven-slicer GUI montage, editable process JSON and eight reproducible exports. |
 | [Distributions](docs/DISTRIBUTIONS.md) | Fixed-version files and source/hash receipts without publishing. |
 | [Python examples](cpp/examples/python_neroued_consumer/README.md) | Complete independent generator and optional writer integration. |
 | [C++ SDK](cpp/README.md) | Source builds, installation and downstream CMake consumption. |

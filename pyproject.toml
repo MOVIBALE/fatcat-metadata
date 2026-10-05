@@ -67,6 +67,7 @@ sdist.include = [
     "cpp/examples/*/*.py",
     "docs/*.md",
     "docs/images/*.png",
+    "docs/images/*.gif",
     "licenses/third-party/manifest.json",
     "licenses/third-party/**/LICENSE*",
     "python/*.py",
