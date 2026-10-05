@@ -29,6 +29,17 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 
+[project.scripts]
+fatcat = "fatcat_metadata_cli:main"
+
+[project.optional-dependencies]
+examples = ["neroued-3mf==0.4.0"]
+
+[project.urls]
+Homepage = "https://github.com/MOVIBALE/fatcat-metadata"
+Documentation = "https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/API.md"
+Issues = "https://github.com/MOVIBALE/fatcat-metadata/issues"
+
 [tool.scikit-build]
 cmake.source-dir = "cpp"
 cmake.version = ">=3.18"
@@ -40,6 +51,7 @@ sdist.include = [
     "cpp/CMakeLists.txt",
     "cpp/README.md",
     "cpp/bindings/*.cpp",
+    "cpp/cli/*.cpp",
     "cpp/include/**/*.h",
     "cpp/include/**/*.hpp",
     "cpp/src/*.cpp",
@@ -54,6 +66,7 @@ sdist.include = [
     "cpp/examples/*/*.md",
     "cpp/examples/*/*.py",
     "docs/*.md",
+    "docs/images/*.png",
     "licenses/third-party/manifest.json",
     "licenses/third-party/**/LICENSE*",
     "python/*.py",

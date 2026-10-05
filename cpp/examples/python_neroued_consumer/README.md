@@ -1,5 +1,16 @@
 # Python consumer example
 
+The wheel installs these examples independently of the source checkout:
+
+```bash
+python -m pip install 'neroued-3mf==0.4.0'
+python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
+```
+
+Use `python -m fatcat_metadata_examples.write_example` for the complete command
+below. Source paths remain supported. Query target/material/plate choices with
+the installed `fatcat` command; see [first use](../../../docs/FIRST_USE.md).
+
 Start with [`minimal.py`](minimal.py): three steps in one short file, using the
 installed dictionary API and no Lumina imports. After installing the packages
 below, run:

@@ -1,7 +1,7 @@
 # C++ library
 
 The CMake project builds the `fatcat_metadata_core` C++17 library and, by
-default, a pybind11 extension module. The public headers are under `include/`.
+default, a pybind11 extension module and the native `fatcat` command. The public headers are under `include/`.
 Slicer translation contracts and native source profiles are in the sibling
 `compatibility/` directory and are packaged with the Python wheel.
 
@@ -62,6 +62,12 @@ Consumers use `find_package(FatCatMetadata 0.1.0 CONFIG REQUIRED)` and link
 data root and follows the installation prefix when it is moved. If a matching
 system JSON or TinyXML2 dependency was used to build the SDK, that dependency
 must also be available to the consumer; bundled dependencies are installed.
+
+The installed `bin/fatcat` queries targets and choices and composes JSON without
+Python. Its default data directory follows the SDK prefix when moved. Start
+with `bin/fatcat --help` and the [first-use guide](../docs/FIRST_USE.md).
+Use [distribution preparation](../docs/DISTRIBUTIONS.md) to archive the SDK and
+its source receipt. macOS builds require a deployment target of at least 13.3.
 
 The same consumer example exercises this installed contract:
 

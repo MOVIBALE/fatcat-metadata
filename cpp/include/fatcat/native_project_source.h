@@ -6,6 +6,17 @@
 
 namespace fatcat {
 
+/// List installed slicer/version identities without exposing source paths.
+/// 查询已安装的软件与版本标识，不暴露内部文件布局。
+std::string metadata_target_catalog(const std::filesystem::path &data_root);
+
+/// List exact process/material/plate choices for the requested machine/nozzle.
+/// 查询指定机型与喷嘴的工艺、材料和板型；不可用候选保留原因。
+/// Optional build_plate_uid filters material availability using the composer.
+/// 可选 build_plate_uid 使用合成器的同一规则判断材料可用性。
+std::string native_project_options(std::string_view request_json,
+                                   const std::filesystem::path &data_root);
+
 /// Read public machine-source identities and effective hardware facts for a
 /// packaged target, without exposing the installed source-file layout.
 std::string native_project_source_catalog(

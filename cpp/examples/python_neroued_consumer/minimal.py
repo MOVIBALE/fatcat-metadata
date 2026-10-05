@@ -9,12 +9,15 @@ import fatcat_metadata_neroued as adapter
 import neroued_3mf as writer
 
 # Reuse the complete example's geometry and safe placement, not slicer policy.
-from write_example import (
-    _create_builder as create_cube_builder,
-    _cube_material as cube_material,
-    _cube_placement as cube_placement,
-    _model_part_request as cube_part_metadata,
-)
+if __package__:
+    from . import write_example
+else:
+    import write_example
+
+create_cube_builder = write_example._create_builder
+cube_material = write_example._cube_material
+cube_placement = write_example._cube_placement
+cube_part_metadata = write_example._model_part_request
 
 
 def main() -> None:

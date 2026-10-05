@@ -13,6 +13,9 @@ FatCat Metadata 是一个 C++17 库，同时提供 Python 接口。它负责选�
 
 [English](README.md) · [简体中文](README_CN.md) · [API 指南](docs/API.md) · [示例](cpp/examples/python_neroued_consumer/) · [反馈问题](https://github.com/MOVIBALE/fatcat-metadata/issues)
 
+**首次使用：**[安装、命令行查询与完整 3MF 示例](docs/FIRST_USE.md)。
+适用于新生成器接入、保留用户工程调校及合并材料槽位，均调用同一核心。
+
 ## 项目状态
 
 当前版本为 **0.1.0**，处于早期公开 SDK 阶段。可从源码安装，或使用通过 CI 检查的
@@ -73,19 +76,35 @@ Neroued 是可选集成，FatCat 核心不依赖它运行。其他写包工具�
 
 ## Python 快速上手
 
-### 从源码安装
+### 安装预编译 wheel
 
-需要 Python 3.12–3.14 和 C++17 编译工具链。构建使用 CMake 3.18 或更新版本；
-系统没有合适的 JSON/XML 依赖时，会获取固定版本的依赖源码。
+从成功的 [CI 构建](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml)
+下载匹配 CPython 3.12–3.14、操作系统和 CPU 的 wheel，替换下方路径。
+匹配的 wheel 包含已编译扩展和原生命令，安装时不需要编译 C++。
 
 ```bash
-git clone https://github.com/MOVIBALE/fatcat-metadata.git
-cd fatcat-metadata
-python -m pip install .
+python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
+fatcat --version
+fatcat catalog
 ```
 
-正式接入时，请先切换到已审核的完整提交 SHA，再进行构建，以便复现所用版本。
-使用随库安装的配置数据不需要安装切片软件。
+Actions 下载需要登录 GitHub，普通 CI 附件保留 30 天。项目尚未提供正式 Release 或
+PyPI 发行。原生 Linux 构建不承诺兼容更旧的发行版；手动[发行准备流程](docs/DISTRIBUTIONS.md)
+使用 manylinux 构建 wheel；macOS wheel 最低版本为 14，C++ SDK 为 13.3，
+不会自动发布。
+
+[随包立方体示例](docs/FIRST_USE.md)已在指定版本 Bambu Studio 中真实打开和切片：
+
+![安装后的示例、A1 mini 配置与真实切片预览](docs/images/first-use-preview.png)
+
+截图展示一个示例的配置和切片走线，不代表所有机型组合或实体打印质量全部验收。
+
+无需安装切片软件。可先查询参数候选，再合成工程：
+
+```bash
+fatcat choices --slicer BambuStudio --application-version 02.08.02.61 \
+  --machine bambu-lab:a1-mini --nozzle nozzle:0.4mm --plate plate:textured-pei
+```
 
 ### 合成原生工程配置
 
@@ -113,11 +132,11 @@ project = result["project_settings"]
 
 ### 写出完整的示例 3MF
 
-在源码目录中安装可选写包工具，然后运行小立方体生成器：
+安装可选写包工具，然后运行随 wheel 提供的示例，不需要克隆源码：
 
 ```bash
 python -m pip install 'neroued-3mf==0.4.0'
-python cpp/examples/python_neroued_consumer/minimal.py --output fatcat-cube.3mf
+python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 ```
 
 [最小示例](cpp/examples/python_neroued_consumer/minimal.py)展示配置合成、真实几何和对象 ID
@@ -125,20 +144,19 @@ python cpp/examples/python_neroued_consumer/minimal.py --output fatcat-cube.3mf
 [完整指南](cpp/examples/python_neroued_consumer/README.md)包含用户来源、U1 兼容案例，
 以及可选外部 production 模型布局对写包工具的要求。
 
-### 安装预编译 wheel
+### 从源码构建
 
-打开成功的 [CI 运行](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml)，
-选择匹配操作系统、架构和 Python 版本的制品，解压后安装其中的 `.whl`。
-下载 GitHub Actions 制品需要登录 GitHub。
+源码构建需要 C++17 编译工具链、CMake 3.18+ 和 Python 3.12–3.14。
+系统没有合适的 JSON/XML 依赖时，会获取固定版本源码。
+正式接入时，请先切换到已审核的完整提交 SHA，便于复现。
 
 ```bash
-python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
+git clone https://github.com/MOVIBALE/fatcat-metadata.git
+cd fatcat-metadata
+python -m pip install .
 ```
 
-请将示例路径替换为下载文件的实际路径，并保留原文件名。CI 为 Linux x64、macOS ARM64、
-Windows x64 分别构建 Python 3.12/3.13/3.14 wheel。制品保留 **30 天**。
-wheel 标签必须匹配平台和解释器；Linux wheel 使用运行器的原生平台标签，
-不承诺兼容更旧的发行版。其他平台或制品已过期时，请从源码安装。
+未提供匹配产物或下载已过期时，可使用源码构建。
 
 当前所有构建均标记为 0.1.0。可查看实际安装的构建信息：
 
@@ -151,7 +169,8 @@ print(fatcat.__source_dirty__)
 ```
 
 源码版本记录实际构建目录的提交，PR CI 可能使用合成的合并提交；
-没有 Git 信息的源码包返回 `"unknown"` 和 `None`。
+没有 Git 信息的源码包默认返回 `"unknown"` 和 `None`；打包工作流可传入构建来源。
+具体规则见[发行文件准备](docs/DISTRIBUTIONS.md)。
 这些字段描述库的构建，与所选原生预设的来源信息相互独立。
 
 ## 独立 C++ SDK
@@ -194,6 +213,8 @@ CI 覆盖 Windows、Linux、macOS 的 C++ Debug/Release、Python wheel 安装、
 | 指南 | 内容 |
 | --- | --- |
 | [API](docs/API.md) | 配置/元数据请求、字典与 JSON 调用、构建追溯。 |
+| [首次使用](docs/FIRST_USE.md) | 安装后的命令、参数查询和完整立方体示例。 |
+| [发行准备](docs/DISTRIBUTIONS.md) | 固定版本、来源和哈希清单；不自动发布。 |
 | [Python 示例](cpp/examples/python_neroued_consumer/README.md) | 完整独立生成器及可选写包集成。 |
 | [C++ SDK](cpp/README.md) | 源码构建、安装和下游 CMake 接入。 |
 | [兼容说明](docs/COMPATIBILITY.md) | 历史来源记录及不可用组合。 |
