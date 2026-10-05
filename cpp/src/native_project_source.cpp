@@ -1180,7 +1180,147 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     return composed;
 }
 
+json offered_build_plates(const json &canonical, const json &target,
+                           const std::string &machine_uid) {
+    json plates = json::array();
+    for (const auto &machine : canonical.at("machines")) {
+        if (machine.at("machine_uid") != machine_uid) continue;
+        const auto &supported = machine.at("supported_build_plate_uids");
+        for (const auto &plate : target.at("build_plate_bindings")) {
+            if (std::find(supported.begin(), supported.end(), plate.at("build_plate_uid")) != supported.end()) {
+                plates.push_back({{"build_plate_uid", plate.at("build_plate_uid")},
+                                  {"name", plate.at("project_value")}});
+            }
+        }
+    }
+    return plates;
+}
+
+bool contains_plate(const json &plates, const json &uid) {
+    return std::any_of(plates.begin(), plates.end(), [&](const json &plate) {
+        return plate.at("build_plate_uid") == uid;
+    });
+}
+
+json process_choices(const json &source, NativeProfileCatalog &catalog) {
+    json choices = json::array();
+    for (const auto &option : profile_options(source, "print_profile_options", "native source")) {
+        json choice = {{"name", option.at("name")}, {"available", option.contains("path")}};
+        if (option.contains("path")) {
+            const auto profile = catalog.resolve(required_string(option, "path", "native process"));
+            if (profile.contains("layer_height")) choice["layer_height"] = profile.at("layer_height");
+        } else {
+            choice["unavailable_reason"] = option.value("unavailable_reason", "native profile file is unavailable");
+        }
+        choices.push_back(std::move(choice));
+    }
+    return choices;
+}
+
+json material_choices(const json &source, const json &target, const json &plates,
+                      const json &selected_plate, NativeProfileCatalog &catalog,
+                      const std::string &machine_name) {
+    json choices = json::array();
+    for (const auto &option : profile_options(source, "filament_profile_options", "native source")) {
+        const auto name = required_string(option, "name", "native material");
+        json choice = {{"name", name}, {"available", false}};
+        if (!option.contains("path")) {
+            choice["unavailable_reason"] = option.value("unavailable_reason", "native profile file is unavailable");
+            choices.push_back(std::move(choice));
+            continue;
+        }
+        const auto profile = catalog.resolve(required_string(option, "path", "native material"));
+        const auto type = native_profile_material_type(profile, name);
+        choice["material_type"] = type;
+        choice["supported_build_plate_uids"] = json::array();
+        for (const auto &plate : target.at("build_plate_bindings")) {
+            const auto uid = plate.at("build_plate_uid");
+            if (contains_plate(plates, uid) && material_supports_plate(profile, plate)) {
+                choice["supported_build_plate_uids"].push_back(uid);
+            }
+        }
+        if (!material_compatible_with_machine(profile, machine_name)) {
+            choice["unavailable_reason"] = "native profile is incompatible with the selected machine";
+        } else if (type.empty()) {
+            choice["unavailable_reason"] = "native profile has no material type";
+        } else if (!selected_plate.is_null() && !material_supports_plate(profile, selected_plate)) {
+            choice["unavailable_reason"] = "native profile does not support the selected build plate";
+        } else {
+            choice["available"] = true;
+        }
+        choices.push_back(std::move(choice));
+    }
+    return choices;
+}
+
 }  // namespace
+
+std::string metadata_target_catalog(const std::filesystem::path &data_root) {
+    const auto index = read_json(safe_path(data_root, "translations/supported-targets.json"),
+                                 "supported targets");
+    json targets = json::array();
+    for (const auto &target : required_array(index, "targets", "supported targets")) {
+        targets.push_back({
+            {"slicer_id", required_string(target, "slicer_id", "target")},
+            {"application_version", required_string(target, "application_version", "target")},
+        });
+    }
+    return json{{"schema_version", 1}, {"targets", std::move(targets)}}.dump();
+}
+
+std::string native_project_options(std::string_view request_json,
+                                   const std::filesystem::path &data_root) {
+    try {
+        const auto request = json::parse(request_json);
+        if (!request.is_object()) invalid("options request must be a JSON object");
+        const auto slicer = required_string(request, "slicer_id", "options request");
+        const auto version = required_string(request, "application_version", "options request");
+        const auto machine_uid = required_string(request, "machine_uid", "options request");
+        const auto nozzle_uid = required_string(request, "nozzle_uid", "options request");
+        const auto target = json::parse(metadata_target_data(slicer, version, data_root));
+        const auto canonical = read_json(safe_path(data_root, "translations/canonical.json"),
+                                         "canonical data");
+        NativeProfileCatalog catalog(data_root / "native_project_sources");
+        const auto matches = matching_source_rows(catalog.index(), slicer, version,
+                                                  machine_uid, nozzle_uid);
+        if (matches.size() != 1) invalid("no unique native source for requested machine/nozzle");
+        const auto &source = *matches.front();
+        const auto machine_name = required_string(source, "source_machine_profile_name", "native source");
+        require_target_machine_binding(canonical, target, slicer, version, machine_uid,
+                                       nozzle_uid, machine_name);
+
+        auto plates = offered_build_plates(canonical, target, machine_uid);
+        json selected_plate;
+        if (request.contains("build_plate_uid")) {
+            const auto uid = required_string(request, "build_plate_uid", "options request");
+            if (!contains_plate(plates, uid)) invalid("build_plate_uid is not supported by the requested target/machine");
+            selected_plate = detail::resolve_source_plate(json::object(), request, target);
+        }
+        auto processes = process_choices(source, catalog);
+        auto materials = material_choices(source, target, plates, selected_plate, catalog, machine_name);
+        json result = {{"schema_version", 1}, {"slicer_id", slicer},
+            {"application_version", version}, {"machine_uid", machine_uid},
+            {"nozzle_uid", nozzle_uid}, {"source_machine_profile_name", machine_name},
+            {"availability", source.at("availability")}, {"build_plates", std::move(plates)},
+            {"print_profiles", std::move(processes)}, {"filament_profiles", std::move(materials)},
+            {"default_print_profile_name", source.value("default_print_profile_name", std::string())},
+            {"default_filament_profile_names", source.value("default_filament_profile_names", json::array())}};
+        if (source.contains("compatibility_project")) {
+            const auto &record = source.at("compatibility_project");
+            result["compatibility_source"] = {
+                {"source_slicer_id", record.at("source_slicer_id")},
+                {"source_application_version", record.at("source_application_version")},
+                {"source_profile_name", record.at("source_profile_name")}};
+        }
+        return result.dump();
+    } catch (const ProjectSettingsError &) {
+        throw;
+    } catch (const json::exception &error) {
+        invalid(std::string("invalid native options JSON: ") + error.what());
+    } catch (const std::filesystem::filesystem_error &error) {
+        invalid(std::string("native options file access failed: ") + error.what());
+    }
+}
 
 std::string native_project_source_catalog(
     std::string_view slicer_id,

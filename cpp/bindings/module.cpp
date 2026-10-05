@@ -357,6 +357,39 @@ PYBIND11_MODULE(fatcat_metadata, module) {
         py::arg("project"), py::arg("request"),
         "Compose an explicit source dictionary or None through the same C++ composer.");
 
+    module.def("list_targets", []() {
+        try {
+            return py::module_::import("json").attr("loads")(
+                fatcat::metadata_target_catalog(packaged_data_root(""))).cast<py::dict>();
+        } catch (const std::exception &error) {
+            throw py::value_error(error.what());
+        }
+    }, "List installed slicer/version identities. 查询已安装的软件与版本。");
+
+    module.def("list_project_options", [](const py::dict &request) {
+        try {
+            return py::module_::import("json").attr("loads")(
+                fatcat::native_project_options(dictionary_json(request), packaged_data_root("")))
+                .cast<py::dict>();
+        } catch (const std::exception &error) {
+            throw py::value_error(error.what());
+        }
+    }, py::arg("request"), "List exact native choices and unavailable reasons. 查询原生候选及不可用原因。");
+
+    module.def("list_machines", [](const std::string &slicer_id, const std::string &version) {
+        try {
+            const auto target = nlohmann::json::parse(fatcat::metadata_target_data(
+                slicer_id, version, packaged_data_root("")));
+            return py::module_::import("json").attr("loads")(
+                fatcat::native_project_source_catalog(slicer_id,
+                    target.at("target_contract").at("application_version").get<std::string>(),
+                    packaged_data_root("native_project_sources"))).cast<py::dict>();
+        } catch (const std::exception &error) {
+            throw py::value_error(error.what());
+        }
+    }, py::arg("slicer_id"), py::arg("application_version") = "",
+       "List exact machine/nozzle identities. 查询机型与喷嘴标识。");
+
     module.def(
         "native_project_source_catalog",
         [](const std::string &slicer_id) {

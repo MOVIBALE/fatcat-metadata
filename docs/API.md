@@ -6,6 +6,34 @@ choices. Neroued owns writing the 3MF. Neither library changes generated geometr
 
 ## Recommended Python entry points
 
+Discover choices before composing; queries return dictionaries and use the same
+native source index and compatibility rules as composition:
+
+```python
+import fatcat_metadata as fatcat
+
+targets = fatcat.list_targets()["targets"]
+machines = fatcat.list_machines("BambuStudio", "02.08.02.61")["sources"]
+choices = fatcat.list_project_options({
+    "slicer_id": "BambuStudio", "application_version": "02.08.02.61",
+    "machine_uid": "bambu-lab:a1-mini", "nozzle_uid": "nozzle:0.4mm",
+    "build_plate_uid": "plate:textured-pei",
+})
+materials = [item for item in choices["filament_profiles"] if item["available"]]
+```
+
+`list_targets` returns exact installed software/version identities.
+`list_machines` accepts an exact version or the unique installed version by
+omission. `list_project_options` requires software/version/machine/nozzle; a
+plate is optional. It returns `build_plates`, `print_profiles`,
+`filament_profiles`, ordered default names, source availability and optional
+`compatibility_source`. Choices contain no raw native profile paths. Material
+names are suitable for `native_filament_profile_names`; their types describe the
+actual inherited preset. Unavailable choices carry `unavailable_reason`.
+Availability is a candidate-level source/selection check, not GUI or printer
+validation. Final composition retains its full validation. See
+[first use](FIRST_USE.md) for the installed command and complete example.
+
 Use dictionaries with the two composers. They call the same C++ implementation
 as the published JSON-string API. The wheel installs
 `fatcat_metadata-stubs/__init__.pyi` for editor signatures and type checking.
@@ -93,7 +121,9 @@ installed stub and public headers.
 For build provenance, read `__version__`, `__source_revision__` and
 `__source_dirty__` from the installed extension. The revision records the build
 checkout and the flag is `True` for local changes, `False` for clean Git sources,
-or `None` when unavailable. Git-free source archives report revision `"unknown"`.
+or `None` when unavailable. Git-free source archives report revision `"unknown"`
+unless their packaging workflow supplies build provenance as described in
+[DISTRIBUTIONS.md](DISTRIBUTIONS.md).
 These identify the library build; `metadata_target(slicer_id)` and the returned
 `process_source`/`material_source` identify the selected configuration sources.
 
@@ -106,6 +136,12 @@ extensions. For example, `output_options.emit_lumina_merged_slots_json` is
 opt-in and requires merged objects. Independent generators need no Lumina code.
 
 ## C++ consumption
+
+The CLI and C++ consumers share `metadata_target_catalog(data_root)` and
+`native_project_options(request_json, data_root)` in
+`fatcat/native_project_source.h`. The existing machine catalogue and both
+composers remain unchanged. CLI examples and stdout/exit-code contracts are
+documented in [FIRST_USE.md](FIRST_USE.md).
 
 Public headers preserve their existing JSON-string contracts. Use
 `compose_builtin_project_settings`, `compose_project_settings_from_data` and

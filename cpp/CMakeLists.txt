@@ -13,10 +13,18 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
 file(READ ${FATCAT_SUPPORTED_TARGETS_FILE} FATCAT_SUPPORTED_TARGETS_JSON)
 configure_file(cmake/supported_targets.h.in generated/supported_targets.h @ONLY)
 
-# Record the actual checkout used by this build. Archives without Git must not
-# pretend to have a known revision or a clean source tree.
+# Record the actual checkout, or provenance supplied by its packaging workflow.
+# Unidentified archives retain unknown revision and source-tree status.
 set(FATCAT_SOURCE_REVISION "unknown")
 set(FATCAT_SOURCE_DIRTY -1)
+# Container builds may omit .git. Their checkout workflow supplies provenance;
+# a real Git checkout below remains authoritative for local builds.
+if(DEFINED ENV{FATCAT_BUILD_REVISION})
+    set(FATCAT_SOURCE_REVISION "$ENV{FATCAT_BUILD_REVISION}")
+    if(DEFINED ENV{FATCAT_BUILD_DIRTY})
+        set(FATCAT_SOURCE_DIRTY "$ENV{FATCAT_BUILD_DIRTY}")
+    endif()
+endif()
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../.git")
     find_package(Git QUIET)
     if(Git_FOUND)
@@ -42,6 +50,7 @@ endif()
 configure_file(cmake/build_info.h.in generated/build_info.h @ONLY)
 
 option(FATCAT_BUILD_PYTHON "Build the Python extension" ON)
+option(FATCAT_BUILD_CLI "Build the standalone metadata command" ON)
 option(FATCAT_BUILD_TESTS "Build the standalone C++ tests" ON)
 option(FATCAT_INSTALL_CPP "Install the standalone C++ SDK and its public data" OFF)
 option(FATCAT_TEST_NON_C_LOCALE
@@ -123,6 +132,22 @@ target_include_directories(fatcat_metadata_core
 target_link_libraries(fatcat_metadata_core PUBLIC nlohmann_json::nlohmann_json
     tinyxml2::tinyxml2)
 target_compile_features(fatcat_metadata_core PUBLIC cxx_std_17)
+
+if(FATCAT_BUILD_CLI)
+    add_executable(fatcat_cli cli/main.cpp)
+    set_target_properties(fatcat_cli PROPERTIES OUTPUT_NAME fatcat)
+    target_link_libraries(fatcat_cli PRIVATE fatcat_metadata_core)
+    target_include_directories(fatcat_cli PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
+    target_compile_definitions(fatcat_cli PRIVATE FATCAT_METADATA_VERSION="${PROJECT_VERSION}")
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        # The executable is carried inside wheels too; auditwheel does not
+        # necessarily repair executables. Keep the C++ runtime inside the CLI.
+        target_link_options(fatcat_cli PRIVATE -static-libstdc++ -static-libgcc)
+    endif()
+    if(FATCAT_INSTALL_CPP)
+        install(TARGETS fatcat_cli RUNTIME DESTINATION bin)
+    endif()
+endif()
 
 if(FATCAT_INSTALL_CPP)
     include(GNUInstallDirs)
@@ -240,8 +265,18 @@ if(FATCAT_BUILD_PYTHON)
     )
     install(FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/../python/fatcat_metadata_neroued.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/../python/fatcat_metadata_cli.py
         DESTINATION .
     )
+    if(FATCAT_BUILD_CLI)
+        install(TARGETS fatcat_cli RUNTIME DESTINATION fatcat_metadata_data/bin)
+    endif()
+    install(DIRECTORY examples/python_neroued_consumer/
+        DESTINATION fatcat_metadata_examples
+        FILES_MATCHING PATTERN "*.py" PATTERN "*.json" PATTERN "*.md"
+        PATTERN "verify_3mf.py" EXCLUDE)
+    install(FILES ../python/fatcat_metadata_examples_init.py
+        DESTINATION fatcat_metadata_examples RENAME __init__.py)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../python/fatcat_metadata.pyi
         DESTINATION fatcat_metadata-stubs RENAME __init__.pyi)
     install(FILES

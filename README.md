@@ -14,6 +14,10 @@ It can be used independently of Lumina or any other application.
 
 [English](README.md) · [简体中文](README_CN.md) · [API guide](docs/API.md) · [Examples](cpp/examples/python_neroued_consumer/) · [Report an issue](https://github.com/MOVIBALE/fatcat-metadata/issues)
 
+**Start here:** [first result, command-line usage and complete 3MF example](docs/FIRST_USE.md).
+Use it to discover native choices, generate a model without Lumina, preserve
+user-project tuning, or compose merged material slots through the same core.
+
 ## Project status
 
 The current version is **0.1.0**, an early public SDK. Install from source or
@@ -79,19 +83,40 @@ The result identifies their actual versions. See [compatibility notes](docs/COMP
 
 ## Python quick start
 
-### Install from source
+### Install a prebuilt wheel
 
-Use Python 3.12–3.14 and a C++17 toolchain. The build uses CMake 3.18 or newer
-and fetches pinned JSON/XML dependencies if suitable system packages are absent.
+Download a matching CPython 3.12–3.14 wheel from a successful
+[CI build](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml).
+Replace the path below with its actual filename. A matching wheel contains the
+compiled extension and native command; installing it does not compile C++.
 
 ```bash
-git clone https://github.com/MOVIBALE/fatcat-metadata.git
-cd fatcat-metadata
-python -m pip install .
+python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
+fatcat --version
+fatcat catalog
 ```
 
-For a reproducible integration, check out the reviewed full commit SHA before
-building. No installed slicer application is needed to use the bundled data.
+Actions downloads require GitHub sign-in and ordinary CI artifacts expire after
+30 days. There is no tagged or PyPI release yet. Match the wheel's OS/CPU/Python
+tags; existing native Linux builds do not promise portability to older distros.
+The manual [distribution preparation](docs/DISTRIBUTIONS.md) builds manylinux
+wheels and targets macOS 14+ for wheels (13.3+ for the C++ SDK), and does not
+publish them automatically.
+
+The [installed cube example](docs/FIRST_USE.md#generate-a-complete-3mf--生成完整-3mf)
+was opened and sliced in the pinned Bambu Studio version:
+
+![Installed cube, A1 mini and real slicing preview](docs/images/first-use-preview.png)
+
+This demonstrates one example's settings and toolpaths. It does not establish
+all printer combinations or physical print quality.
+
+No installed slicer is needed. Query choices before composing settings:
+
+```bash
+fatcat choices --slicer BambuStudio --application-version 02.08.02.61 \
+  --machine bambu-lab:a1-mini --nozzle nozzle:0.4mm --plate plate:textured-pei
+```
 
 ### Compose native project settings
 
@@ -120,11 +145,12 @@ for both request contracts.
 
 ### Write a complete example 3MF
 
-From the source checkout, install the optional writer and run the cube generator:
+Install the optional writer and run the example shipped by the wheel, without
+cloning this repository:
 
 ```bash
 python -m pip install 'neroued-3mf==0.4.0'
-python cpp/examples/python_neroued_consumer/minimal.py --output fatcat-cube.3mf
+python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 ```
 
 The [minimal example](cpp/examples/python_neroued_consumer/minimal.py) shows
@@ -134,22 +160,19 @@ archive write. It uses Neroued's public core assembly layout. The
 sources, U1 compatibility and writer requirements for optional external
 production-model layouts.
 
-### Install a prebuilt wheel
+### Build from source
 
-Open a successful [CI run](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml),
-select the artifact for your OS, architecture and Python version, unzip it,
-and install its `.whl`. GitHub sign-in is required to download Actions artifacts.
+Source builds require a C++17 toolchain, CMake 3.18+ and Python 3.12–3.14.
+The build fetches pinned JSON/XML dependencies if suitable system packages are
+absent. Check out the reviewed full SHA for a reproducible integration.
 
 ```bash
-python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
+git clone https://github.com/MOVIBALE/fatcat-metadata.git
+cd fatcat-metadata
+python -m pip install .
 ```
 
-Replace the sample path with the actual downloaded filename; keep its wheel tags.
-CI produces Python 3.12/3.13/3.14 wheels for Linux x64, macOS ARM64 and Windows
-x64. Artifacts are retained for **30 days**. Wheel tags must match your platform
-and interpreter; Linux wheels use the runner's native tag and do not promise
-compatibility with older distributions. Use source installation for other
-platforms or expired artifacts.
+Use source builds for unsupported platforms or expired download artifacts.
 
 All current builds are version 0.1.0. Inspect the installed build with:
 
@@ -162,7 +185,9 @@ print(fatcat.__source_dirty__)
 ```
 
 The revision identifies the actual build checkout; PR CI may use a merge
-revision. Git-free archives report `"unknown"` and `None`. These build fields
+revision. Git-free archives report `"unknown"` and `None` unless their packaging
+workflow supplies build provenance. See [distribution preparation](docs/DISTRIBUTIONS.md).
+These build fields
 are separate from the selected profiles' provenance.
 
 ## Standalone C++ SDK
@@ -209,6 +234,8 @@ acceptance. See [validation scope](docs/VALIDATION.md) for what each check estab
 | Guide | Purpose |
 | --- | --- |
 | [API](docs/API.md) | Settings/metadata requests, dictionary and JSON calls, and build provenance. |
+| [First result](docs/FIRST_USE.md) | Installed CLI, choice discovery and the complete cube example. |
+| [Distributions](docs/DISTRIBUTIONS.md) | Fixed-version files and source/hash receipts without publishing. |
 | [Python examples](cpp/examples/python_neroued_consumer/README.md) | Complete independent generator and optional writer integration. |
 | [C++ SDK](cpp/README.md) | Source builds, installation and downstream CMake consumption. |
 | [Compatibility](docs/COMPATIBILITY.md) | Historical profiles and unavailable combinations. |
