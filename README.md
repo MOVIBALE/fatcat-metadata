@@ -85,14 +85,23 @@ These are the exact versions currently bundled with the library:
 | OrcaSlicer | `OrcaSlicer` | `2.4.2` |
 | QIDI Studio | `QIDIStudio` | `02.07.02.60` |
 | ElegooSlicer | `ElegooSlicer` | `1.5.3.5` |
-| Anycubic Slicer Next | `AnycubicSlicerNext` | `2.0.0.2` |
-| Flash Studio | `FlashStudio` | `1.7.15` |
-| Snapmaker Orca | `SnapmakerOrca` | `2.3.6` |
+| Anycubic Slicer Next | `AnycubicSlicerNext` | `2.0.0.3` |
+| Flash Studio | `FlashStudio` | `1.7.18` |
+| Snapmaker Orca | `SnapmakerOrca` | `2.4.0` |
 
 The [target manifest](compatibility/current-src/translations/supported-targets.json)
 is the authoritative version list. Unknown targets and incompatible selections
 are rejected. A supported slicer does not imply every printer/nozzle/material/plate
 combination is available; inspect its native source catalogue.
+
+The snapshots above were checked against official stable macOS downloads on
+2026-10-06. Beta/nightly releases are excluded. Anycubic's Linux 2.0.0.5 build
+is a different release and is not claimed by the macOS 2.0.0.3 snapshot.
+
+Explicit [process settings](docs/PROCESS_SETTINGS.md) use a discoverable contract:
+known equivalents are normalized, target array formats are respected, and
+unknown or unsupported inputs raise actionable errors. This covers 38 fields,
+not every slicer feature or every interaction between settings.
 
 Some combinations use explicitly recorded historical sources. OrcaSlicer 2.4.2
 U1 0.4 mm, for example, uses a recorded 2.2.4 process and textured-plate material.

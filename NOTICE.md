@@ -25,16 +25,19 @@ its content hash is recorded in the source descriptor.
 | OrcaSlicer 2.4.2 | [OrcaSlicer/OrcaSlicer](https://github.com/OrcaSlicer/OrcaSlicer) | [AGPL-3.0](licenses/third-party/slicer-profiles/orcaslicer/LICENSE.txt) |
 | QIDI Studio 02.07.02.60 | [QIDITECH/QIDIStudio](https://github.com/QIDITECH/QIDIStudio) | [upstream license](licenses/third-party/slicer-profiles/qidi-studio/LICENSE) |
 | ElegooSlicer 1.5.3.5 | [ElegooOfficial/ElegooSlicer](https://github.com/ElegooOfficial/ElegooSlicer) | [AGPL-3.0](licenses/third-party/slicer-profiles/elegooslicer/LICENSE.txt) |
-| Anycubic Slicer Next 2.0.0.2 | [ANYCUBIC-3D/AnycubicSlicerNext](https://github.com/ANYCUBIC-3D/AnycubicSlicerNext) | [AGPL-3.0](licenses/third-party/slicer-profiles/anycubic-slicer-next/LICENSE.txt) |
-| Flash Studio 1.7.15 | [FlashForge/Orca-Flashforge](https://github.com/FlashForge/Orca-Flashforge) | [AGPL-3.0](licenses/third-party/slicer-profiles/flash-studio/LICENSE.txt) |
-| Snapmaker Orca 2.3.6 | [Snapmaker/OrcaSlicer](https://github.com/Snapmaker/OrcaSlicer) | [AGPL-3.0](licenses/third-party/slicer-profiles/snapmaker-orca/LICENSE.txt) |
+| Anycubic Slicer Next 2.0.0.3 | [ANYCUBIC-3D/AnycubicSlicerNext](https://github.com/ANYCUBIC-3D/AnycubicSlicerNext) | [AGPL-3.0](licenses/third-party/slicer-profiles/anycubic-slicer-next/LICENSE.txt) |
+| Flash Studio 1.7.18 | [FlashForge/Orca-Flashforge](https://github.com/FlashForge/Orca-Flashforge) | [AGPL-3.0](licenses/third-party/slicer-profiles/flash-studio/LICENSE.txt) |
+| Snapmaker Orca 2.4.0 | [Snapmaker/OrcaSlicer](https://github.com/Snapmaker/OrcaSlicer) | [AGPL-3.0](licenses/third-party/slicer-profiles/snapmaker-orca/LICENSE.txt) |
 
 The QIDI repository's license file is preserved verbatim because its copyright
 and preamble differ from the common AGPL text in the other profile repositories.
-For Anycubic, no repository tag matching application version 2.0.0.2 was found;
+For Anycubic, no repository tag matching application version 2.0.0.3 was found;
 the included license text is from the repository `main` commit recorded in the
 manifest. The snapshot version describes the installed application source used
-for the profiles, not the revision of that license file.
+for the profiles, not the revision of that license file. Flash Studio 1.7.18 also
+had no matching public source tag; its included license text is from the recorded
+1.7.15 source revision. Both native snapshots come from the exact official app
+bundles, while these license-source limitations remain explicit.
 
 ## Build dependencies
 

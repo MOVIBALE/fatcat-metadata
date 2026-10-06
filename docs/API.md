@@ -76,6 +76,13 @@ The result has one authoritative `project_settings` dictionary. Its
 `process_source` and `material_source`, when present, identify actual native or
 recorded compatibility sources. See [COMPATIBILITY.md](COMPATIBILITY.md).
 
+Explicit process overrides share one target-specific contract across native and
+user-project composition. Query `list_project_options(request)` or `fatcat choices`
+for `process_settings_contract`; see [PROCESS_SETTINGS.md](PROCESS_SETTINGS.md)
+for aliases, accepted values, scalar/array serialization and error behavior.
+Unknown nested process keys now raise errors. Existing unknown source-project
+fields remain preserved.
+
 For a user-provided project, call
 `compose_project_settings(source_project, request)`. This request omits
 `project_source`; it supplies the target and its source-preservation or material

@@ -15,9 +15,9 @@ TARGETS = (
     ("OrcaSlicer", "2.4.2", "bambu-lab:p1s", "plate:textured-pei"),
     ("QIDIStudio", "02.07.02.60", "qidi:q2", "plate:cool"),
     ("ElegooSlicer", "1.5.3.5", "elegoo:centauri", "plate:cool"),
-    ("AnycubicSlicerNext", "2.0.0.2", "anycubic:kobra-2-pro", "plate:cool"),
-    ("FlashStudio", "1.7.15", "flashforge:ad5x", "plate:textured-pei"),
-    ("SnapmakerOrca", "2.3.6", "snapmaker:u1", "plate:textured-pei"),
+    ("AnycubicSlicerNext", "2.0.0.3", "anycubic:kobra-2-pro", "plate:cool"),
+    ("FlashStudio", "1.7.18", "flashforge:ad5x", "plate:textured-pei"),
+    ("SnapmakerOrca", "2.4.0", "snapmaker:u1", "plate:textured-pei"),
 )
 NOZZLE_UID = "nozzle:0.4mm"
 TARGET_FILES = {
@@ -25,9 +25,9 @@ TARGET_FILES = {
     "OrcaSlicer": "orca-slicer-2.4.2.json",
     "QIDIStudio": "qidi-studio-02.07.02.60.json",
     "ElegooSlicer": "elegoo-slicer-1.5.3.5.json",
-    "AnycubicSlicerNext": "anycubic-slicer-next-2.0.0.2.json",
-    "FlashStudio": "flash-studio-1.7.15.json",
-    "SnapmakerOrca": "snapmaker-orca-2.3.6.json",
+    "AnycubicSlicerNext": "anycubic-slicer-next-2.0.0.3.json",
+    "FlashStudio": "flash-studio-1.7.18.json",
+    "SnapmakerOrca": "snapmaker-orca-2.4.0.json",
 }
 
 
@@ -247,13 +247,13 @@ class PublicNativeSourceTests(unittest.TestCase):
     def test_available_specific_native_variant_is_selected_without_plain_pla_fallback(self):
         result = json.loads(fatcat.compose_project_settings(json.dumps({
             "project_source": "fatcat_native", "slicer_id": "AnycubicSlicerNext",
-            "application_version": "2.0.0.2", "machine_uid": "anycubic:kobra-4",
+            "application_version": "2.0.0.3", "machine_uid": "anycubic:kobra-4",
             "nozzle_uid": "nozzle:0.8mm", "build_plate_uid": "plate:textured-pei",
             "source_materials": [{"name": "White", "material_type": "PLA Silk", "colour": "#FFFFFF"}],
         })))
         project = json.loads(result["project_settings_json"])
         self.assertEqual(project["filament_settings_id"], ["Anycubic PLA Silk @Anycubic Kobra 4 0.8 nozzle"])
-        self.assertEqual(result["material_source"]["source_application_version"], "2.0.0.2")
+        self.assertEqual(result["material_source"]["source_application_version"], "2.0.0.3")
 
     def test_incompatible_native_material_is_rejected_even_when_explicitly_selected(self):
         for nozzle in ('nozzle:0.4mm', 'nozzle:0.6mm'):
@@ -316,7 +316,7 @@ class PublicNativeSourceTests(unittest.TestCase):
 
     def test_untyped_native_material_name_uses_native_default_profile(self):
         slicer = "AnycubicSlicerNext"
-        version = "2.0.0.2"
+        version = "2.0.0.3"
         machine_uid = "anycubic:kobra-2"
         source = self._source(slicer, version, machine_uid)
         defaults = source["default_filament_profile_names"]

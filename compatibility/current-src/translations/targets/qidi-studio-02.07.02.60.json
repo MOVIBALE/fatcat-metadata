@@ -2722,5 +2722,262 @@
         }
       }
     }
-  ]
+  ],
+  "process_settings_contract": {
+    "scope": "SDK-supported explicit FFF overrides; not the application's entire schema",
+    "source": {
+      "definition_url": "https://github.com/QIDITECH/QIDIStudio/blob/v2.07.02.60/src/libslic3r/PrintConfig.cpp",
+      "definition_sha256": "6c2e02b80d25e06e7863a0a87e55ea97d4dbb9d5d18a16c8be136a3475ea477d",
+      "definition_version": "02.07.02.60",
+      "exact_application_definitions": true
+    },
+    "fields": {
+      "elefant_foot_compensation": {
+        "type": "float",
+        "minimum": 0.0
+      },
+      "layer_height": {
+        "type": "float",
+        "minimum": 0.0,
+        "exclusive_minimum": 0
+      },
+      "bottom_shell_layers": {
+        "type": "int",
+        "minimum": 0.0,
+        "maximum": 2147483647
+      },
+      "brim_width": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 100.0
+      },
+      "brim_type": {
+        "type": "enum",
+        "values": [
+          "auto_brim",
+          "brim_ears",
+          "outer_only",
+          "inner_only",
+          "outer_and_inner",
+          "no_brim"
+        ]
+      },
+      "top_surface_pattern": {
+        "type": "enum",
+        "values": [
+          "concentric",
+          "zig-zag",
+          "monotonic",
+          "monotonicline",
+          "alignedrectilinear",
+          "hilbertcurve",
+          "archimedeanchords",
+          "octagramspiral"
+        ]
+      },
+      "bottom_surface_pattern": {
+        "type": "enum",
+        "values": [
+          "concentric",
+          "zig-zag",
+          "monotonic",
+          "monotonicline",
+          "alignedrectilinear",
+          "hilbertcurve",
+          "archimedeanchords",
+          "octagramspiral"
+        ]
+      },
+      "outer_wall_line_width": {
+        "type": "float",
+        "minimum": 0.0
+      },
+      "outer_wall_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 0.0
+      },
+      "line_width": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 10.0
+      },
+      "sparse_infill_density": {
+        "type": "percent",
+        "minimum": 0.0,
+        "maximum": 100.0
+      },
+      "sparse_infill_pattern": {
+        "type": "enum",
+        "values": [
+          "concentric",
+          "zig-zag",
+          "grid",
+          "line",
+          "cubic",
+          "triangles",
+          "tri-hexagon",
+          "gyroid",
+          "honeycomb",
+          "adaptivecubic",
+          "alignedrectilinear",
+          "3dhoneycomb",
+          "hilbertcurve",
+          "archimedeanchords",
+          "octagramspiral",
+          "supportcubic",
+          "lightning",
+          "crosshatch",
+          "zigzag",
+          "crosszag",
+          "lockedzag",
+          "2dlattice"
+        ]
+      },
+      "initial_layer_line_width": {
+        "type": "float",
+        "minimum": 0.0
+      },
+      "initial_layer_print_height": {
+        "type": "float",
+        "minimum": 0.0,
+        "exclusive_minimum": 0
+      },
+      "initial_layer_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 0.0
+      },
+      "initial_layer_infill_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 1.0
+      },
+      "precise_outer_wall": {
+        "type": "bool"
+      },
+      "sparse_infill_line_width": {
+        "type": "float",
+        "minimum": 0.0
+      },
+      "sparse_infill_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 0.0
+      },
+      "inner_wall_line_width": {
+        "type": "float",
+        "minimum": 0.0
+      },
+      "inner_wall_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 0.0
+      },
+      "wall_loops": {
+        "type": "int",
+        "minimum": 0.0,
+        "maximum": 1000.0
+      },
+      "skirt_distance": {
+        "type": "float",
+        "minimum": 0.0,
+        "maximum": 55.0
+      },
+      "skirt_height": {
+        "type": "int",
+        "maximum": 10000.0
+      },
+      "draft_shield": {
+        "type": "enum",
+        "values": [
+          "disabled",
+          "limited",
+          "enabled"
+        ]
+      },
+      "skirt_loops": {
+        "type": "int",
+        "minimum": 0.0,
+        "maximum": 10.0
+      },
+      "internal_solid_infill_line_width": {
+        "type": "float",
+        "minimum": 0.0
+      },
+      "internal_solid_infill_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 0.0
+      },
+      "single_extruder_multi_material": {
+        "type": "bool"
+      },
+      "enable_support": {
+        "type": "bool"
+      },
+      "support_line_width": {
+        "type": "float",
+        "minimum": 0.0
+      },
+      "support_interface_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 1.0
+      },
+      "support_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 0.0
+      },
+      "top_surface_line_width": {
+        "type": "float",
+        "minimum": 0.0
+      },
+      "top_surface_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 0.0
+      },
+      "top_shell_layers": {
+        "type": "int",
+        "minimum": 0.0,
+        "maximum": 2147483647
+      },
+      "travel_speed": {
+        "type": "float",
+        "array": true,
+        "minimum": 1.0
+      },
+      "wall_generator": {
+        "type": "enum",
+        "values": [
+          "classic",
+          "arachne"
+        ]
+      }
+    },
+    "aliases": {
+      "initial_layer_height": "initial_layer_print_height",
+      "first_layer_height": "initial_layer_print_height",
+      "elephant_foot_compensation": "elefant_foot_compensation"
+    },
+    "value_aliases": {
+      "brim_type": {
+        "none": "no_brim"
+      },
+      "sparse_infill_pattern": {
+        "rectilinear": "zig-zag"
+      },
+      "top_surface_pattern": {
+        "rectilinear": "zig-zag"
+      },
+      "bottom_surface_pattern": {
+        "rectilinear": "zig-zag"
+      }
+    },
+    "unsupported_fields": {
+      "print_speed": "No single native overall speed. Use outer_wall_speed, inner_wall_speed, sparse_infill_speed or another specific speed field."
+    }
+  }
 }

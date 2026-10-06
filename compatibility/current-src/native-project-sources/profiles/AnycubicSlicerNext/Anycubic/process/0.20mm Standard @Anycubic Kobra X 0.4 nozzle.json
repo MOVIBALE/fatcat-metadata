@@ -1,10 +1,10 @@
 {
     "type": "process",
     "from": "system",
-    "setting_id": "GP004",
+    "setting_id": "0.20mm Standard @Anycubic Kobra X 0.4 nozzle",
     "is_custom_defined": "0",
     "instantiation": "true",
-    "version": "1.3.2512.05",
+    "version": "1.3.2609.02",
     "inherits": "",
     "name": "0.20mm Standard @Anycubic Kobra X 0.4 nozzle",
     "print_settings_id": "0.20mm Standard @Anycubic Kobra X 0.4 nozzle",

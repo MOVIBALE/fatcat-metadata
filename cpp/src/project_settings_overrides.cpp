@@ -1,5 +1,7 @@
 #include "project_settings_overrides.h"
 
+#include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -35,88 +37,148 @@ json normalized_numeric_value(const std::string &raw, std::string_view field) {
     return json(number);
 }
 
-void validate_positive_number(const json &request, const std::string &key) {
-    if (!request.at(key).is_string()) {
-        invalid("request." + key + " must be text");
-    }
-    if (!(numeric_value(request.at(key).get<std::string>(), key) > 0.0)) {
-        invalid("request." + key + " must be finite and positive");
-    }
+const json &process_contract(const json &target) {
+    return required_member(target, "process_settings_contract", "target data");
 }
 
-void validate_density(const json &request) {
-    const std::string value = request.at("sparse_infill_density").get<std::string>();
-    if (value.empty()) {
-        invalid("request.sparse_infill_density must be a finite percentage");
+std::string target_label(const json &target) {
+    const auto &contract = required_member(target, "target_contract", "target data");
+    return required_string(contract, "slicer_id", "target contract") + " " +
+           required_string(contract, "application_version", "target contract");
+}
+
+std::string scalar_text(const json &value, const std::string &path) {
+    if (value.is_string()) return value.get<std::string>();
+    if (value.is_boolean()) return value.get<bool>() ? "1" : "0";
+    if (value.is_number()) return value.dump();
+    invalid(path + " must be a scalar string, number or boolean");
+}
+
+std::string validate_process_value(const json &value, const json &field,
+                                   const json &contract, const std::string &key,
+                                   const std::string &path, const json &target) {
+    std::string raw = scalar_text(value, path);
+    const auto &value_aliases = contract.at("value_aliases");
+    if (value_aliases.contains(key) && value_aliases.at(key).contains(raw)) {
+        raw = value_aliases.at(key).at(raw).get<std::string>();
     }
-    const bool percent = value.back() == '%';
-    const std::string numeric = percent ? value.substr(0, value.size() - 1) : value;
-    const double density = numeric_value(numeric, "sparse_infill_density");
-    if (density < 0.0 || density > 100.0) {
-        invalid("request.sparse_infill_density must be between 0% and 100%");
+    const auto type = required_string(field, "type", "process field");
+    if (value.is_boolean() && type != "bool") invalid(path + " does not accept a boolean");
+    if (type == "enum") {
+        const auto &values = field.at("values");
+        if (std::find(values.begin(), values.end(), json(raw)) == values.end()) {
+            invalid(path + "='" + raw + "' is unsupported by " + target_label(target) +
+                    "; supported values: " + values.dump());
+        }
+        return raw;
     }
+    if (type == "bool") {
+        if (raw == "true") return "1";
+        if (raw == "false") return "0";
+        if (raw != "0" && raw != "1") invalid(path + " must be 0 or 1 (or boolean)");
+        return raw;
+    }
+    const bool percent = !raw.empty() && raw.back() == '%';
+    if (percent && type != "percent" && type != "float_or_percent") {
+        invalid(path + " does not accept a percentage in " + target_label(target));
+    }
+    double number = 0.0;
+    const auto token = percent ? raw.substr(0, raw.size() - 1) : raw;
+    if (!detail::parse_finite_decimal_string(token, number)) {
+        invalid(path + " must be a finite numeric value");
+    }
+    if (type == "int" && std::trunc(number) != number) {
+        invalid(path + " must be a whole number");
+    }
+    if (field.contains("minimum") && number < field.at("minimum").get<double>()) {
+        invalid(path + " must be at least " + field.at("minimum").dump());
+    }
+    if (field.contains("exclusive_minimum") &&
+        number <= field.at("exclusive_minimum").get<double>()) {
+        invalid(path + " must be greater than " + field.at("exclusive_minimum").dump());
+    }
+    if (field.contains("maximum") && number > field.at("maximum").get<double>()) {
+        invalid(path + " must be at most " + field.at("maximum").dump());
+    }
+    if (type == "int") return std::to_string(static_cast<std::int64_t>(number));
+    if (type == "percent" && !percent) raw += '%';
+    return raw;
+}
+
+bool equivalent_process_values(const json &left, const json &right) {
+    if (left == right) return true;
+    double a = 0.0, b = 0.0;
+    return detail::parse_finite_decimal_string(left.get<std::string>(), a) &&
+           detail::parse_finite_decimal_string(right.get<std::string>(), b) && a == b;
+}
+
+json resolve_process_level(const json &values, const json &target,
+                           const std::string &path, bool nested) {
+    const auto &contract = process_contract(target);
+    const auto &fields = contract.at("fields");
+    const auto &aliases = contract.at("aliases");
+    const auto &unsupported = contract.at("unsupported_fields");
+    json result = json::object();
+    for (const auto &[input_key, value] : values.items()) {
+        const auto key = aliases.value(input_key, input_key);
+        if (unsupported.contains(input_key)) {
+            invalid(path + "." + input_key + " is unsupported by " + target_label(target) +
+                    "; " + unsupported.at(input_key).get<std::string>());
+        }
+        if (!fields.contains(key)) {
+            if (nested) invalid(path + " contains unsupported field '" + input_key +
+                                "' for " + target_label(target));
+            continue;
+        }
+        const auto normalized = validate_process_value(value, fields.at(key), contract,
+                                                        key, path + "." + input_key, target);
+        if (result.contains(key) && !equivalent_process_values(result.at(key), normalized)) {
+            invalid(path + " supplies conflicting aliases for '" + key + "'");
+        }
+        result[key] = normalized;
+    }
+    return result;
 }
 
 }  // namespace
 
-void apply_scalar_overrides(json &project, const json &request,
+bool is_process_override_key(const json &target, const std::string &key) {
+    const auto &contract = process_contract(target);
+    return contract.at("fields").contains(key) || contract.at("aliases").contains(key) ||
+           contract.at("unsupported_fields").contains(key);
+}
+
+json resolve_process_overrides(const json &request, const json &target) {
+    json result = json::object();
+    if (request.contains("process_settings")) {
+        const auto &process = request.at("process_settings");
+        if (!process.is_object()) invalid("request.process_settings must be an object");
+        result = resolve_process_level(process, target, "request.process_settings", true);
+    }
+    // Explicit top-level values retain priority over nested process defaults.
+    result.update(resolve_process_level(request, target, "request", false));
+    return result;
+}
+
+void apply_scalar_overrides(json &project, const json &request, const json &target,
                             std::vector<std::string> &changed_keys) {
-    static const std::vector<std::string> scalar_keys = {
-        "layer_height",
-        "initial_layer_print_height",
-        "initial_layer_height",
-        "line_width",
-        "initial_layer_line_width",
-        "inner_wall_line_width",
-        "outer_wall_line_width",
-        "top_surface_line_width",
-        "sparse_infill_line_width",
-        "internal_solid_infill_line_width",
-        "support_line_width",
-        "wall_loops",
-        "top_shell_layers",
-        "bottom_shell_layers",
-        "bottom_surface_pattern",
-        "elefant_foot_compensation",
-        "sparse_infill_density",
-        "sparse_infill_pattern",
-        "print_speed",
-        "travel_speed",
-        "enable_support",
-        "single_extruder_multi_material",
-        "precise_outer_wall",
-        "brim_type",
-        "brim_width",
-        "wall_generator",
-        "skirt_loops",
-        "skirt_distance",
-        "skirt_height",
-        "draft_shield",
-    };
-    for (const auto &key : scalar_keys) {
-        if (!request.contains(key)) {
-            continue;
-        }
-        if (!request.at(key).is_string()) {
-            invalid("request." + key + " must be text");
-        }
-        if (key == "layer_height" || key == "initial_layer_print_height" ||
-            key == "initial_layer_height") {
-            validate_positive_number(request, key);
-        } else if (key == "sparse_infill_density") {
-            validate_density(request);
-        } else if (key == "sparse_infill_pattern" &&
-                   request.at(key).get<std::string>().empty()) {
-            invalid("request.sparse_infill_pattern must be non-empty text");
-        } else if (key == "brim_type" && request.at(key).get<std::string>().empty()) {
-            invalid("request.brim_type must be non-empty text");
-        } else if (key == "brim_width") {
-            const double width = numeric_value(request.at(key).get<std::string>(), key);
-            if (width < 0.0) {
-                invalid("request.brim_width must be finite and non-negative");
+    const auto overrides = resolve_process_overrides(request, target);
+    const auto &fields = process_contract(target).at("fields");
+    for (const auto &[key, value] : overrides.items()) {
+        if (fields.at(key).value("array", false)) {
+            const auto existing = project.find(key);
+            const auto nozzles = project.find("nozzle_diameter");
+            std::size_t count = 1;
+            if (existing != project.end() && existing->is_array() && !existing->empty()) {
+                count = existing->size();
+            } else if (nozzles != project.end() && nozzles->is_array() && !nozzles->empty()) {
+                count = nozzles->size();
             }
+            project[key] = json::array();
+            for (std::size_t index = 0; index < count; ++index) project[key].push_back(value);
+        } else {
+            project[key] = value;
         }
-        project[key] = request.at(key);
         changed_keys.push_back(key);
     }
 }

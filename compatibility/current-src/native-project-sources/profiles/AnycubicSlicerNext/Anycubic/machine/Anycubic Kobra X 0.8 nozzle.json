@@ -72,7 +72,7 @@
     "long_retractions_when_cut": [
         "0"
     ],
-    "machine_end_gcode": "M400\nM140 S0 ; turn off heatbed\nM104 S0 ; turn off temperature\nM107 ; turn off fan\nM84; disable motors                  \n; disable stepper motors",
+    "machine_end_gcode": "G1 E-2\nG1 Z{layer_z+1} \nG1 X0 Y265\nM400\nM140 S0 ; turn off heatbed\nM104 S0 ; turn off temperature\nM107;turn off fan\nM84; disable motors\n; disable stepper motors",
     "machine_load_filament_time": "0",
     "machine_max_acceleration_e": [
         "6500"

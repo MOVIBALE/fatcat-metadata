@@ -1,11 +1,11 @@
 {
     "type": "machine",
     "from": "system",
-    "setting_id": "GM040",
+    "setting_id": "Anycubic Kobra X 0.4 nozzle",
     "printer_technology": "FFF",
     "is_custom_defined": "0",
     "instantiation": "true",
-    "version": "1.3.2512.05",
+    "version": "1.3.2609.02",
     "inherits": "",
     "name": "Anycubic Kobra X 0.4 nozzle",
     "printer_settings_id": "Anycubic Kobra X 0.4 nozzle",

@@ -90,7 +90,8 @@ class ProfileCatalog:
         self.root = root
         self.documents: dict[str, dict[str, Any]] = {}
         self.categories: dict[str, dict[str, list[str]]] = {
-            category: {"name": {}, "stem": {}} for category in PROFILE_CATEGORIES
+            category: {"name": {}, "stem": {}, "renamed_from": {}}
+            for category in PROFILE_CATEGORIES
         }
         for path in sorted(root.rglob("*.json")):
             relative = path.relative_to(root).as_posix()
@@ -107,11 +108,20 @@ class ProfileCatalog:
             name = document.get("name")
             if isinstance(name, str) and name:
                 self.categories[category]["name"].setdefault(name, []).append(relative)
+            renamed = document.get("renamed_from", [])
+            if isinstance(renamed, str):
+                renamed = renamed.split(";")
+            if isinstance(renamed, list):
+                for previous in renamed:
+                    if isinstance(previous, str) and previous:
+                        self.categories[category]["renamed_from"].setdefault(previous, []).append(relative)
 
     def find_named(self, category: str, name: str, preferred_scope: str) -> str | None:
         matches = self.categories[category]["name"].get(name, [])
         if not matches:
             matches = self.categories[category]["stem"].get(name, [])
+        if not matches:
+            matches = self.categories[category]["renamed_from"].get(name, [])
         if not matches:
             return None
 
@@ -136,6 +146,11 @@ class ProfileCatalog:
         if len(signatures) == 1:
             return sorted(matches)[0]
         return None
+
+    def canonical_name(self, category: str, name: str, scope: str) -> str:
+        """Resolve only a native name or an explicit upstream renamed_from edge."""
+        path = self.find_named(category, name, scope)
+        return self.documents[path].get("name", name) if path is not None else name
 
     @staticmethod
     def _scope(path: str, category: str) -> str:
@@ -303,12 +318,18 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
     machine_process_names = _names(machine.get("default_print_profile"))
     machine_material_names = _names(machine.get("default_filament_profile"))
     target_processes, target_materials = _target_profile_options(target, row)
+    scope = ProfileCatalog._scope(machine_path, "machine")
+    machine_process_names = [catalog.canonical_name("process", name, scope)
+                             for name in machine_process_names]
+    machine_material_names = [catalog.canonical_name("filament", name, scope)
+                             for name in machine_material_names]
+    target_processes = [catalog.canonical_name("process", name, scope) for name in target_processes]
+    target_materials = [catalog.canonical_name("filament", name, scope) for name in target_materials]
     process_names = list(dict.fromkeys((*machine_process_names, *target_processes)))
     material_names = list(dict.fromkeys((*machine_material_names, *target_materials)))
     # Some machines declare a default whose explicit compatibility list targets
     # other printers. Include genuine compatible alternatives from that vendor's
     # native files instead of treating the incomplete default list as the catalog.
-    scope = ProfileCatalog._scope(machine_path, "machine")
     incompatible_default = False
     for name in machine_material_names:
         path = catalog.find_named('filament', name, scope)

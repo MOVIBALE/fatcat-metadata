@@ -118,6 +118,14 @@ python -m fatcat_metadata_examples.showcase \
   --filament-profile 'Flashforge PLA Basic @FF AD5X' --output flash-ad5x.3mf
 ```
 
+The table and recording describe the 2026-10-05 run with its original 16-entry
+process input. Current snapshots and the expanded example have since changed;
+the recording does not certify newer application versions. See
+[PROCESS_SETTINGS.md](PROCESS_SETTINGS.md) for current input normalization.
+
+表格与动图记录的是 2026-10-05 当时的版本和 16 项输入。当前快照及示例已经更新，
+旧录像不作为新版软件的验收证据。
+
 ## Notices and limits / 提示与限制
 
 - Bambu Studio warned that the connected local device differed from the P1S

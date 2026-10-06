@@ -76,9 +76,9 @@ Neroued 是可选集成，FatCat 核心不依赖它运行。其他写包工具�
 | OrcaSlicer | `OrcaSlicer` | `2.4.2` |
 | QIDI Studio | `QIDIStudio` | `02.07.02.60` |
 | ElegooSlicer | `ElegooSlicer` | `1.5.3.5` |
-| Anycubic Slicer Next | `AnycubicSlicerNext` | `2.0.0.2` |
-| Flash Studio | `FlashStudio` | `1.7.15` |
-| Snapmaker Orca | `SnapmakerOrca` | `2.3.6` |
+| Anycubic Slicer Next | `AnycubicSlicerNext` | `2.0.0.3` |
+| Flash Studio | `FlashStudio` | `1.7.18` |
+| Snapmaker Orca | `SnapmakerOrca` | `2.4.0` |
 
 [目标清单](compatibility/current-src/translations/supported-targets.json)是版本范围的权威来源。
 未知目标和不兼容的选择会明确拒绝。支持某款软件不代表其所有机型、喷嘴、材料和打印板
@@ -100,6 +100,15 @@ python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
 fatcat --version
 fatcat catalog
 ```
+
+当前原生配置已对齐 2026-10-06 核对的 macOS 稳定版：Snapmaker Orca 2.4.0、
+Flash Studio 1.7.18、Anycubic Slicer Next 2.0.0.3；其他版本见
+[完整版本表](README.md#supported-slicer-snapshots)。Beta/nightly 不包含在内；
+Anycubic Linux 2.0.0.5 是不同版本，尚未纳入此快照。
+
+[工艺参数契约](docs/PROCESS_SETTINGS.md)可查询 38 个字段及其范围、枚举与别名。
+已知等价项自动转换，速度使用目标的原生单值或数组格式；未知或不支持的输入明确报错。
+这不代表所有切片软件专属功能都能相互转换。
 
 Actions 下载需要登录 GitHub，普通 CI 附件保留 30 天。项目尚未提供正式 Release 或
 PyPI 发行。原生 Linux 构建不承诺兼容更旧的发行版；手动[发行准备流程](docs/DISTRIBUTIONS.md)
