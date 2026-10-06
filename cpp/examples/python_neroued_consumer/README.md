@@ -13,6 +13,19 @@ the installed `fatcat` command; see [first use](../../../docs/FIRST_USE.md).
 
 ## Custom process across slicers
 
+For PrusaSlicer 3.0.0-alpha12, use the installed `prusa` example. It exports
+a native single-material MK4S project or four coloured parts for MMU3/XL:
+
+```bash
+python -m fatcat_metadata_examples.prusa --machine prusa:mk4s --output mk4s.3mf
+python -m fatcat_metadata_examples.prusa --machine prusa:mk4s-mmu3-32bit --output mmu3.3mf
+python -m fatcat_metadata_examples.prusa --machine prusa:xl-5t --output xl.3mf
+```
+
+The modified process, native temperature/flow values, GUI observations and
+scope boundaries are explained in [the Prusa guide](../../../docs/PRUSA.md).
+Use this format's native contract rather than the Orca showcase process file.
+
 [`showcase.py`](showcase.py) exports the same teal 20 mm PLA cube for a selected
 target. [`showcase_process.json`](showcase_process.json) supplies editable layer,
 width, wall, shell, infill and brim settings. The wheel installs both files:

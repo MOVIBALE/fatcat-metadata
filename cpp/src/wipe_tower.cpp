@@ -3,6 +3,7 @@
 #endif
 
 #include "fatcat/wipe_tower.h"
+#include "prusa_project.h"
 #include "difference_index.h"
 
 #include <algorithm>
@@ -856,6 +857,13 @@ std::string patch_wipe_tower(std::string_view project_json,
     const auto project = parse_json_text(project_json, false);
     const auto settings_value = parse_json_text(settings_json, true);
     const auto dialect_value = parse_json_text(dialect_json, true);
+    if (detail::prusa::is_target(dialect_value)) {
+        try {
+            return detail::prusa::patch_tower(project, settings_value).dump();
+        } catch (const std::exception &error) {
+            invalid(error.what());
+        }
+    }
     if (!project.is_object()) {
         invalid("project settings must be an object");
     }

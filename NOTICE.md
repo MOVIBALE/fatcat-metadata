@@ -12,6 +12,12 @@ license path, and source URL. Fat Cat translation contracts and compatibility
 metadata are maintained separately; the upstream profiles remain under their
 respective upstream terms.
 
+PrusaSlicer 3 preset data is collected through its native configuration CLI,
+which resolves the application's YAML presets. The exact typed JSON values are
+stored as a shared base and JSON Patch differences. Its schema is exported by
+the same binary. Upstream implementation code and application binaries are not
+included. This snapshot remains subject to the upstream license below.
+
 One retained complete project at
 `native-project-sources/compatibility-projects/orca-2.2.4-snapmaker-u1-0.4.json`
 records an OrcaSlicer 2.2.4 U1 process. It is compatibility data, not a 2.4.2
@@ -28,6 +34,7 @@ its content hash is recorded in the source descriptor.
 | Anycubic Slicer Next 2.0.0.3 | [ANYCUBIC-3D/AnycubicSlicerNext](https://github.com/ANYCUBIC-3D/AnycubicSlicerNext) | [AGPL-3.0](licenses/third-party/slicer-profiles/anycubic-slicer-next/LICENSE.txt) |
 | Flash Studio 1.7.18 | [FlashForge/Orca-Flashforge](https://github.com/FlashForge/Orca-Flashforge) | [AGPL-3.0](licenses/third-party/slicer-profiles/flash-studio/LICENSE.txt) |
 | Snapmaker Orca 2.4.0 | [Snapmaker/OrcaSlicer](https://github.com/Snapmaker/OrcaSlicer) | [AGPL-3.0](licenses/third-party/slicer-profiles/snapmaker-orca/LICENSE.txt) |
+| PrusaSlicer 3.0.0-alpha12 | [prusa3d/PrusaSlicer](https://github.com/prusa3d/PrusaSlicer) | [AGPL-3.0](licenses/third-party/slicer-profiles/prusaslicer/LICENSE) |
 
 The QIDI repository's license file is preserved verbatim because its copyright
 and preamble differ from the common AGPL text in the other profile repositories.

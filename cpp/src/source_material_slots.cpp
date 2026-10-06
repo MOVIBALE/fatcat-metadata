@@ -1,6 +1,7 @@
 #include "fatcat/source_material_slots.h"
 #include "fatcat/source_project_settings.h"
 #include "source_identity.h"
+#include "prusa_project.h"
 
 #include <algorithm>
 #include <charconv>
@@ -691,6 +692,9 @@ std::string extract_source_material_slots(std::string_view project_json,
                                          std::string_view target_json) {
     (void)settings_parts(parse_json(target_json, "target data"));
     const auto project = source_project(project_json);
+    if (detail::prusa::is_target(parse_json(target_json, "target data"))) {
+        return detail::prusa::material_slots(detail::prusa::normalized_project(project)).dump();
+    }
     tinyxml2::XMLDocument document;
     return material_slots(project, model_settings_xml, document).dump();
 }
@@ -699,6 +703,10 @@ std::string read_project_layout(std::string_view project_json,
                                 std::string_view target_json) {
     auto project = parse_json(project_json, "project settings");
     const auto target = parse_json(target_json, "target data");
+    if (detail::prusa::is_target(target)) {
+        const auto native = detail::prusa::normalized_project(project);
+        return project_layout(detail::prusa::summary(native), target).dump();
+    }
     return project_layout(std::move(project), target).dump();
 }
 
@@ -715,6 +723,23 @@ std::string read_source_metadata(
     std::optional<std::string_view> placement_json) {
     const auto target = parse_json(target_json, "target data");
     (void)settings_parts(target);
+    if (detail::prusa::is_target(target)) {
+        const auto native = detail::prusa::normalized_project(source_project(project_json));
+        tinyxml2::XMLDocument document;
+        const auto *root = detail::read_source_xml(document, source_model_xml);
+        const auto identity = detail::read_source_identity(root, nullptr, target);
+        const auto slots = detail::prusa::material_slots(native);
+        return json{{"project_settings", native}, {"slots", slots},
+            {"project_filament_count", slots.size()},
+            {"source_slicer", identity.at("source_slicer")},
+            {"source_version", identity.at("source_version")},
+            {"matches_selected_target_identity", identity.at("matches_selected_target_identity")},
+            {"source_root_metadata", root == nullptr ? json::object() : metadata_values(root)},
+            {"model_settings", {{"objects", native.at("objects")}, {"plates", json::array()}}},
+            {"slice_headers", json::array()},
+            {"layout", project_layout(detail::prusa::summary(native), target)},
+            {"warnings", json::array()}}.dump();
+    }
     const auto project = source_project(project_json);
     tinyxml2::XMLDocument settings_document, model_document, slice_document;
     const auto slots = material_slots(project, model_settings_xml, settings_document);

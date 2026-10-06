@@ -135,7 +135,12 @@ def sync(*, dry_run: bool = False) -> int:
         raise ValueError("native source map has an unsupported schema")
     if source_index.get("schema_version") != 1 or not isinstance(source_rows, list):
         raise ValueError("native source index has an unsupported schema")
-    targets = {slicer: load(TARGET_DIR / name) for slicer, name in TARGET_FILES.items()}
+    targets = {}
+    for slicer, name in TARGET_FILES.items():
+        target = load(TARGET_DIR / name)
+        if target.get("project_format") == "prusa3":
+            continue  # Native CLI data owns this format's hardware, not JSON profile bindings.
+        targets[slicer] = target
     sources = {source_key(row): row for row in source_rows}
     if len(sources) != len(source_rows):
         raise ValueError("native source index contains duplicate machine/nozzle identities")

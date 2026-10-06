@@ -81,10 +81,12 @@ py::dict project_dictionary(const std::string &result_json) {
 }
 
 std::array<std::string, 6> read_import_targets() {
+    // Preserve the legacy public six-target import signature. Typed formats
+    // identify themselves through Application and use the selected target.
     std::array<std::string, 6> targets;
     std::size_t index = 0;
     for (const auto &target : fatcat::detail::supported_targets()) {
-        if (target.at("template_import").get<bool>()) {
+        if (target.at("template_import").get<bool>() && target.value("legacy_import_slot", true)) {
             targets.at(index++) = read_packaged_target(
                 target.at("slicer_id").get<std::string>());
         }

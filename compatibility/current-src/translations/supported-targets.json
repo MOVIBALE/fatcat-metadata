@@ -41,6 +41,13 @@
       "application_version": "2.4.0",
       "filename": "snapmaker-orca-2.4.0.json",
       "template_import": true
+    },
+    {
+      "slicer_id": "PrusaSlicer",
+      "application_version": "3.0.0-alpha12",
+      "filename": "prusa-slicer-3.0.0-alpha12.json",
+      "template_import": true,
+      "legacy_import_slot": false
     }
   ]
 }

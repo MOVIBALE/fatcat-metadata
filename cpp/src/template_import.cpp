@@ -1,5 +1,6 @@
 #include "fatcat/template_import.h"
 #include "source_identity.h"
+#include "prusa_project.h"
 
 #include <algorithm>
 #include <cctype>
@@ -196,6 +197,7 @@ std::optional<std::string> declared_version(
 }
 
 std::string source_slicer(std::string_view marker_text) {
+    if (contains(marker_text, "PrusaSlicer-3.")) return "PrusaSlicer";
     if (contains(marker_text, "Snapmaker")) {
         return "SnapmakerOrca";
     }
@@ -373,6 +375,12 @@ json detail::read_source_identity(const tinyxml2::XMLElement *source_model,
 std::string template_import_parts(std::string_view target_json) {
     const auto target = parse_json(target_json, "Fat Cat target is invalid JSON");
     const auto &dialect = required_object(target, "package_dialect");
+    if (detail::prusa::is_target(target)) {
+        return json{{"source_model", "3D/3dmodel.model"},
+            {"project_settings", "Metadata/PrusaSlicer3_project.json"},
+            {"model_settings", "Metadata/PrusaSlicer3_project.json"},
+            {"slice_info", ""}, {"plate_sidecar", ""}, {"wipe_tower_placement", ""}}.dump();
+    }
     const auto &settings = required_object(dialect, "settings_parts");
     const auto &relationships = required_object(
         required_object(dialect, "metadata_components"), "model_relationships");
@@ -394,6 +402,18 @@ std::string resolve_template_build_plate(
     std::optional<std::string_view> sidecar_bed_value,
     std::optional<std::string_view> project_bed_value) {
     const auto target = parse_json(target_json, "Fat Cat target is invalid JSON");
+    if (detail::prusa::is_target(target)) {
+        if (!project_bed_value.has_value() || project_bed_value->empty()) {
+            invalid("Prusa sheet resolution requires the native project's sheet type");
+        }
+        const auto sheet = std::string(*project_bed_value);
+        const auto uid = "prusa-sheet:" + sheet;
+        if (!default_build_plate_uid.empty() && default_build_plate_uid != uid) {
+            invalid("Prusa template sheet differs from the selected native sheet");
+        }
+        return json{{"build_plate_uid", uid}, {"project_value", sheet},
+            {"plate_value", sheet}, {"sidecar_value", sheet}}.dump();
+    }
     const auto &bindings = target.at("build_plate_bindings");
     const auto result = [](const json &binding) {
         return json{{"build_plate_uid", required_text(binding, "build_plate_uid")},
@@ -436,6 +456,28 @@ void validate_template_hardware(std::string_view template_json,
     const auto expected = parse_json(expected_project_json, "Expected project is invalid JSON");
     if (source_slicer != selected_slicer) {
         invalid("Custom 3MF template slicer does not match the selected slicer");
+    }
+    if (selected_slicer == "PrusaSlicer") {
+        const auto actual_project = detail::prusa::normalized_project(project);
+        const auto wanted_project = detail::prusa::normalized_project(expected);
+        const auto &actual = actual_project.at("config_containers").at(0).at("preset").at("hw_config");
+        const auto &wanted = wanted_project.at("config_containers").at(0).at("preset").at("hw_config");
+        // Material assignments and instance UUIDs are not hardware identities.
+        const auto hardware = [](const json &config) {
+            json tools = json::object();
+            for (std::size_t i = 0; i < config.at("tool_count").get<std::size_t>(); ++i) {
+                const auto id = std::to_string(i);
+                const auto &tool = config.at("tools").at(id);
+                tools[id] = {{"id", tool.at("id")}, {"type", tool.at("type")},
+                    {"features", tool.at("features")}, {"feeder", tool.value("feeder", json(nullptr))}};
+            }
+            return json{{"model", config.at("model")}, {"tool_count", config.at("tool_count")},
+                {"tools", tools}};
+        };
+        if (hardware(actual) != hardware(wanted)) {
+            invalid("Custom Prusa template hardware differs from selected native configuration");
+        }
+        return;
     }
     if (project.value("printer_model", json(nullptr)) != expected.value("printer_model", json(nullptr))) {
         invalid("Custom 3MF template printer does not match the selected printer");
@@ -505,6 +547,23 @@ std::string import_template_metadata(
         invalid("3MF project settings must be an object");
     }
     const auto selected = parse_json(selected_target_json, "Fat Cat target is invalid JSON");
+    if (detail::prusa::is_target(selected)) {
+        const auto native = detail::prusa::normalized_project(project);
+        const auto effective = detail::prusa::summary(native);
+        tinyxml2::XMLDocument document;
+        const auto *root = detail::read_source_xml(document, source_model_xml);
+        const auto identity = detail::read_source_identity(root, nullptr, selected);
+        if (identity.at("source_slicer") != "PrusaSlicer" ||
+            identity.at("source_version") != "3.0.0-alpha12" ||
+            !identity.at("matches_selected_target_identity").get<bool>()) invalid("Prusa template requires exact 3.0.0-alpha12 project identity");
+        return json{{"settings", native}, {"source_slicer", "PrusaSlicer"},
+            {"source_version", "3.0.0-alpha12"}, {"selected_slicer", "PrusaSlicer"},
+            {"matches_selected_target_identity", true},
+            {"printer_model", effective.at("printer_model")},
+            {"nozzle_diameter", effective.at("nozzle_diameter")},
+            {"filament_count", effective.at("filament_settings_id").size()},
+            {"plate_value", effective.at("curr_bed_type")}, {"sidecar_bed", nullptr}}.dump();
+    }
     const auto bambu = parse_json(bambu_target_json, "Fat Cat target is invalid JSON");
     const auto orca = parse_json(orca_target_json, "Fat Cat target is invalid JSON");
     const auto qidi = parse_json(qidi_target_json, "Fat Cat target is invalid JSON");
