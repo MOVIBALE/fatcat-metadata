@@ -108,6 +108,8 @@ Anycubic Linux 2.0.0.5 是不同版本，尚未纳入此快照。
 
 [工艺参数契约](docs/PROCESS_SETTINGS.md)可查询 38 个字段及其范围、枚举与别名。
 已知等价项自动转换，速度使用目标的原生单值或数组格式；未知或不支持的输入明确报错。
+通过 `fatcat fields --slicer BambuStudio` 或 Python `list_native_fields` 可查原生证据与
+显式工艺覆盖范围。“SDK 尚未支持”与“原生标准枚举词不接受”分别说明；清单外字段仍为待确认。
 这不代表所有切片软件专属功能都能相互转换。
 
 Actions 下载需要登录 GitHub，普通 CI 附件保留 30 天。项目尚未提供正式 Release 或

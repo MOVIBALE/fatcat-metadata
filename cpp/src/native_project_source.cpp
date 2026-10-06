@@ -1412,6 +1412,68 @@ std::string metadata_target_data(std::string_view slicer_id,
     return selected.dump();
 }
 
+std::string native_field_inventory(std::string_view slicer_id,
+                                    std::string_view application_version,
+                                    const std::filesystem::path &data_root) {
+    const auto target = json::parse(metadata_target_data(slicer_id, application_version, data_root));
+    const auto &identity = target.at("target_contract");
+    const auto &contract = target.at("process_settings_contract");
+    const auto index = read_json(safe_path(data_root, "translations/supported-targets.json"),
+                                 "supported targets");
+    json result;
+    for (const auto &row : index.at("targets")) {
+        if (row.at("slicer_id") == identity.at("slicer_id") &&
+            row.at("application_version") == identity.at("application_version")) {
+            result = read_json(safe_path(data_root, "translations/native-fields/" +
+                required_string(row, "filename", "target")), "native field inventory");
+            break;
+        }
+    }
+    if (result.is_null()) invalid("native field inventory is unavailable for selected target");
+    if (result.at("slicer_id") != identity.at("slicer_id") ||
+        result.at("application_version") != identity.at("application_version") ||
+        result.at("source") != contract.at("source")) {
+        invalid("native field inventory provenance differs from process contract; refresh both together");
+    }
+    json summary = {{"observed_native_fields", result.at("fields").size()},
+        {"supported", 0}, {"sdk_not_supported", 0}, {"unverified", 0},
+        {"process_profile_observed_fields", 0}, {"process_profile_supported_fields", 0}};
+    for (auto &[key, field] : result.at("fields").items()) {
+        bool native_present = field.contains("native_export_shape");
+        if (contract.at("source").value("exact_application_definitions", false) &&
+            field.contains("definitions")) {
+            for (const auto &definition : field.at("definitions")) {
+                if (!definition.contains("conditions")) native_present = true;
+            }
+        }
+        const bool supported = contract.at("fields").contains(key);
+        const std::string status = supported ? "supported" :
+            native_present ? "sdk_not_supported" : "unverified";
+        field["process_override_status"] = status;
+        summary[status] = summary.at(status).get<std::size_t>() + 1;
+        const auto groups = field.value("profile_groups", json::array());
+        if (std::find(groups.begin(), groups.end(), json("process")) != groups.end()) {
+            summary["process_profile_observed_fields"] =
+                summary.at("process_profile_observed_fields").get<std::size_t>() + 1;
+            if (supported) summary["process_profile_supported_fields"] =
+                summary.at("process_profile_supported_fields").get<std::size_t>() + 1;
+        }
+    }
+    result["summary"] = std::move(summary);
+    result["process_settings_contract"] = contract;
+    result["input_aliases"] = json::object();
+    for (const auto &[alias, key] : contract.at("aliases").items()) {
+        result["input_aliases"][alias] = {{"status", "converted"}, {"native_field", key}};
+    }
+    result["status_definitions"] = {
+        {"supported", "Accepted native field in FatCat's explicit process override API"},
+        {"converted", "Reviewed input alias or value mapping in process_settings_contract"},
+        {"sdk_not_supported", "Native evidence exists, but this process override API does not accept the field; other FatCat APIs may own it"},
+        {"target_not_supported", "Used only for a canonical enum token excluded by an exact native parse map; legacy replacements and feature interactions remain outside scope"},
+        {"unverified", "Native support is not established for this version; absent keys have this status too"}};
+    return result.dump();
+}
+
 std::string compose_builtin_project_settings(std::string_view request_json,
                                              const std::filesystem::path &data_root) {
     const auto request = json::parse(request_json);

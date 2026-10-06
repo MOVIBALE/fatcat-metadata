@@ -102,6 +102,9 @@ Explicit [process settings](docs/PROCESS_SETTINGS.md) use a discoverable contrac
 known equivalents are normalized, target array formats are respected, and
 unknown or unsupported inputs raise actionable errors. This covers 38 fields,
 not every slicer feature or every interaction between settings.
+Use `fatcat fields --slicer BambuStudio` or Python `list_native_fields` to inspect
+versioned native evidence and process coverage. Missing SDK support is reported
+separately from an excluded native enum token; absent fields remain unverified.
 
 Some combinations use explicitly recorded historical sources. OrcaSlicer 2.4.2
 U1 0.4 mm, for example, uses a recorded 2.2.4 process and textured-plate material.

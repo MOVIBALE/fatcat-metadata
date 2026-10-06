@@ -101,7 +101,8 @@ void validate_request_keys(const json &request, const json &target) {
     };
     for (const auto &[key, ignored] : request.items()) {
         if (allowed.find(key) == allowed.end() && !detail::is_process_override_key(target, key)) {
-            invalid("request contains unsupported field '" + key + "'");
+            invalid("request contains unsupported field '" + key +
+                    "' in FatCat's request API [sdk_not_supported]; native compatibility has not been checked");
         }
     }
 }

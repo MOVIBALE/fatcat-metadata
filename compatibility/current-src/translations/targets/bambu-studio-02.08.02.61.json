@@ -18824,7 +18824,10 @@
       "definition_url": "https://github.com/bambulab/BambuStudio/blob/v02.08.02.61/src/libslic3r/PrintConfig.cpp",
       "definition_sha256": "d4e96aaca40b0698de720537ba0d2af46efbb576e183507c763c0654e394e99c",
       "definition_version": "02.08.02.61",
-      "exact_application_definitions": true
+      "exact_application_definitions": true,
+      "native_defaults_sha256": "032d9102ffbdc06978cca15abbfa46b61a270b3ef255cc16e714c786fa0063df",
+      "native_defaults_application_version": "02.08.02.61",
+      "exported_schema_version": "02.08.02.61"
     },
     "fields": {
       "elefant_foot_compensation": {
@@ -18855,6 +18858,15 @@
           "inner_only",
           "outer_and_inner",
           "no_brim"
+        ],
+        "native_enum_type": "BrimType",
+        "native_parse_values": [
+          "no_brim",
+          "outer_only",
+          "inner_only",
+          "outer_and_inner",
+          "auto_brim",
+          "brim_ears"
         ]
       },
       "top_surface_pattern": {
@@ -18868,6 +18880,33 @@
           "hilbertcurve",
           "archimedeanchords",
           "octagramspiral"
+        ],
+        "native_enum_type": "InfillPattern",
+        "native_parse_values": [
+          "concentric",
+          "zig-zag",
+          "grid",
+          "line",
+          "cubic",
+          "triangles",
+          "tri-hexagon",
+          "gyroid",
+          "honeycomb",
+          "adaptivecubic",
+          "monotonic",
+          "monotonicline",
+          "alignedrectilinear",
+          "3dhoneycomb",
+          "hilbertcurve",
+          "archimedeanchords",
+          "octagramspiral",
+          "supportcubic",
+          "lightning",
+          "crosshatch",
+          "zigzag",
+          "crosszag",
+          "lockedzag",
+          "2dlattice"
         ]
       },
       "bottom_surface_pattern": {
@@ -18881,6 +18920,33 @@
           "hilbertcurve",
           "archimedeanchords",
           "octagramspiral"
+        ],
+        "native_enum_type": "InfillPattern",
+        "native_parse_values": [
+          "concentric",
+          "zig-zag",
+          "grid",
+          "line",
+          "cubic",
+          "triangles",
+          "tri-hexagon",
+          "gyroid",
+          "honeycomb",
+          "adaptivecubic",
+          "monotonic",
+          "monotonicline",
+          "alignedrectilinear",
+          "3dhoneycomb",
+          "hilbertcurve",
+          "archimedeanchords",
+          "octagramspiral",
+          "supportcubic",
+          "lightning",
+          "crosshatch",
+          "zigzag",
+          "crosszag",
+          "lockedzag",
+          "2dlattice"
         ]
       },
       "outer_wall_line_width": {
@@ -18915,6 +18981,33 @@
           "gyroid",
           "honeycomb",
           "adaptivecubic",
+          "alignedrectilinear",
+          "3dhoneycomb",
+          "hilbertcurve",
+          "archimedeanchords",
+          "octagramspiral",
+          "supportcubic",
+          "lightning",
+          "crosshatch",
+          "zigzag",
+          "crosszag",
+          "lockedzag",
+          "2dlattice"
+        ],
+        "native_enum_type": "InfillPattern",
+        "native_parse_values": [
+          "concentric",
+          "zig-zag",
+          "grid",
+          "line",
+          "cubic",
+          "triangles",
+          "tri-hexagon",
+          "gyroid",
+          "honeycomb",
+          "adaptivecubic",
+          "monotonic",
+          "monotonicline",
           "alignedrectilinear",
           "3dhoneycomb",
           "hilbertcurve",
@@ -18989,6 +19082,12 @@
           "disabled",
           "limited",
           "enabled"
+        ],
+        "native_enum_type": "DraftShield",
+        "native_parse_values": [
+          "disabled",
+          "limited",
+          "enabled"
         ]
       },
       "skirt_loops": {
@@ -19049,6 +19148,11 @@
         "values": [
           "classic",
           "arachne"
+        ],
+        "native_enum_type": "PerimeterGeneratorType",
+        "native_parse_values": [
+          "classic",
+          "arachne"
         ]
       }
     },
@@ -19072,7 +19176,7 @@
       }
     },
     "unsupported_fields": {
-      "print_speed": "No single native overall speed. Use outer_wall_speed, inner_wall_speed, sparse_infill_speed or another specific speed field."
+      "print_speed": "FatCat has no reviewed overall-speed mapping. Use outer_wall_speed, inner_wall_speed, sparse_infill_speed or another specific speed field."
     }
   }
 }

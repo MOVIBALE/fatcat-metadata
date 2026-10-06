@@ -286,6 +286,7 @@ if(FATCAT_BUILD_PYTHON)
     )
     install(DIRECTORY
         ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/targets
+        ${CMAKE_CURRENT_SOURCE_DIR}/../compatibility/current-src/translations/native-fields
         DESTINATION fatcat_metadata_data/translations
         FILES_MATCHING PATTERN "*.json"
     )

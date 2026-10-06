@@ -145,6 +145,36 @@ enum values. Review those in the native GUI and retain this limitation in docs.
 Do not relabel older definitions as current ones. Native `renamed_from` records
 resolve preset renames; ambiguous/missing identities remain unavailable.
 
+The same updater writes `translations/native-fields/<target filename>` alongside
+the process contract. Supply exact native defaults for each target when updating
+the inventory. The source, export and profile hashes identify observed evidence;
+no source code or application binaries are shipped. Fields are kept to one line
+each to avoid expanding large generated JSON diffs.
+
+Review `registration_scan`: `calls` counts all `this->add` occurrences in the
+common/FFF scope, `parsed_calls` counts recognized registrations, `resolved_calls`
+counts registrations with known keys, and `unresolved` preserves expressions the
+importer cannot name. Axis-loop names come from the native axis declaration.
+Conditional definitions remain conditional; missing exports are not absence
+proof. Profile-only keys can be stale, renamed or unrecognized by the current
+engine and remain unverified. Preset transport fields alone are excluded.
+
+Process enum `values` are field-specific choices; `native_parse_values` come
+from the referenced native enum type's token map. A token accepted by the enum
+type can still be unsuitable for an individual field. Do not broaden supported
+choices from that map automatically, infer equivalence from names, or treat
+an older definition map as exact evidence about a newer application.
+
+Query the installed result with `fatcat fields` or `list_native_fields` and
+review its coverage counts together with [PROCESS_SETTINGS.md](PROCESS_SETTINGS.md).
+The query checks that target identity and source provenance match the process
+contract. Keep their refresh atomic in a PR; the inventory is evidence about
+explicit process overrides, not a general-purpose native config validator.
+
+同一导入器生成字段清单与工艺契约，查询会核对版本和来源。每次升级需一起审核未解析调用、
+旧预设字段和当前导出；较旧源码、同名字段、默认值缺席都不能证明目标不兼容。
+原生枚举解析词表与某个字段实际开放的可选项也必须区分。
+
 ## Verify and record the update
 
 Run the commands from the repository root:
