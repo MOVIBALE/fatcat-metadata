@@ -2593,6 +2593,16 @@
           "inner_only",
           "outer_and_inner",
           "no_brim"
+        ],
+        "native_enum_type": "BrimType",
+        "native_parse_values": [
+          "no_brim",
+          "outer_only",
+          "inner_only",
+          "outer_and_inner",
+          "auto_brim",
+          "brim_ears",
+          "painted"
         ]
       },
       "top_surface_pattern": {
@@ -2606,6 +2616,37 @@
           "hilbertcurve",
           "archimedeanchords",
           "octagramspiral"
+        ],
+        "native_enum_type": "InfillPattern",
+        "native_parse_values": [
+          "monotonic",
+          "monotonicline",
+          "rectilinear",
+          "alignedrectilinear",
+          "zigzag",
+          "crosszag",
+          "lockedzag",
+          "line",
+          "grid",
+          "triangles",
+          "tri-hexagon",
+          "cubic",
+          "adaptivecubic",
+          "quartercubic",
+          "supportcubic",
+          "lightning",
+          "honeycomb",
+          "3dhoneycomb",
+          "lateral-honeycomb",
+          "lateral-lattice",
+          "crosshatch",
+          "tpmsd",
+          "tpmsfk",
+          "gyroid",
+          "concentric",
+          "hilbertcurve",
+          "archimedeanchords",
+          "octagramspiral"
         ]
       },
       "bottom_surface_pattern": {
@@ -2615,6 +2656,37 @@
           "monotonicline",
           "rectilinear",
           "alignedrectilinear",
+          "concentric",
+          "hilbertcurve",
+          "archimedeanchords",
+          "octagramspiral"
+        ],
+        "native_enum_type": "InfillPattern",
+        "native_parse_values": [
+          "monotonic",
+          "monotonicline",
+          "rectilinear",
+          "alignedrectilinear",
+          "zigzag",
+          "crosszag",
+          "lockedzag",
+          "line",
+          "grid",
+          "triangles",
+          "tri-hexagon",
+          "cubic",
+          "adaptivecubic",
+          "quartercubic",
+          "supportcubic",
+          "lightning",
+          "honeycomb",
+          "3dhoneycomb",
+          "lateral-honeycomb",
+          "lateral-lattice",
+          "crosshatch",
+          "tpmsd",
+          "tpmsfk",
+          "gyroid",
           "concentric",
           "hilbertcurve",
           "archimedeanchords",
@@ -2643,6 +2715,37 @@
       "sparse_infill_pattern": {
         "type": "enum",
         "values": [
+          "rectilinear",
+          "alignedrectilinear",
+          "zigzag",
+          "crosszag",
+          "lockedzag",
+          "line",
+          "grid",
+          "triangles",
+          "tri-hexagon",
+          "cubic",
+          "adaptivecubic",
+          "quartercubic",
+          "supportcubic",
+          "lightning",
+          "honeycomb",
+          "3dhoneycomb",
+          "lateral-honeycomb",
+          "lateral-lattice",
+          "crosshatch",
+          "tpmsd",
+          "tpmsfk",
+          "gyroid",
+          "concentric",
+          "hilbertcurve",
+          "archimedeanchords",
+          "octagramspiral"
+        ],
+        "native_enum_type": "InfillPattern",
+        "native_parse_values": [
+          "monotonic",
+          "monotonicline",
           "rectilinear",
           "alignedrectilinear",
           "zigzag",
@@ -2726,6 +2829,11 @@
         "values": [
           "disabled",
           "enabled"
+        ],
+        "native_enum_type": "DraftShield",
+        "native_parse_values": [
+          "disabled",
+          "enabled"
         ]
       },
       "skirt_loops": {
@@ -2784,6 +2892,11 @@
         "values": [
           "classic",
           "arachne"
+        ],
+        "native_enum_type": "PerimeterGeneratorType",
+        "native_parse_values": [
+          "classic",
+          "arachne"
         ]
       }
     },
@@ -2807,7 +2920,7 @@
       }
     },
     "unsupported_fields": {
-      "print_speed": "No single native overall speed. Use outer_wall_speed, inner_wall_speed, sparse_infill_speed or another specific speed field."
+      "print_speed": "FatCat has no reviewed overall-speed mapping. Use outer_wall_speed, inner_wall_speed, sparse_infill_speed or another specific speed field."
     }
   }
 }

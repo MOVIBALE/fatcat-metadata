@@ -10,6 +10,12 @@ namespace fatcat {
 /// 查询已安装的软件与版本标识，不暴露内部文件布局。
 std::string metadata_target_catalog(const std::filesystem::path &data_root);
 
+/// Query versioned native-field evidence and process-override coverage.
+/// 查询指定版本的原生字段证据与工艺覆盖范围；清单外字段不等于软件不支持。
+std::string native_field_inventory(std::string_view slicer_id,
+                                    std::string_view application_version,
+                                    const std::filesystem::path &data_root);
+
 /// List exact process/material/plate choices for the requested machine/nozzle.
 /// 查询指定机型与喷嘴的工艺、材料和板型；不可用候选保留原因。
 /// Optional build_plate_uid filters material availability using the composer.

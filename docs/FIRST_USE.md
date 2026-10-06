@@ -36,6 +36,7 @@ wheel 安装的 `fatcat` 启动同一原生命令。Python 的命令目录未加
 
 ```bash
 fatcat catalog --slicer BambuStudio --application-version 02.08.02.61
+fatcat fields --slicer BambuStudio --application-version 02.08.02.61
 fatcat choices --slicer BambuStudio --application-version 02.08.02.61 \
   --machine bambu-lab:a1-mini --nozzle nozzle:0.4mm --plate plate:textured-pei
 ```

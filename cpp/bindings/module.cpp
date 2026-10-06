@@ -376,6 +376,18 @@ PYBIND11_MODULE(fatcat_metadata, module) {
         }
     }, py::arg("request"), "List exact native choices and unavailable reasons. 查询原生候选及不可用原因。");
 
+    module.def("list_native_fields", [](const std::string &slicer_id, const std::string &version) {
+        try {
+            return py::module_::import("json").attr("loads")(
+                fatcat::native_field_inventory(slicer_id, version, packaged_data_root("")))
+                .cast<py::dict>();
+        } catch (const std::exception &error) {
+            throw py::value_error(error.what());
+        }
+    }, py::arg("slicer_id"), py::arg("application_version") = "",
+       "Query native field evidence and process coverage; absent keys remain unverified. "
+       "查询原生字段证据与工艺覆盖范围；清单外字段仍为待确认。");
+
     module.def("list_machines", [](const std::string &slicer_id, const std::string &version) {
         try {
             const auto target = nlohmann::json::parse(fatcat::metadata_target_data(

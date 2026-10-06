@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Refresh the SDK's supported process subset from native FFF definitions.
+"""Refresh process overrides and inventory native common/FFF field evidence.
 
 Supply a reviewed upstream PrintConfig.cpp, its revision URL and, when available,
 the exact application's --export-settings output. This is a maintainer import
 tool, not a general C++ parser. It refuses definitions it cannot resolve.
+The inventory accounts for unresolved registrations without treating absence
+from a defaults export or a selected profile as native incompatibility.
 """
 
 from __future__ import annotations
@@ -34,11 +36,112 @@ TYPES = {"coFloat": "float", "coFloats": "float", "coFloatOrPercent": "float_or_
          "coPercent": "percent", "coInt": "int", "coBool": "bool", "coEnum": "enum"}
 
 
+def strip_comments(source: str) -> str:
+    """Preserve positions and strings for upstream line references."""
+    return re.sub(r'"(?:\\.|[^"\\])*"|//[^\n]*|/\*.*?\*/',
+                  lambda m: m.group() if m.group().startswith('"') else
+                  re.sub(r'[^\n]', ' ', m.group()), source, flags=re.DOTALL)
+
+
+def extract_inventory(source: str, defaults: dict, profile_root: Path) -> dict:
+    """Record all observed keys, not a compiled or semantic compatibility schema."""
+    clean = strip_comments(source)
+    start = clean.index("void PrintConfigDef::init_common_params()")
+    end = clean.index("void PrintConfigDef::init_sla_params()")
+    scope = clean[start:end]
+    fields, unresolved = {}, []
+    conditions, active = {}, []
+    for line_number, line in enumerate(clean.splitlines(), 1):
+        directive = line.strip()
+        if re.match(r'#\s*(if|ifdef|ifndef)\b', directive):
+            active.append(directive)
+        elif re.match(r'#\s*(else|elif)\b', directive) and active:
+            active[-1] = active[-1] + " / " + directive
+        elif re.match(r'#\s*endif\b', directive) and active:
+            active.pop()
+        conditions[line_number] = [item for item in active if item != "#if 1"]
+
+    calls = list(re.finditer(r'\bthis->add\(([^;]+?),\s*(co\w+)\s*\)', scope))
+    resolved_calls = 0
+    for match in calls:
+        expression, native_type = match.groups()
+        line = clean.count('\n', 0, start + match.start()) + 1
+        literal = re.fullmatch(r'"([^"\\]+)"', expression.strip())
+        axes = re.fullmatch(r'"([^"\\]+)"\s*\+\s*axis\.name', expression.strip())
+        keys = [literal[1]] if literal else []
+        if axes:
+            # Expand the names actually declared in this native loop.
+            declaration = scope.rfind("std::vector<AxisDefault> axes", 0, match.start())
+            loop = scope.find("for (const AxisDefault &axis : axes)", declaration)
+            if declaration >= 0 and declaration < loop < match.start():
+                keys = [axes[1] + name for name in
+                        re.findall(r'\{\s*"([^"\\]+)"\s*,', scope[declaration:loop])]
+        if not keys:
+            unresolved.append({"expression": expression.strip(), "native_type": native_type,
+                               "definition_line": line})
+            continue
+        resolved_calls += 1
+        for key in keys:
+            field = fields.setdefault(key, {"definitions": []})
+            definition = {"native_type": native_type, "line": line}
+            if conditions[line]:
+                definition["conditions"] = conditions[line]
+            field["definitions"].append(definition)
+
+    # Preset transport keys are not native configuration fields on their own.
+    transport = {"name", "from", "version", "type", "inherits", "include", "instantiation",
+                 "setting_id", "filament_id", "renamed_from"}
+    for key, value in defaults.items():
+        if key in transport and key not in fields:
+            continue
+        fields.setdefault(key, {})["native_export_shape"] = (
+            "array" if isinstance(value, list) else "scalar")
+    profile_hash = hashlib.sha256()
+    profile_count = 0
+    for path in sorted(profile_root.rglob("*.json")):
+        relative = path.relative_to(profile_root).as_posix()
+        group = next((part for part in relative.split('/') if
+                      part in {"process", "machine", "filament"}), None)
+        if group is None:
+            continue
+        raw = path.read_bytes()
+        profile_hash.update(relative.encode('utf-8') + b'\0' + raw + b'\0')
+        profile_count += 1
+        for key in json.loads(raw):
+            if key in transport and key not in fields:
+                continue
+            groups = fields.setdefault(key, {}).setdefault("profile_groups", [])
+            if group not in groups:
+                groups.append(group)
+    for field in fields.values():
+        if "profile_groups" in field:
+            field["profile_groups"].sort()
+    return {"scope": "Observed common/FFF definitions, exact defaults and bundled profile keys; not a compiled full schema",
+            "absence_means": "unverified, not target_not_supported",
+            "registration_scan": {"calls": len(re.findall(r'\bthis->add\s*\(', scope)),
+                                  "parsed_calls": len(calls), "resolved_calls": resolved_calls,
+                                  "unresolved": unresolved},
+            "profiles": {"file_count": profile_count, "sha256": profile_hash.hexdigest()},
+            "fields": dict(sorted(fields.items()))}
+
+
+def write_inventory(path: Path, inventory: dict) -> None:
+    """Keep generated evidence to one readable line per field."""
+    header = {key: value for key, value in inventory.items() if key != "fields"}
+    text = json.dumps(header, ensure_ascii=False, indent=2)[:-2] + ',\n  "fields": {\n'
+    text += ',\n'.join('    ' + json.dumps(key) + ': ' +
+                       json.dumps(value, ensure_ascii=False) for key, value in inventory["fields"].items())
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text + '\n  }\n}\n', encoding='utf-8')
+
+
 def extract_fields(source: str) -> dict:
     # Keep quoted text intact while removing commented-out native choices.
-    source = re.sub(r'"(?:\\.|[^"\\])*"|//[^\n]*|/\*.*?\*/',
-                    lambda m: m.group() if m.group().startswith('"') else "", source,
-                    flags=re.DOTALL)
+    source = strip_comments(source)
+    enum_maps = {name: re.findall(r'\{\s*"([^"\\]+)"\s*,', body)
+                 for name, body in re.findall(
+                     r'\bt_config_enum_values\s+s_keys_map_(\w+)\s*(?:=\s*)?\{(.*?)^\s*\};',
+                     source, flags=re.MULTILINE | re.DOTALL)}
     source = source[source.index("void PrintConfigDef::init_common_params()"):
                     source.index("void PrintConfigDef::init_sla_params()")]
     matches = list(re.finditer(r'def\s*=\s*this->add\("([^"]+)",\s*(co\w+)\)', source))
@@ -54,6 +157,10 @@ def extract_fields(source: str) -> dict:
         field = {"type": TYPES.get(native_type, native_type)}
         if native_type == "coEnum":
             field["values"] = values
+            enum_type = re.search(r'def->enum_keys_map\s*=\s*&ConfigOptionEnum<(\w+)>::get_enum_values\(\)', block)
+            if enum_type and enum_maps.get(enum_type[1]):
+                field["native_enum_type"] = enum_type[1]
+                field["native_parse_values"] = enum_maps[enum_type[1]]
         if native_type == "coFloats":
             field["array"] = True
         for native, name in [("min", "minimum"), ("max", "maximum")]:
@@ -133,10 +240,18 @@ def main() -> None:
                     "first_layer_height": "initial_layer_print_height",
                     "elephant_foot_compensation": "elefant_foot_compensation"},
         "value_aliases": value_aliases,
-        "unsupported_fields": {"print_speed": "No single native overall speed. Use outer_wall_speed, inner_wall_speed, sparse_infill_speed or another specific speed field."}}
+        "unsupported_fields": {"print_speed": "FatCat has no reviewed overall-speed mapping. Use outer_wall_speed, inner_wall_speed, sparse_infill_speed or another specific speed field."}}
+    inventory = extract_inventory(source_bytes.decode("utf-8"),
+                                  defaults if args.native_defaults else {},
+                                  ROOT / "compatibility/current-src/native-project-sources/profiles" / args.slicer)
+    inventory.update({"schema_version": 1, "slicer_id": args.slicer,
+                      "application_version": entry["application_version"], "source": provenance})
     if not args.dry_run:
         target_path.write_text(json.dumps(target, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"{args.slicer} {entry['application_version']}: {len(fields)} process fields")
+        write_inventory(TARGETS / "native-fields" / entry["filename"], inventory)
+    print(f"{args.slicer} {entry['application_version']}: {len(fields)} process overrides, "
+          f"{len(inventory['fields'])} observed native fields, "
+          f"{len(inventory['registration_scan']['unresolved'])} unresolved registrations")
 
 
 if __name__ == "__main__":

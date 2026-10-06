@@ -67,8 +67,15 @@ std::string validate_process_value(const json &value, const json &field,
     if (type == "enum") {
         const auto &values = field.at("values");
         if (std::find(values.begin(), values.end(), json(raw)) == values.end()) {
-            invalid(path + "='" + raw + "' is unsupported by " + target_label(target) +
-                    "; supported values: " + values.dump());
+            const auto parse_values = field.value("native_parse_values", json::array());
+            const bool excluded = contract.at("source").value("exact_application_definitions", false) &&
+                !parse_values.empty() &&
+                std::find(parse_values.begin(), parse_values.end(), json(raw)) == parse_values.end();
+            const auto reason = excluded ? " is unsupported by " + target_label(target) +
+                " as a canonical native enum token [target_not_supported]" :
+                " is outside FatCat's recorded field-specific enum subset for " +
+                target_label(target) + " [sdk_not_supported]; native applicability is unverified";
+            invalid(path + "='" + raw + "'" + reason + "; supported values: " + values.dump());
         }
         return raw;
     }
@@ -122,12 +129,15 @@ json resolve_process_level(const json &values, const json &target,
     for (const auto &[input_key, value] : values.items()) {
         const auto key = aliases.value(input_key, input_key);
         if (unsupported.contains(input_key)) {
-            invalid(path + "." + input_key + " is unsupported by " + target_label(target) +
+            invalid(path + "." + input_key + " is unsupported by FatCat's process override API for " +
+                    target_label(target) + " [sdk_not_supported]" +
                     "; " + unsupported.at(input_key).get<std::string>());
         }
         if (!fields.contains(key)) {
             if (nested) invalid(path + " contains unsupported field '" + input_key +
-                                "' for " + target_label(target));
+                                "' in FatCat's process override API [sdk_not_supported] for " +
+                                target_label(target) + "; this does not establish native incompatibility. "
+                                "Query list_native_fields or fatcat fields for native evidence");
             continue;
         }
         const auto normalized = validate_process_value(value, fields.at(key), contract,

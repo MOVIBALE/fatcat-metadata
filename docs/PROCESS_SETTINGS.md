@@ -29,10 +29,108 @@ their types, numeric bounds, native array shape and accepted enum values.
 `aliases`, `value_aliases` and `unsupported_fields` explain the normalization.
 Inspect `source` for the definition revision and whether it matches the exact
 application release. This subset is distinct from the application's full schema.
+`values` is the reviewed field-specific subset; `native_parse_values` records
+the native enum type's token map, which can contain additional tokens unsuitable
+for that field. Presence in that map alone does not enable an override.
 
 同一份契约也可通过 CLI 和 C++ 查询。目前有 38 个工艺字段；可查询类型、范围、数组格式、
 枚举值、别名与明确不支持项。`source` 记录依据的源码版本及其是否与应用版本完全对应。
 这里列出的是 SDK 支持范围，不是切片软件的全部设置。
+`values` 是该字段已核对的可选值；`native_parse_values` 是原生枚举类型的解析词表。
+解析词表可能含有不适用于此字段的值，不能仅据词表扩展支持范围。
+
+## Native inventory and coverage / 原生清单与覆盖范围
+
+Query a version without selecting a printer:
+
+```bash
+fatcat fields --slicer BambuStudio --application-version 02.08.02.61
+```
+
+```python
+inventory = fatcat.list_native_fields("BambuStudio", "02.08.02.61")
+print(inventory["summary"])
+print(inventory["fields"]["outer_wall_acceleration"])
+# Absence is unverified, never proof of native incompatibility.
+status = inventory["fields"].get("some_new_field", {}).get(
+    "process_override_status", "unverified"
+)
+```
+
+C++ exposes the same result through `native_field_inventory(slicer, version,
+data_root)`. The inventory records every parsed common/FFF registration from
+the reviewed source, exact application's default-export keys and keys observed
+in the bundled profile snapshot. Definitions carry upstream line numbers;
+exports record scalar/array shape. Source/export/profile hashes identify the
+evidence. Exports and profiles do not prove every legal value or dependency.
+`registration_scan` accounts for parsed, resolved and unresolved calls; the
+importer is not a C++ compiler and does not claim a complete compiled schema.
+
+查询不需要机型。清单汇集所审源码的 common/FFF 字段声明、当前应用导出与已收录原生预设，
+记录源码行号、单值/数组格式与证据哈希。`registration_scan` 单独列出未解析调用。
+预设本身也可能带有旧字段；清单不会把“预设里出现过”当成当前引擎已经支持。
+
+| Status | Meaning / 含义 |
+| --- | --- |
+| `supported` | Native field accepted by the explicit process override API / 显式工艺入口已支持 |
+| `converted` | Reviewed input aliases or value mappings / 已确认等价转换，见 `input_aliases` 和契约中的 `value_aliases` |
+| `sdk_not_supported` | Native evidence exists, but this process override API has no support / 有原生证据，此工艺入口尚未开放 |
+| `target_not_supported` | Canonical enum token absent from an exact native parse map / 准确版本的原生解析词表明确不接受该标准枚举词；用于报错，不从字段缺席推断 |
+| `unverified` | Current native applicability is not established / 当前版本待确认，包括清单外字段 |
+
+These statuses apply to **explicit process overrides**, not the entire SDK.
+Native presets are still inherited and carried into projects; machines,
+materials and wipe towers also have their own existing composition inputs.
+Do not count those fields as unsupported by all FatCat operations. Unsupported
+new overrides remain errors; user-project settings already present remain
+preserved. Rejected enums outside a baseline or a field-specific subset report
+`sdk_not_supported`; they are not automatically native incompatibilities.
+Legacy token replacements and cross-field feature interactions remain outside
+the canonical enum-token check.
+
+这些状态只评价显式工艺修改入口，不评价整个 SDK。原生预设仍通过继承链带入工程，
+机型、材料、擦拭塔也有各自输入。不能把“此入口未开放”解释成库不能导出这些配置。
+未知输入仍拒绝；用户工程原有设置仍保留。较旧源码或字段可选项子集之外的枚举拒绝会说明
+是 SDK 范围限制；旧词替换和字段交互仍需原生软件确认。
+
+### Recorded coverage, 2026-10-06 / 本版清单
+
+| Target | Observed field names | Explicit process fields | Native evidence, API not open | Unverified |
+| --- | ---: | ---: | ---: | ---: |
+| Bambu 02.08.02.61 | 617 | 38 | 550 | 29 |
+| Orca 2.4.2 | 777 | 38 | 621 | 118 |
+| QIDI 02.07.02.60 | 615 | 38 | 557 | 20 |
+| Elegoo 1.5.3.5 | 682 | 38 | 624 | 20 |
+| Anycubic macOS 2.0.0.3 | 658 | 38 | 516 | 104 |
+| Flash 1.7.18 | 719 | 38 | 599 | 82 |
+| Snapmaker 2.4.0 | 669 | 38 | 551 | 80 |
+
+This is an evidence inventory, **not a compatibility percentage**: the total
+includes machine/material fields, inherited preset keys and unresolved legacy
+keys. `process_profile_observed_fields` and `process_profile_supported_fields`
+separately count keys seen in the selected process-profile snapshot; they do
+not exhaust all process features. Snapmaker's dynamic `project_schema.config_key`
+registration remains unresolved by the importer; its actual exported
+`project_schema_version` is recorded separately. Flash/Anycubic lack exact
+release source definitions, so unexported baseline keys remain unverified.
+
+这张表是证据盘点，不是兼容率。总数混合了工艺、机型、材料和遗留字段。
+查询结果另列已收录工艺预设的字段数及其中显式可改的字段数，也不冒充全部功能。
+Snapmaker 有一处动态字段注册尚未由导入器解析，但应用导出的对应字段已收录；
+Flash/Anycubic 的较旧源码字段如果没有当前导出佐证，继续标为待确认。
+
+### Next expansion / 下一步扩展依据
+
+Use the inventory to prioritize common, native-evidenced process fields such as
+`outer_wall_acceleration`, `inner_wall_acceleration` and `bridge_speed`.
+For each addition, review native type, field-specific choices, serialization,
+same-name meaning and interaction constraints before adding a contract entry.
+Native field presence or matching names alone does not establish equivalence.
+Treat fork-specific features and unverified legacy keys separately; do not pass
+them through as new overrides merely to increase the supported count.
+
+后续优先补通用加速度、桥接速度等有原生证据的工艺字段，再处理专属功能。
+每项都需核对类型、可选值、序列化、同名含义与交互限制；字段同名不等于行为等价。
 
 ## Compose once / 一次合成
 
@@ -74,7 +172,7 @@ settings = fatcat.compose_project_settings(request)
 
 首层只需输入一次；直线填充、无 Brim 等已知等价项会自动规范化。速度按原生单值或数组格式
 写入；数组输入暂不支持。顶层显式值覆盖嵌套值，同一个对象中别名冲突会报错。
-未知字段、空值、类型或范围错误、目标不支持的枚举值都会明确报错；没有含义明确的“整体速度”
+未知字段、空值、类型或范围错误、SDK 未支持或目标标准词表不接受的枚举值都会明确报错；没有含义明确的“整体速度”
 映射，因此应填写具体速度项。
 
 ## Scope and verification / 范围与验证

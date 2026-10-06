@@ -82,6 +82,11 @@ for `process_settings_contract`; see [PROCESS_SETTINGS.md](PROCESS_SETTINGS.md)
 for aliases, accepted values, scalar/array serialization and error behavior.
 Unknown nested process keys now raise errors. Existing unknown source-project
 fields remain preserved.
+`list_native_fields(slicer_id, application_version="")` queries versioned native
+evidence, process coverage and unknowns without requiring a machine. This returns
+a dictionary; the CLI `fatcat fields` and C++ `native_field_inventory` return the
+same JSON contract. See [PROCESS_SETTINGS.md](PROCESS_SETTINGS.md) for status
+definitions and the distinction between native field evidence and SDK support.
 
 For a user-provided project, call
 `compose_project_settings(source_project, request)`. This request omits

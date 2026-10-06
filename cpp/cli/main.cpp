@@ -27,6 +27,7 @@ const char *help = R"(FatCat Metadata: native choices and 3MF metadata compositi
 
 Usage:
   fatcat catalog [--slicer ID] [--application-version VERSION]
+  fatcat fields --slicer ID [--application-version VERSION]
   fatcat choices --slicer ID --application-version VERSION --machine UID --nozzle UID
                  [--plate UID]
   fatcat compose-settings --request REQUEST.json [--project SOURCE.json]
@@ -78,7 +79,7 @@ std::string optional(const Options &options, const std::string &key) {
 
 Options parse_options(const std::vector<std::string> &args, const std::string &command) {
     std::set<std::string> allowed = {"--data-root", "--output"};
-    if (command == "catalog" || command == "choices") {
+    if (command == "catalog" || command == "choices" || command == "fields") {
         allowed.insert({"--slicer", "--application-version"});
         if (command == "choices") allowed.insert({"--machine", "--nozzle", "--plate"});
     } else if (command == "compose-settings" || command == "compose-metadata") {
@@ -109,6 +110,10 @@ json project_settings(const std::string &name) {
 }
 
 std::string execute(const std::string &command, const Options &options, const fs::path &root) {
+    if (command == "fields") {
+        return fatcat::native_field_inventory(required(options, "--slicer"),
+            optional(options, "--application-version"), root);
+    }
     if (command == "catalog") {
         const auto slicer = optional(options, "--slicer");
         if (slicer.empty()) {
