@@ -310,9 +310,9 @@ void test_preserve_template_extended_process_overrides() {
     request_data["wall_loops"] = "3";
     request_data["top_shell_layers"] = "5";
     request_data["bottom_shell_layers"] = "4";
-    request_data["bottom_surface_pattern"] = "rectilinear";
+    request_data["bottom_surface_pattern"] = "zig-zag";
     request_data["elefant_foot_compensation"] = "0.14";
-    request_data["print_speed"] = "95";
+    request_data["outer_wall_speed"] = "95";
     request_data["travel_speed"] = "210";
     request_data["enable_support"] = "1";
     request_data["single_extruder_multi_material"] = "0";
@@ -321,7 +321,7 @@ void test_preserve_template_extended_process_overrides() {
     for (const auto &key : {"line_width", "initial_layer_line_width", "wall_loops",
                             "top_shell_layers", "bottom_shell_layers",
                             "bottom_surface_pattern", "elefant_foot_compensation",
-                            "print_speed", "travel_speed", "enable_support",
+                            "enable_support",
                             "single_extruder_multi_material"}) {
         expect(out.at(key) == request_data.at(key),
                std::string("extended process field was not applied: ") + key);
@@ -329,6 +329,9 @@ void test_preserve_template_extended_process_overrides() {
     expect(out.at("nozzle_temperature") == project.at("nozzle_temperature") &&
                out.at("filament_flow_ratio") == project.at("filament_flow_ratio"),
            "extended process overrides changed material tuning");
+    expect(out.at("outer_wall_speed") == json::array({"95"}) &&
+               out.at("travel_speed") == json::array({"210"}),
+           "speed overrides did not use native arrays");
 }
 
 void test_native_material_is_data_driven_and_distinct() {
@@ -386,7 +389,7 @@ void test_layer_aliases_brim_and_wipe_summary() {
         json project = base_project();
         json request_data = request("preserve_template");
         request_data["initial_layer_print_height"] = "0.20";
-        request_data["initial_layer_height"] = "0.08";
+        request_data["initial_layer_height"] = "0.20";
         request_data["brim_type"] = brim_type;
         request_data["brim_width"] = brim_width;
         request_data["sparse_infill_density"] = "80%";
@@ -396,12 +399,13 @@ void test_layer_aliases_brim_and_wipe_summary() {
         const json &summary = result.at("effective_settings");
         expect(out.at("initial_layer_print_height") == "0.20" &&
                    out.at("initial_layer_height") == "0.08",
-               "layer aliases were forced to one value");
+               "first-layer alias did not resolve to the native FFF field");
         expect(summary.at("initial_layer_print_height") == "0.20" &&
                    summary.at("initial_layer_height") == "0.08",
-               "layer alias summary was not independent");
-        expect(out.at("brim_type") == brim_type && out.at("brim_width") == brim_width &&
-                   summary.at("brim_type") == brim_type &&
+               "first-layer summary differs from the resolved native field");
+        const auto native_brim = brim_type == "none" ? "no_brim" : brim_type;
+        expect(out.at("brim_type") == native_brim && out.at("brim_width") == brim_width &&
+                   summary.at("brim_type") == native_brim &&
                    summary.at("brim_width") == brim_width,
                "brim output and summary disagree");
         expect(out.at("sparse_infill_pattern") == "grid" &&
@@ -430,7 +434,7 @@ void test_errors_and_input_immutability() {
 
     json invalid_type = request("preserve_template");
     invalid_type["layer_height"] = true;
-    expect_error([&] { compose(project, invalid_type); }, "text");
+    expect_error([&] { compose(project, invalid_type); }, "boolean");
 
     json missing = target_data();
     missing.erase("material_bindings");

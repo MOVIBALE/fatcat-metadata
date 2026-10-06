@@ -9,9 +9,9 @@ TARGETS = (
     ('OrcaSlicer', '2.4.2', 'snapmaker:u1', 'plate:textured-pei'),
     ('QIDIStudio', '02.07.02.60', 'qidi:q2', 'plate:cool'),
     ('ElegooSlicer', '1.5.3.5', 'elegoo:centauri', 'plate:cool'),
-    ('AnycubicSlicerNext', '2.0.0.2', 'anycubic:kobra-2-pro', 'plate:cool'),
-    ('FlashStudio', '1.7.15', 'flashforge:ad5x', 'plate:textured-pei'),
-    ('SnapmakerOrca', '2.3.6', 'snapmaker:u1', 'plate:textured-pei'),
+    ('AnycubicSlicerNext', '2.0.0.3', 'anycubic:kobra-2-pro', 'plate:cool'),
+    ('FlashStudio', '1.7.18', 'flashforge:ad5x', 'plate:textured-pei'),
+    ('SnapmakerOrca', '2.4.0', 'snapmaker:u1', 'plate:textured-pei'),
 )
 
 
@@ -131,7 +131,7 @@ class SparseMergeTests(unittest.TestCase):
         project.update({'small_area_infill_flow_compensation_model': ['user-model'],
                         'version': 'custom-version', 'default_print_profile': 'custom-process',
                         'inherits_group': ['process', 'material', 'printer']})
-        request = {'slicer_id': 'SnapmakerOrca', 'application_version': '2.3.6',
+        request = {'slicer_id': 'SnapmakerOrca', 'application_version': '2.4.0',
                    'machine_uid': 'snapmaker:u1', 'nozzle_uid': 'nozzle:0.4mm',
                    'build_plate_uid': 'plate:textured-pei', 'material_uid': 'material:pla',
                    'material_mode': 'target_native_preset', 'filament_colour': ['#123456']}

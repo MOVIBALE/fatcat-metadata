@@ -12,6 +12,7 @@
 #include "fatcat/project_settings.h"
 #include "difference_index.h"
 #include "filament_projection.h"
+#include "project_settings_overrides.h"
 
 namespace fatcat::detail {
 namespace {
@@ -102,29 +103,6 @@ void rebuild_flush_matrix_from_vector(json &project) {
         }
     }
     project["flush_volumes_matrix"] = std::move(matrix);
-}
-
-std::string process_text(const json &value) {
-    if (value.is_array()) return value.empty() ? "" : process_text(value.front());
-    if (value.is_boolean()) return value.get<bool>() ? "1" : "0";
-    return text(value);
-}
-
-json process_overrides(const json &request) {
-    json result = json::object();
-    const auto process = request.value("process_settings", json::object());
-    for (const auto *key : {"layer_height", "initial_layer_height", "initial_layer_print_height", "line_width",
-            "initial_layer_line_width", "wall_loops", "top_shell_layers", "bottom_shell_layers", "bottom_surface_pattern",
-            "elefant_foot_compensation", "sparse_infill_density", "sparse_infill_pattern", "print_speed", "travel_speed",
-            "enable_support", "single_extruder_multi_material", "precise_outer_wall", "brim_width", "brim_type"}) {
-        const auto found = process.find(key);
-        if (found != process.end() && !found->is_null()) {
-            const auto value = process_text(*found);
-            if (!value.empty()) result[key] = value;
-        }
-        if (request.contains(key)) result[key] = request.at(key);
-    }
-    return result;
 }
 
 void resize_arrays(json &project, const json &source, std::size_t count) {
@@ -759,11 +737,9 @@ json compose_source_project(const json &base, const json &request, const json &t
         project["precise_outer_wall"] = "0";
         overrides.insert("precise_outer_wall");
     }
-    const auto process = process_overrides(request);
-    for (const auto &[key, value] : process.items()) {
-        project[key] = value;
-        overrides.insert(key);
-    }
+    std::vector<std::string> process_changes;
+    apply_scalar_overrides(project, request, target, process_changes);
+    overrides.insert(process_changes.begin(), process_changes.end());
     record_differences(project, overrides, scoped_markers, difference_key,
                        difference_offset, difference_trailing);
     return project;
@@ -877,9 +853,10 @@ json native_source_request(const json &project, const json &request, const json 
     }
     resolved["filament_colour"] = colours;
     resolved["filament_multi_colour"] = colours;
-    const auto process = process_overrides(request);
-    for (const auto &[key, value] : process.items()) resolved[key] = value;
-    if (slicer == "OrcaSlicer") resolved["precise_outer_wall"] = "0";
+    if (slicer == "OrcaSlicer" &&
+        !resolve_process_overrides(request, target).contains("precise_outer_wall")) {
+        resolved["precise_outer_wall"] = "0";
+    }
     return resolved;
 }
 

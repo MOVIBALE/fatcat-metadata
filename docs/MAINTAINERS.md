@@ -40,9 +40,9 @@ their actual bundle paths) before running the updater:
 | `OrcaSlicer` | `2.4.2` |
 | `QIDIStudio` | `02.07.02.60` |
 | `ElegooSlicer` | `1.5.3.5` |
-| `AnycubicSlicerNext` | `2.0.0.2` |
-| `FlashStudio` | `1.7.15` |
-| `SnapmakerOrca` | `2.3.6` |
+| `AnycubicSlicerNext` | `2.0.0.3` |
+| `FlashStudio` | `1.7.18` |
+| `SnapmakerOrca` | `2.4.0` |
 
 Pass one app bundle for every `slicer_id`. The path must be the `.app` bundle
 root, which contains `Contents/Info.plist` and
@@ -86,7 +86,7 @@ and retained materials are checked too. The result identifies each actual
 `process_source` and `material_source`; historical settings must never be
 relabeled as 2.4.2 native presets. Catalogue availability does not guarantee
 that every material type or plate is supported. OrcaSlicer U1 0.6 mm has no PLA
-candidate; SnapmakerOrca 2.3.6 has genuine Generic PLA sources for 0.2/0.6/0.8 mm.
+candidate; SnapmakerOrca 2.4.0 has genuine Generic PLA sources for 0.2/0.6/0.8 mm.
 
 The updater preserves the retained file and its source descriptor across
 refreshes. Check its recorded hardware, process provenance, content hash, and
@@ -118,6 +118,32 @@ diffs together. Hardware volume, nozzle arrays, target default process, plate
 bindings, and unavailable source reasons must all agree with the pinned native
 profiles. Preserve explicit unavailable combinations instead of inventing a
 fallback.
+
+## Refresh explicit process contracts
+
+`scripts/sync_process_contract.py` extracts only the SDK's declared process
+subset from reviewed `PrintConfig.cpp` common/FFF definitions. It excludes SLA,
+uses each field's enum list (including explicit reused lists), and keeps native
+scalar/array serialization. It does not infer feature equivalents. Inspect
+preprocessor conditions manually: this limited importer is not a C++ compiler.
+
+```bash
+python3 scripts/sync_process_contract.py --slicer OrcaSlicer \
+  --print-config /path/to/exact-release/PrintConfig.cpp \
+  --definition-version 2.4.2 \
+  --source-url https://github.com/OrcaSlicer/OrcaSlicer/blob/v2.4.2/src/libslic3r/PrintConfig.cpp \
+  --dry-run
+```
+
+Remove `--dry-run` after reviewing the definitions. When the exact public source
+is unavailable, supply the recorded baseline version, an exact native
+`--export-settings` output via `--native-defaults`, and its `--application-root`.
+The app bundle version must match the target. Both definition and export hashes
+are recorded; `exact_application_definitions` remains false for an older source.
+The export confirms field presence, defaults and serialization, not all possible
+enum values. Review those in the native GUI and retain this limitation in docs.
+Do not relabel older definitions as current ones. Native `renamed_from` records
+resolve preset renames; ambiguous/missing identities remain unavailable.
 
 ## Verify and record the update
 

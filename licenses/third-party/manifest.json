@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_on": "2026-10-02",
+  "generated_on": "2026-10-06",
   "files": [
     {
       "kind": "slicer-profile-source",
@@ -61,14 +61,14 @@
     {
       "kind": "slicer-profile-source",
       "name": "Anycubic Slicer Next",
-      "application_version": "2.0.0.2",
+      "application_version": "2.0.0.3",
       "repository": "https://github.com/ANYCUBIC-3D/AnycubicSlicerNext",
       "release_tag": null,
       "source_commit": "6103ed8b511609658d00d0538cc7f0609cdb57da",
       "license_path": "LICENSE.txt",
       "license_file": "slicer-profiles/anycubic-slicer-next/LICENSE.txt",
       "license": "AGPL-3.0-only",
-      "note": "No repository tag matching application version 2.0.0.2 was found. This is the license file at the repository main commit listed here.",
+      "note": "Profiles are copied from the official 2.0.0.3 macOS package. No repository tag matching this application version was found. This is the license file at the repository main commit listed here.",
       "license_sha256": "57c8ff33c9c0cfc3ef00e650a1cc910d7ee479a8bc509f6c9209a7c2a11399d6",
       "license_bytes": 34520,
       "license_source_url": "https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/blob/6103ed8b511609658d00d0538cc7f0609cdb57da/LICENSE.txt"
@@ -76,7 +76,7 @@
     {
       "kind": "slicer-profile-source",
       "name": "Flash Studio",
-      "application_version": "1.7.15",
+      "application_version": "1.7.18",
       "repository": "https://github.com/FlashForge/Orca-Flashforge",
       "release_tag": "1.7.15",
       "source_commit": "84b7074b252af144a75fec04a0db3c21e6e65536",
@@ -85,21 +85,22 @@
       "license": "AGPL-3.0-only",
       "license_sha256": "57c8ff33c9c0cfc3ef00e650a1cc910d7ee479a8bc509f6c9209a7c2a11399d6",
       "license_bytes": 34520,
-      "license_source_url": "https://github.com/FlashForge/Orca-Flashforge/blob/84b7074b252af144a75fec04a0db3c21e6e65536/LICENSE.txt"
+      "license_source_url": "https://github.com/FlashForge/Orca-Flashforge/blob/84b7074b252af144a75fec04a0db3c21e6e65536/LICENSE.txt",
+      "note": "Profiles are copied from the official 1.7.18 macOS package. No matching public source tag was found; the license and definition baseline are the listed 1.7.15 source revision."
     },
     {
       "kind": "slicer-profile-source",
       "name": "Snapmaker Orca",
-      "application_version": "2.3.6",
+      "application_version": "2.4.0",
       "repository": "https://github.com/Snapmaker/OrcaSlicer",
-      "release_tag": "2.3.6",
-      "source_commit": "f34a62da0600713c7f6a0e9056600567d5ae4fba",
+      "release_tag": "v2.4.0",
+      "source_commit": "b1831e5dcb464172de33783142425aafda834fbc",
       "license_path": "LICENSE.txt",
       "license_file": "slicer-profiles/snapmaker-orca/LICENSE.txt",
       "license": "AGPL-3.0-only",
       "license_sha256": "57c8ff33c9c0cfc3ef00e650a1cc910d7ee479a8bc509f6c9209a7c2a11399d6",
       "license_bytes": 34520,
-      "license_source_url": "https://github.com/Snapmaker/OrcaSlicer/blob/f34a62da0600713c7f6a0e9056600567d5ae4fba/LICENSE.txt"
+      "license_source_url": "https://github.com/Snapmaker/OrcaSlicer/blob/b1831e5dcb464172de33783142425aafda834fbc/LICENSE.txt"
     },
     {
       "kind": "build-dependency",

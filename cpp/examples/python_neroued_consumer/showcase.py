@@ -90,7 +90,13 @@ def main() -> None:
         json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {args.output}")
     print(f"Target: {args.slicer} {target['application_version']} / {project['printer_model']}")
-    print(json.dumps({key: project.get(key) for key in process}, indent=2))
+    options = fatcat.list_project_options({
+        key: selection[key]
+        for key in ("slicer_id", "application_version", "machine_uid", "nozzle_uid")
+    })
+    aliases = options["process_settings_contract"]["aliases"]
+    print(json.dumps({aliases.get(key, key): project.get(aliases.get(key, key))
+                      for key in process}, indent=2))
 
 
 if __name__ == "__main__":

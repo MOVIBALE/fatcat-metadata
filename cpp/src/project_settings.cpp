@@ -67,7 +67,7 @@ const json &find_binding(const json &root, std::string_view array_key,
             first_key + "='" + first + "'");
 }
 
-void validate_request_keys(const json &request) {
+void validate_request_keys(const json &request, const json &target) {
     static const std::set<std::string> allowed = {
         "slicer_id",
         "application_version",
@@ -77,36 +77,6 @@ void validate_request_keys(const json &request) {
         "material_uid",
         "material_uids",
         "material_mode",
-        "layer_height",
-        "initial_layer_print_height",
-        "initial_layer_height",
-        "line_width",
-        "initial_layer_line_width",
-        "inner_wall_line_width",
-        "outer_wall_line_width",
-        "top_surface_line_width",
-        "sparse_infill_line_width",
-        "internal_solid_infill_line_width",
-        "support_line_width",
-        "wall_loops",
-        "top_shell_layers",
-        "bottom_shell_layers",
-        "bottom_surface_pattern",
-        "elefant_foot_compensation",
-        "sparse_infill_density",
-        "sparse_infill_pattern",
-        "print_speed",
-        "travel_speed",
-        "enable_support",
-        "single_extruder_multi_material",
-        "precise_outer_wall",
-        "brim_type",
-        "brim_width",
-        "wall_generator",
-        "skirt_loops",
-        "skirt_distance",
-        "skirt_height",
-        "draft_shield",
         "enable_prime_tower",
         "prime_tower_width",
         "wipe_tower_rotation_angle",
@@ -130,7 +100,7 @@ void validate_request_keys(const json &request) {
         "source_slot_colours",
     };
     for (const auto &[key, ignored] : request.items()) {
-        if (allowed.find(key) == allowed.end()) {
+        if (allowed.find(key) == allowed.end() && !detail::is_process_override_key(target, key)) {
             invalid("request contains unsupported field '" + key + "'");
         }
     }
@@ -1067,7 +1037,7 @@ json compose_preserved_source(json project, const json &request, const json &tar
     project = detail::compose_source_project(project, request, target);
     if (request.contains("build_plate_uid")) project["curr_bed_type"] = plate.at("project_value");
     std::vector<std::string> changed;
-    detail::apply_scalar_overrides(project, request, changed);
+    detail::apply_scalar_overrides(project, request, target, changed);
     json tower_dialect = required_member(dialect, "wipe_tower", "package dialect");
     detail::apply_tower_overrides(project, request, target);
     auto summary = effective_summary(project, "preserve_template", "", "",
@@ -1096,7 +1066,8 @@ std::string compose_project_settings(std::string_view base_project_json,
     json request = detail::parse_json_object<ProjectSettingsError>(request_json, "project settings request");
     const json canonical = detail::parse_json_object<ProjectSettingsError>(canonical_json, "canonical data");
     const json target = detail::parse_json_object<ProjectSettingsError>(target_json, "target data");
-    validate_request_keys(request);
+    validate_request_keys(request, target);
+    detail::resolve_process_overrides(request, target);
     if (request.value("hardware_mode", "target_binding") == "auto" &&
         project.contains("printer_settings_id")) {
         project["print_compatible_printers"] = json::array({project.at("printer_settings_id")});
@@ -1207,7 +1178,7 @@ std::string compose_project_settings(std::string_view base_project_json,
         // printer/process identity, geometry, or the source format version.
         project["curr_bed_type"] = required_string(plate, "project_value", "build plate");
     }
-    detail::apply_scalar_overrides(project, request, changed_keys);
+    detail::apply_scalar_overrides(project, request, target, changed_keys);
     if (material_mode == "target_native_preset") {
         apply_target_native_materials(project, materials, machine);
         clear_native_differences(project, dialect, slot_count, materials, request);
