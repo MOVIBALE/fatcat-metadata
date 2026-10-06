@@ -14670,5 +14670,13 @@
     "profiles/SnapmakerOrca/Snapmaker/filament/Snapmaker TPU @U1 0.8 nozzle.json": {
       "inherits:Snapmaker TPU @U1 base": "profiles/SnapmakerOrca/Snapmaker/filament/Snapmaker TPU @U1 base.json"
     }
+  },
+  "format_catalogs": {
+    "PrusaSlicer": {
+      "application_version": "3.0.0-alpha12",
+      "catalog": "prusa-3/catalog.json",
+      "schema": "prusa-3/schema.json",
+      "project_format": "prusa3"
+    }
   }
 }

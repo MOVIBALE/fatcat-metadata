@@ -88,19 +88,21 @@ These are the exact versions currently bundled with the library:
 | Anycubic Slicer Next | `AnycubicSlicerNext` | `2.0.0.3` |
 | Flash Studio | `FlashStudio` | `1.7.18` |
 | Snapmaker Orca | `SnapmakerOrca` | `2.4.0` |
+| PrusaSlicer (preview) | `PrusaSlicer` | `3.0.0-alpha12` |
 
 The [target manifest](compatibility/current-src/translations/supported-targets.json)
 is the authoritative version list. Unknown targets and incompatible selections
 are rejected. A supported slicer does not imply every printer/nozzle/material/plate
 combination is available; inspect its native source catalogue.
 
-The snapshots above were checked against official stable macOS downloads on
-2026-10-06. Beta/nightly releases are excluded. Anycubic's Linux 2.0.0.5 build
+The seven stable snapshots were checked against official macOS downloads on
+2026-10-06. PrusaSlicer is an explicitly supported preview, checked on 2026-10-07;
+its new native project format is separate from PrusaSlicer 2.x. Anycubic's Linux 2.0.0.5 build
 is a different release and is not claimed by the macOS 2.0.0.3 snapshot.
 
 Explicit [process settings](docs/PROCESS_SETTINGS.md) use a discoverable contract:
 known equivalents are normalized, target array formats are respected, and
-unknown or unsupported inputs raise actionable errors. This covers 38 fields,
+unknown or unsupported inputs raise actionable errors. The seven stable targets cover 38 fields,
 not every slicer feature or every interaction between settings.
 Use `fatcat fields --slicer BambuStudio` or Python `list_native_fields` to inspect
 versioned native evidence and process coverage. Missing SDK support is reported
@@ -109,6 +111,25 @@ separately from an excluded native enum token; absent fields remain unverified.
 Some combinations use explicitly recorded historical sources. OrcaSlicer 2.4.2
 U1 0.4 mm, for example, uses a recorded 2.2.4 process and textured-plate material.
 The result identifies their actual versions. See [compatibility notes](docs/COMPATIBILITY.md).
+
+### PrusaSlicer 3 preview
+
+The SDK composes native `Metadata/PrusaSlicer3_project.json` from Prusa's own
+configuration exports. Its catalogue contains 32 default-nozzle FFF hardware
+selections, including MK4S, CORE One, MINI, MMU and XL. A single nozzle with MMU
+material slots and multiple independent tools retain their distinct native
+configuration structures. Native process overrides and per-material temperature
+and flow settings use the exact application's schema.
+
+```bash
+fatcat catalog --slicer PrusaSlicer
+python -m fatcat_metadata_examples.prusa --machine prusa:mk4s --output prusa.3mf
+```
+
+The complete example requires the optional Neroued writer. MK4S, MK4S + MMU3
+and XL 5T samples were opened and sliced in the actual alpha12 GUI. This does
+not establish every catalogue combination or physical print quality. See the
+[Prusa guide](docs/PRUSA.md) for configuration imports, aliases and limits.
 
 ## Python quick start
 

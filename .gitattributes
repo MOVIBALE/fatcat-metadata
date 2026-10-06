@@ -2,7 +2,7 @@
 * text=auto eol=lf
 
 # These upstream snapshots are verified against their original byte hashes.
-licenses/third-party/** -text !eol
+licenses/third-party/** -text !eol whitespace=cr-at-eol
 compatibility/current-src/native-project-sources/profiles/** -text !eol
 
 # Keep the root license in the standard LF text form.

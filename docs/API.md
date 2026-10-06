@@ -76,6 +76,14 @@ The result has one authoritative `project_settings` dictionary. Its
 `process_source` and `material_source`, when present, identify actual native or
 recorded compatibility sources. See [COMPATIBILITY.md](COMPATIBILITY.md).
 
+PrusaSlicer 3 uses this same entry point and metadata description, with native
+typed JSON as `project_settings`. Its flattened `effective_settings` is a
+geometry/layout summary; it is not a project to serialize. Per-slot
+`source_materials[i].native_settings` applies reviewed native filament values.
+Native preset names and IDs are retained; a generator's material `name` labels
+its writer-owned base material rather than renaming a Prusa preset.
+See [PRUSA.md](PRUSA.md) for capacity, scopes and unsupported merge operations.
+
 Explicit process overrides share one target-specific contract across native and
 user-project composition. Query `list_project_options(request)` or `fatcat choices`
 for `process_settings_contract`; see [PROCESS_SETTINGS.md](PROCESS_SETTINGS.md)

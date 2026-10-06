@@ -23,6 +23,7 @@
 #include "project_settings_internal.h"
 #include "project_settings_merge.h"
 #include "project_settings_overrides.h"
+#include "prusa_project.h"
 
 namespace fatcat {
 namespace {
@@ -1067,6 +1068,7 @@ std::string compose_project_settings(std::string_view base_project_json,
     json request = detail::parse_json_object<ProjectSettingsError>(request_json, "project settings request");
     const json canonical = detail::parse_json_object<ProjectSettingsError>(canonical_json, "canonical data");
     const json target = detail::parse_json_object<ProjectSettingsError>(target_json, "target data");
+    if (detail::prusa::is_target(target)) return detail::prusa::compose(project, request, target).dump();
     validate_request_keys(request, target);
     detail::resolve_process_overrides(request, target);
     if (request.value("hardware_mode", "target_binding") == "auto" &&

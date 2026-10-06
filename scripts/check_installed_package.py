@@ -73,10 +73,12 @@ def main() -> int:
     if {path.name for path in target_paths} != {target["filename"] for target in manifest["targets"]}:
         raise SystemExit("installed target filenames differ from the support manifest")
     actual_targets = {}
+    targets_by_slicer = {}
     for target_path in target_paths:
         target = json.loads(target_path.read_text(encoding="utf-8"))
         contract = target["target_contract"]
         actual_targets[contract["slicer_id"]] = contract["application_version"]
+        targets_by_slicer[contract["slicer_id"]] = target
     if actual_targets != expected_targets:
         raise SystemExit(f"installed targets differ from the support manifest: {actual_targets}")
     if not (data_root / "translations" / "canonical.json").is_file():
@@ -86,6 +88,17 @@ def main() -> int:
     source_index_path = source_root_data / "source-index.json"
     source_index = json.loads(source_index_path.read_text(encoding="utf-8"))
     actual_slicers = {row["slicer_id"] for row in source_index["sources"]}
+    for slicer, record in source_index.get("format_catalogs", {}).items():
+        catalog = json.loads((source_root_data / record["catalog"]).read_text(encoding="utf-8"))
+        schema_bytes = (source_root_data / record["schema"]).read_bytes()
+        target = targets_by_slicer[slicer]
+        if (catalog["slicer_id"] != slicer or catalog["application_version"] != expected_targets[slicer]
+                or record["application_version"] != expected_targets[slicer]
+                or record["project_format"] != target["project_format"] or not catalog["sources"]):
+            raise SystemExit("installed format catalogue identity differs from target")
+        if hashlib.sha256(schema_bytes).hexdigest() != target["process_settings_contract"]["source"]["schema_sha256"]:
+            raise SystemExit("installed native schema differs from its override contract")
+        actual_slicers.add(slicer)
     if actual_slicers != set(expected_targets):
         raise SystemExit(f"native source index does not cover all targets: {actual_slicers}")
     missing_profiles = [

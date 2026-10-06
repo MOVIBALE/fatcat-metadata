@@ -11,6 +11,40 @@ owns explicit scalar, colour and wipe-tower overrides. Shared project field
 contracts remain private in `project_settings_internal.h`; none of these files
 introduces an installed public API or a generator dependency.
 
+PrusaSlicer 3's independent typed project format is implemented in the private
+`prusa_project.cpp` adapter. The public discovery/composition/import/description
+entry points dispatch by `project_format`. Its native JSON is serialized only
+by FatCat; the consumer still supplies meshes and the writer still writes once.
+There are no machine-specific code paths.
+
+## Refresh PrusaSlicer 3 separately
+
+The user-requested preview target is exactly `3.0.0-alpha12`. The YAML presets
+are resolved by the application, with an isolated data directory and no mesh
+generation. Run with the exact native executable:
+
+```bash
+python3 scripts/sync_prusa_sources.py \
+  --binary '/Applications/PrusaSlicer-3.0.0-alpha12.app/Contents/MacOS/PrusaSlicer'
+```
+
+The native query enumerates 32 default-nozzle FFF selections. `--save` exports
+their real 0.20 mm / Prusament PLA values; `--export-config-schema` supplies the
+override definitions. Configurations use a shared base and RFC 6902 patches
+against earlier records. Sources are sorted, and random CLI hardware instance
+UUIDs are normalized deterministically. Preset UUIDs, material assignments,
+tool/feeder counts, arrays and nulls remain unchanged.
+
+This refresh writes the catalogue, schema, target process/material definitions
+and `source-index.json` format routing. Review their hashes and identities
+together. Reviewed aliases remain separately maintained in the target. An
+`--output` directory outside the packaged source writes investigation data only,
+without altering target contracts or routing. The seven-target profile updater
+below preserves Prusa's separately collected data and routing.
+
+Prusa 3 的预设由应用解析，维护时直接导出配置，不逐机型生成 3MF。升级必须一并审核
+原生格式、schema、契约及真实 GUI；不能只改版本号或把 alpha12 验收沿用到下一版本。
+
 The native source updater is `scripts/sync_native_project_sources.py`. It reads
 the profile files installed by each supported macOS slicer release and checks
 the exact `CFBundleShortVersionString` in its app bundle before it writes any
@@ -44,7 +78,7 @@ their actual bundle paths) before running the updater:
 | `FlashStudio` | `1.7.18` |
 | `SnapmakerOrca` | `2.4.0` |
 
-Pass one app bundle for every `slicer_id`. The path must be the `.app` bundle
+Pass one app bundle for every `slicer_id` in the stable-target table above. The path must be the `.app` bundle
 root, which contains `Contents/Info.plist` and
 `Contents/Resources/profiles/`:
 

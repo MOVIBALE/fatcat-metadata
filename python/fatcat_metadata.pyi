@@ -7,6 +7,7 @@ class _SourceMaterial(TypedDict, total=False):
     name: str
     colour: str
     material_type: str | None
+    native_settings: _Object
 
 
 class _MergeSlot(TypedDict):

@@ -116,6 +116,7 @@ add_library(fatcat_metadata_core STATIC
     src/project_settings_merge.cpp
     src/project_settings_overrides.cpp
     src/native_project_source.cpp
+    src/prusa_project.cpp
     src/source_project_settings.cpp
     src/source_material_slots.cpp
     src/template_import.cpp

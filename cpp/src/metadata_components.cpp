@@ -1,4 +1,5 @@
 #include "fatcat/metadata_components.h"
+#include "prusa_project.h"
 #include "supported_targets.h"
 
 #include <algorithm>
@@ -1644,6 +1645,7 @@ std::string compose_model_metadata(std::string_view project_json,
     const json project = detail::parse_json_object<MetadataComponentsError>(project_json, "project settings");
     const json request = detail::parse_json_object<MetadataComponentsError>(request_json, "metadata request");
     const json target = detail::parse_json_object<MetadataComponentsError>(target_json, "target data");
+    if (detail::prusa::is_target(target)) return detail::prusa::describe(project, request, target).dump();
     const json &slot_values = required_array(project, "filament_settings_id",
                                              "project settings");
     const std::size_t slot_count = slot_values.size();

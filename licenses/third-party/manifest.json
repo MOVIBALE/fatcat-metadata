@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_on": "2026-10-06",
+  "generated_on": "2026-10-07",
   "files": [
     {
       "kind": "slicer-profile-source",
@@ -101,6 +101,21 @@
       "license_sha256": "57c8ff33c9c0cfc3ef00e650a1cc910d7ee479a8bc509f6c9209a7c2a11399d6",
       "license_bytes": 34520,
       "license_source_url": "https://github.com/Snapmaker/OrcaSlicer/blob/b1831e5dcb464172de33783142425aafda834fbc/LICENSE.txt"
+    },
+    {
+      "kind": "slicer-profile-source",
+      "name": "PrusaSlicer",
+      "application_version": "3.0.0-alpha12",
+      "repository": "https://github.com/prusa3d/PrusaSlicer",
+      "release_tag": "version_3.0.0-alpha12",
+      "source_commit": "30ef59195e0f3ee6f270b185bb5f9fb5f349f81f",
+      "license_path": "LICENSE",
+      "license_file": "slicer-profiles/prusaslicer/LICENSE",
+      "license": "AGPL-3.0-only",
+      "license_sha256": "282751b8c98ee9e445346eb57a992c9ecbe25ed8dd554df046777313e19b10f9",
+      "license_bytes": 35181,
+      "license_source_url": "https://github.com/prusa3d/PrusaSlicer/blob/30ef59195e0f3ee6f270b185bb5f9fb5f349f81f/LICENSE",
+      "note": "Native CLI resolved preset data and schema from the exact alpha12 app; no upstream implementation code or binaries included."
     },
     {
       "kind": "build-dependency",

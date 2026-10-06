@@ -621,7 +621,12 @@ def sync(application_roots: dict[str, Path], *, dry_run: bool = False) -> int:
         old_index = OUTPUT_DIR / "source-index.json"
         if old_index.is_file():
             try:
-                old_files = set(_load_json(old_index).get("profile_files", []))
+                previous_index = _load_json(old_index)
+                old_files = set(previous_index.get("profile_files", []))
+                if previous_index.get("format_catalogs"):
+                    staged_index["format_catalogs"] = previous_index["format_catalogs"]
+                    (stage / "source-index.json").write_text(
+                        json.dumps(staged_index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             except (OSError, ValueError, json.JSONDecodeError):
                 old_files = set()
 

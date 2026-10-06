@@ -16,6 +16,7 @@
 #include <nlohmann/json.hpp>
 
 #include "filament_projection.h"
+#include "prusa_project.h"
 #include "fatcat/project_settings.h"
 #include "fatcat/metadata_components.h"
 #include "fatcat/source_project_settings.h"
@@ -1278,6 +1279,9 @@ std::string native_project_options(std::string_view request_json,
         const auto machine_uid = required_string(request, "machine_uid", "options request");
         const auto nozzle_uid = required_string(request, "nozzle_uid", "options request");
         const auto target = json::parse(metadata_target_data(slicer, version, data_root));
+        if (detail::prusa::is_target(target)) {
+            return detail::prusa::options(request, target, data_root / "native_project_sources").dump();
+        }
         const auto canonical = read_json(safe_path(data_root, "translations/canonical.json"),
                                          "canonical data");
         NativeProfileCatalog catalog(data_root / "native_project_sources");
@@ -1329,6 +1333,10 @@ std::string native_project_source_catalog(
     std::string_view application_version,
     const std::filesystem::path &data_root) {
     try {
+        if (slicer_id == "PrusaSlicer") {
+            if (application_version != "3.0.0-alpha12") invalid("unsupported PrusaSlicer version");
+            return detail::prusa::catalog(data_root).dump();
+        }
         NativeProfileCatalog catalog(data_root);
         const auto &index = catalog.index();
         json sources = json::array();
@@ -1379,6 +1387,9 @@ std::string compose_builtin_project_settings(
         const auto request = json::parse(request_json);
         const auto canonical = json::parse(canonical_json);
         const auto target = json::parse(target_json);
+        if (detail::prusa::is_target(target)) {
+            return detail::prusa::compose_builtin(request, target, data_root).dump();
+        }
         if (!request.is_object() || !canonical.is_object() || !target.is_object()) {
             invalid("built-in project source inputs must be JSON objects");
         }
@@ -1418,6 +1429,33 @@ std::string native_field_inventory(std::string_view slicer_id,
     const auto target = json::parse(metadata_target_data(slicer_id, application_version, data_root));
     const auto &identity = target.at("target_contract");
     const auto &contract = target.at("process_settings_contract");
+    if (detail::prusa::is_target(target)) {
+        const auto schema = read_json(data_root / "native_project_sources/prusa-3/schema.json", "Prusa native schema");
+        json fields = json::object();
+        std::size_t supported = 0;
+        for (const auto *group : {"print", "printer", "filament"}) {
+            for (const auto &definition : schema.at(group).at("items")) {
+                const auto name = definition.at("name").get<std::string>();
+                const bool accepted = std::string(group) == "print" && contract.at("fields").contains(name);
+                if (accepted) ++supported;
+                fields[std::string(group) + "." + name] = {
+                    {"definitions", json::array({definition})},
+                    {"profile_groups", json::array({group})},
+                    {"process_override_status", accepted ? "supported" : "sdk_not_supported"}};
+                if (std::string(group) == "filament") {
+                    fields[std::string(group) + "." + name]["material_override_status"] =
+                        target.at("material_settings_contract").at("fields").contains(name) ? "supported" : "sdk_not_supported";
+                }
+            }
+        }
+        return json{{"slicer_id", identity.at("slicer_id")},
+            {"application_version", identity.at("application_version")},
+            {"source", contract.at("source")}, {"fields", fields},
+            {"process_settings_contract", contract},
+            {"material_settings_contract", target.at("material_settings_contract")},
+            {"summary", {{"observed_native_fields", fields.size()},
+                {"supported", supported}, {"sdk_not_supported", fields.size() - supported}, {"unverified", 0}}}}.dump();
+    }
     const auto index = read_json(safe_path(data_root, "translations/supported-targets.json"),
                                  "supported targets");
     json result;
@@ -1490,6 +1528,9 @@ std::string compose_project_settings_from_data(std::string_view project_json,
     const auto target_text = metadata_target_data(request.at("slicer_id").get<std::string>(),
         request.at("application_version").get<std::string>(), data_root);
     const auto target = json::parse(target_text);
+    if (detail::prusa::is_target(target)) {
+        return detail::prusa::compose(json::parse(project_json), request, target).dump();
+    }
     if (request.contains("merge_sources") && request.contains("source_materials")) {
         const auto &palette = required_array(request, "source_materials", "merged request");
         std::set<std::size_t> present;
