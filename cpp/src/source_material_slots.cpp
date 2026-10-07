@@ -649,6 +649,7 @@ json project_layout(json project, const json &target) {
         {"purge_volume", purge_volume},
         {"filament_change_volume", change_length * std::acos(-1.0) * filament_diameter * filament_diameter / 4.0},
         {"tower_infill_spacing_ratio", std::max(0.01, infill_ratio)},
+        {"tower_cyclic_toolchanges", placement_geometry.value("cyclic_toolchanges", false)},
         {"uses_rib_wall", uses_rib},
         {"tower_rib_width", std::max(0.0, number(value(rib_width_key)))},
         {"tower_extra_rib_length", number(value(extra_rib_length_key))},
@@ -738,7 +739,7 @@ std::string read_source_metadata(
             {"model_settings", {{"objects", native.at("objects")}, {"plates", json::array()}}},
             {"slice_headers", json::array()},
             {"layout", project_layout(detail::prusa::summary(native), target)},
-            {"warnings", json::array()}}.dump();
+            {"warnings", placement_warnings(placement_json)}}.dump();
     }
     const auto project = source_project(project_json);
     tinyxml2::XMLDocument settings_document, model_document, slice_document;

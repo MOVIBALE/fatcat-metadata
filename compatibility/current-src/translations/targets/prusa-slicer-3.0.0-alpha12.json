@@ -269,6 +269,9 @@
       "support_interface_speed": "support_material_interface_speed"
     },
     "enum_aliases": {
+      "support_material": {
+        "0": "none", "false": "none", "1": "everywhere", "true": "everywhere"
+      },
       "fill_pattern": {
         "zig-zag": "zigzag"
       },
@@ -281,6 +284,7 @@
     }
   },
   "material_settings_contract": {
+    "type_aliases": {"PLA Basic": "PLA", "PETG Basic": "PETG"},
     "fields": {
       "bed_temperature": {"max":300.0,"min":0.0,"type":"Int","overrides_in":[]},
       "bridge_fan_speed": {"max":100.0,"min":0.0,"type":"Int","overrides_in":[]},
@@ -350,6 +354,7 @@
     }
   },
   "package_dialect": {
+    "wipe_tower_placement": {"cyclic_toolchanges": true},
     "source_identity": {
       "name": "Application",
       "value": "PrusaSlicer-3.0.0-alpha12"

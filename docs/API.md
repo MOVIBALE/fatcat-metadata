@@ -82,7 +82,8 @@ geometry/layout summary; it is not a project to serialize. Per-slot
 `source_materials[i].native_settings` applies reviewed native filament values.
 Native preset names and IDs are retained; a generator's material `name` labels
 its writer-owned base material rather than renaming a Prusa preset.
-See [PRUSA.md](PRUSA.md) for capacity, scopes and unsupported merge operations.
+See [PRUSA.md](PRUSA.md) for the core geometry layout, native capacity policy,
+source-preserving merge inputs, layer ranges and remaining limits.
 
 Explicit process overrides share one target-specific contract across native and
 user-project composition. Query `list_project_options(request)` or `fatcat choices`

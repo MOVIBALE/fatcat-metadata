@@ -379,7 +379,8 @@ std::string template_import_parts(std::string_view target_json) {
         return json{{"source_model", "3D/3dmodel.model"},
             {"project_settings", "Metadata/PrusaSlicer3_project.json"},
             {"model_settings", "Metadata/PrusaSlicer3_project.json"},
-            {"slice_info", ""}, {"plate_sidecar", ""}, {"wipe_tower_placement", ""}}.dump();
+            {"slice_info", ""}, {"plate_sidecar", ""},
+            {"wipe_tower_placement", "Metadata/wipe_tower_placement.json"}}.dump();
     }
     const auto &settings = required_object(dialect, "settings_parts");
     const auto &relationships = required_object(

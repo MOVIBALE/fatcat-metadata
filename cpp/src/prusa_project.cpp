@@ -6,6 +6,7 @@
 #include <fstream>
 #include <limits>
 #include <locale>
+#include <map>
 #include <set>
 #include <sstream>
 #include <vector>
@@ -261,7 +262,8 @@ void apply_materials(json &project, const json &request, const json &target) {
             if (!material.is_object()) invalid("each source material must be an object");
             colour = material.value("colour", colour);
             if (material.contains("material_type") && !material.at("material_type").is_null()) {
-                const auto type = material.at("material_type").get<std::string>();
+                const auto requested = material.at("material_type").get<std::string>();
+                const auto type = target.at("material_settings_contract").value("type_aliases", json::object()).value(requested, requested);
                 if (type != filaments.at("filament_type").at(i)) invalid("material type differs from native preset; provide a config exported with that material");
             }
             if (material.contains("native_settings")) {
@@ -297,6 +299,159 @@ void apply_materials(json &project, const json &request, const json &target) {
             filaments.at("filament_colour").at(index) = colour;
         }
     }
+}
+
+json hardware_identity(json hardware) {
+    // Configuration UUIDs and material assignments are not physical hardware.
+    hardware.erase("config_id");
+    for (auto &[key, tool] : hardware.at("tools").items()) {
+        tool.erase("slicer_material");
+        tool.erase("material_package_instance");
+    }
+    return hardware;
+}
+
+std::size_t slot_index(const json &value) {
+    if (!value.is_number_integer() || value.get<long long>() < 0) invalid("slot index must be a nonnegative integer");
+    return value.get<std::size_t>();
+}
+
+json material_snapshot(const json &box, std::size_t index) {
+    const auto keys = material_keys(box.at("preset").at("hw_config"));
+    if (index >= keys.size()) invalid("source material index exceeds native hardware capacity");
+    json values = json::object();
+    for (const auto &[key, rows] : box.at("configuration").at("filament_settings").items()) {
+        if (!rows.is_array() || rows.size() != keys.size()) invalid("native filament field has an inconsistent slot count: " + key);
+        values[key] = rows.at(index);
+    }
+    const auto &tool = box.at("preset").at("hw_config").at("tools").at(keys.at(index));
+    const auto physical = keys.at(index).substr(0, keys.at(index).find('.'));
+    return {{"preset", box.at("preset").at("materials").at(index)}, {"values", values},
+        {"tool_features", box.at("preset").at("hw_config").at("tools").at(physical).at("features")},
+        {"slicer_material", tool.value("slicer_material", json(nullptr))},
+        {"material_package_instance", tool.value("material_package_instance", json(nullptr))}};
+}
+
+json object_process_overrides(const json &source, const json &destination, const json &target) {
+    json result = json::object();
+    const auto &fields = target.at("process_settings_contract").at("fields");
+    for (const auto *group : {"print_settings", "toolprint_settings"}) {
+        const auto &original = container(source).at("configuration").at(group);
+        const auto &output = container(destination).at("configuration").at(group);
+        for (const auto &[key, rows] : original.items()) {
+            // The final merged bed owns tower width/position, not each object.
+            if (key == "wipe_tower_width") continue;
+            if (output.contains(key) && output.at(key) == rows) continue;
+            if (!fields.contains(key)) invalid("merged process difference cannot be represented per object: " + key);
+            const auto &scopes = fields.at(key).at("overrides_in");
+            if (std::find(scopes.begin(), scopes.end(), "Object") == scopes.end()) invalid("merged process difference is project-wide: " + key);
+            auto value = rows;
+            if (std::string(group) == "toolprint_settings") {
+                if (!rows.is_array() || rows.empty() || std::any_of(rows.begin(), rows.end(), [&](const json &row) { return row != rows.front(); })) invalid("different per-tool process values cannot become one object override: " + key);
+                value = rows.front();
+            }
+            result[key] = value;
+        }
+    }
+    return result;
+}
+
+json merge_materials(json &project, const json &request, const json &target) {
+    const auto &inputs = request.at("merge_sources");
+    if (!inputs.is_array() || inputs.empty()) invalid("merge_sources must be a nonempty array");
+    const auto first = project;
+    auto &destination = container(project);
+    const auto capacity = destination.at("preset").at("materials").size();
+    const auto destination_keys = material_keys(destination.at("preset").at("hw_config"));
+    std::map<std::size_t, json> identities, snapshots;
+    json mappings = json::array();
+    std::set<std::string> source_ids;
+    for (std::size_t i = 0; i < inputs.size(); ++i) {
+        const auto &input = inputs.at(i);
+        if ((i == 0) == input.contains("project_settings")) invalid("first merge source uses the base project; later sources require project_settings");
+        const auto source = i == 0 ? first : normalized_project(input.at("project_settings"));
+        const auto &box = container(source);
+        if (hardware_identity(box.at("preset").at("hw_config")) != hardware_identity(container(first).at("preset").at("hw_config")) ||
+            box.at("configuration").at("printer_settings") != container(first).at("configuration").at("printer_settings")) invalid("merged sources have different physical hardware or printer settings");
+        auto source_settings = box.at("configuration").at("project_settings");
+        auto base_settings = container(first).at("configuration").at("project_settings");
+        for (const auto *key : {"extruder_colour", "wiping_volumes_matrix"}) {
+            source_settings.erase(key);
+            base_settings.erase(key);
+        }
+        if (source_settings != base_settings) invalid("merged sources have different project-wide settings");
+        if (box.at("beds").size() != 1 || container(first).at("beds").size() != 1) invalid("merged sources require one bed per configuration");
+        if (box.at("beds").front().value("custom_gcode", json(nullptr)) !=
+            container(first).at("beds").front().value("custom_gcode", json(nullptr))) invalid("merged sources have different bed custom G-code");
+        (void)object_process_overrides(source, first, target);
+        const auto id = input.at("source_id").get<std::string>();
+        if (id.empty() || !source_ids.insert(id).second) invalid("merge source IDs must be nonempty and unique");
+        const auto &slots = input.at("slots");
+        if (!slots.is_array() || slots.empty()) invalid("each merge source requires material slots");
+        json mapping = {{"source_id", id}, {"slots", json::array()}};
+        std::set<std::size_t> seen, source_indices;
+        for (std::size_t j = 0; j < slots.size(); ++j) {
+            const auto &slot = slots.at(j);
+            const auto logical_id = slot_index(slot.at("source_slot_id"));
+            const auto from = slot_index(slot.value("source_slot_index", json(j)));
+            if (!seen.insert(logical_id).second || !source_indices.insert(from).second) invalid("duplicate source slot mapping");
+            json identity = {{"slot_id", logical_id}, {"slot_name", slot.at("slot_name")},
+                {"material_id", slot.at("material_id")}, {"preview_color", slot.at("preview_color")}};
+            auto snapshot = material_snapshot(box, from);
+            snapshot["values"]["filament_colour"] = identity.at("preview_color");
+            if (identities.count(logical_id) && (identities.at(logical_id).at("material_id") != identity.at("material_id") ||
+                identities.at(logical_id).at("preview_color") != identity.at("preview_color") || snapshots.at(logical_id) != snapshot)) invalid("merged material slot has conflicting identity or native tuning: " + std::to_string(logical_id));
+            identities[logical_id] = std::move(identity);
+            snapshots[logical_id] = std::move(snapshot);
+            mapping["slots"].push_back({{"source_slot_id", logical_id}, {"source_slot_index", from}, {"output_slot_id", logical_id}});
+        }
+        mappings.push_back(std::move(mapping));
+    }
+    if (identities.size() > capacity) invalid("merged materials exceed native hardware capacity");
+    json logical = json::array();
+    std::map<std::size_t, std::size_t> output_indices;
+    for (const auto &[id, identity] : identities) {
+        const auto index = logical.size();
+        output_indices[id] = index;
+        logical.push_back(identity);
+        const auto &snapshot = snapshots.at(id);
+        const auto physical = destination_keys.at(index).substr(0, destination_keys.at(index).find('.'));
+        if (snapshot.at("tool_features") != destination.at("preset").at("hw_config").at("tools").at(physical).at("features")) invalid("merged material remapping changes physical nozzle features");
+        destination.at("preset").at("materials").at(index) = snapshot.at("preset");
+        for (const auto &[key, value] : snapshot.at("values").items()) destination.at("configuration").at("filament_settings").at(key).at(index) = value;
+        destination.at("configuration").at("project_settings").at("extruder_colour").at(index) = identity.at("preview_color");
+        auto &tool = destination.at("preset").at("hw_config").at("tools").at(destination_keys.at(index));
+        for (const auto *key : {"slicer_material", "material_package_instance"}) {
+            if (snapshot.at(key).is_null()) tool.erase(key); else tool[key] = snapshot.at(key);
+        }
+    }
+    // Preserve known transitions; a new transition has no native value to infer.
+    auto &matrix = destination.at("configuration").at("project_settings").at("wiping_volumes_matrix");
+    for (auto &mapping : mappings) {
+        for (auto &slot : mapping.at("slots")) slot["output_slot_index"] = output_indices.at(slot.at("output_slot_id").get<std::size_t>());
+    }
+    const auto matrix_width = static_cast<std::size_t>(std::sqrt(matrix.size()));
+    if (matrix.is_array() && matrix_width >= capacity && matrix_width * matrix_width == matrix.size()) {
+        std::map<std::pair<std::size_t, std::size_t>, json> transitions;
+        for (std::size_t i = 0; i < inputs.size(); ++i) {
+            const auto source = i == 0 ? first : normalized_project(inputs.at(i).at("project_settings"));
+            const auto &values = container(source).at("configuration").at("project_settings").at("wiping_volumes_matrix");
+            const auto count = static_cast<std::size_t>(std::sqrt(values.size()));
+            if (!values.is_array() || count < capacity || values.size() != count * count) invalid("native wiping matrix has an inconsistent shape");
+            for (const auto &from : mappings.at(i).at("slots")) for (const auto &to : mappings.at(i).at("slots")) {
+                const auto pair = std::pair{slot_index(from.at("output_slot_index")), slot_index(to.at("output_slot_index"))};
+                const auto value = values.at(slot_index(from.at("source_slot_index")) * count + slot_index(to.at("source_slot_index")));
+                if (transitions.count(pair) && transitions.at(pair) != value) invalid("merged wiping transition has conflicting native values");
+                transitions[pair] = value;
+            }
+        }
+        for (std::size_t from = 0; from < logical.size(); ++from) for (std::size_t to = 0; to < logical.size(); ++to) {
+            const auto pair = std::pair{from, to};
+            if (!transitions.count(pair)) invalid("merged material transition has no source value; provide a source with the complete palette");
+            matrix.at(from * matrix_width + to) = transitions.at(pair);
+        }
+    }
+    return {{"merged_slots", logical}, {"source_slot_mappings", mappings}};
 }
 }  // namespace
 
@@ -339,7 +494,8 @@ json catalog(const std::filesystem::path &source_root) {
         sources.push_back(std::move(source));
     }
     return {{"schema_version", 1}, {"slicer_id", "PrusaSlicer"},
-            {"application_version", version}, {"source", data.at("source")}, {"sources", sources}};
+            {"application_version", version}, {"source", data.at("source")},
+            {"filament_slot_policy", "preserve_native_capacity"}, {"sources", sources}};
 }
 
 json options(const json &request, const json &target, const std::filesystem::path &source_root) {
@@ -377,6 +533,40 @@ json compose_builtin(const json &request, const json &target, const std::filesys
     return result;
 }
 
+namespace {
+double layout_purge_volume(const json &config) {
+    const auto &printer = config.at("printer_settings");
+    const auto &filaments = config.at("filament_settings");
+    const auto &settings = config.at("project_settings");
+    const bool semm = printer.at("single_extruder_multi_material").get<bool>();
+    double purge = 0.0, ramming = 0.0;
+    if (semm && settings.at("wiping_volumes_use_custom_matrix").get<bool>()) {
+        for (const auto &value : settings.at("wiping_volumes_matrix")) purge = std::max(purge, number(value));
+    } else if (semm) {
+        for (const auto &value : filaments.at("filament_purge_multiplier")) purge = std::max(purge, number(printer.at("multimaterial_purging")) * number(value) / 100.0);
+    }
+    for (const auto &value : filaments.at("filament_minimal_purge_on_wipe_tower")) purge = std::max(purge, number(value));
+    if (semm) {
+        for (const auto &value : filaments.at("filament_ramming_parameters")) {
+            std::istringstream stream(value.get<std::string>());
+            stream.imbue(std::locale::classic());
+            double line_width, step, flow, volume = 0.0;
+            if (!(stream >> line_width >> step)) invalid("invalid native ramming parameters");
+            while (stream >> flow) {
+                if (!std::isfinite(flow) || flow < 0.0) invalid("invalid native ramming flow");
+                volume += 0.25 * flow;
+            }
+            ramming = std::max(ramming, volume * step / 100.0);
+        }
+    } else {
+        for (std::size_t i = 0; i < filaments.at("filament_multitool_ramming").size(); ++i) {
+            if (filaments.at("filament_multitool_ramming").at(i).get<bool>()) ramming = std::max(ramming, number(filaments.at("filament_multitool_ramming_volume").at(i)));
+        }
+    }
+    return purge + ramming;
+}
+}  // namespace
+
 json summary(const json &project) {
     const auto &box = container(project);
     const auto &config = box.at("configuration");
@@ -406,6 +596,10 @@ json summary(const json &project) {
         (height.value("is_percent", false) ? number(result.at("layer_height")) / 100.0 : 1.0);
     result["enable_prime_tower"] = result.at("wipe_tower").get<bool>() ? "1" : "0";
     result["prime_tower_width"] = result.at("wipe_tower_width");
+    // Layout consumes native purge and spacing facts, never the Orca fallback.
+    result["prime_tower_brim_width"] = result.at("wipe_tower_brim_width");
+    result["prime_tower_infill_gap"] = number(result.at("wipe_tower_extra_spacing")) / 100.0;
+    result["prime_volume"] = layout_purge_volume(config);
     result["curr_bed_type"] = hardware.at("sheet").at("type");
     result["min_layer_height"] = printer.value("min_layer_height", json(nullptr));
     result["max_layer_height"] = printer.value("max_layer_height", json(nullptr));
@@ -419,7 +613,7 @@ json summary(const json &project) {
 json compose(json project, const json &request, const json &target) {
     check_identity(request, target);
     project = normalized_project(std::move(project));
-    if (request.contains("merge_sources")) invalid("merged source tuning is not yet supported for Prusa 3; no settings will be silently discarded");
+    const auto merged = request.contains("merge_sources") ? merge_materials(project, request, target) : json::object();
     if (request.contains("material_uids") || request.contains("material_uid")) invalid("use a native material config or per-slot native_settings for Prusa 3");
     auto &box = container(project);
     check_presets(box, request);
@@ -435,8 +629,8 @@ json compose(json project, const json &request, const json &target) {
         }
     }
     if (request.contains("material_mode") && request.at("material_mode") != "preserve_template") invalid("Prusa 3 requires preserve_template material mode");
-    if (request.contains("hardware_mode") && request.at("hardware_mode") != "preserve_template") invalid("Prusa 3 requires preserve_template hardware mode; compose the selected native hardware instead");
-    if (request.contains("filament_slot_mode") && request.at("filament_slot_mode") != "preserve_template") invalid("Prusa 3 preserves native hardware slot capacity; slot compaction is not supported");
+    if (request.contains("hardware_mode") && request.at("hardware_mode") != "preserve_template" && request.at("hardware_mode") != "preserve_source" && request.at("hardware_mode") != "auto") invalid("Prusa 3 requires preserved native hardware");
+    if (request.contains("filament_slot_mode") && request.at("filament_slot_mode") != "preserve_template" && request.at("filament_slot_mode") != "preserve" && request.at("filament_slot_mode") != "auto") invalid("Prusa 3 preserves native hardware slot capacity; slot compaction is not supported");
     if (request.contains("filament_multi_colour") && request.at("filament_multi_colour") != request.value("filament_colour", json::array())) invalid("Prusa 3 multi-colour filament metadata is not supported");
     if (request.contains("preserve_source_material_settings") && request.at("preserve_source_material_settings") != true) invalid("Prusa 3 preserves native material settings; replace them through explicit native_settings");
     if (request.contains("project_source") && request.at("project_source") != "fatcat_native") invalid("unsupported built-in source mode");
@@ -448,7 +642,7 @@ json compose(json project, const json &request, const json &target) {
         "build_plate_uid", "hardware_mode", "source_materials", "filament_colour", "filament_multi_colour",
         "filament_slot_mode", "filament_source_slots", "material_mode", "process_settings",
         "native_print_profile_name", "native_filament_profile_names", "source_slot_colours",
-        "preserve_source_material_settings", "source_profile", "consumer_type",
+        "preserve_source_material_settings", "source_profile", "consumer_type", "merge_sources",
         "enable_prime_tower", "prime_tower_width", "wipe_tower_x", "wipe_tower_y", "wipe_tower_rotation_angle"};
     json chosen = json::object();
     const auto accept = [&](const std::string &key, const json &value) {
@@ -456,9 +650,10 @@ json compose(json project, const json &request, const json &target) {
         const auto native = contract.at("aliases").value(key, key);
         if (!contract.at("fields").contains(native)) invalid("unsupported process override '" + key + "' [sdk_not_supported]");
         auto canonical = value;
-        if (canonical.is_string() && contract.contains("enum_aliases") && contract.at("enum_aliases").contains(native)) {
+        if (contract.contains("enum_aliases") && contract.at("enum_aliases").contains(native)) {
             const auto &aliases = contract.at("enum_aliases").at(native);
-            canonical = aliases.value(canonical.get<std::string>(), canonical.get<std::string>());
+            const auto text = canonical.is_string() ? canonical.get<std::string>() : canonical.dump();
+            if (aliases.contains(text)) canonical = aliases.at(text);
         }
         json parsed;
         try {
@@ -490,12 +685,15 @@ json compose(json project, const json &request, const json &target) {
     json slot_map = json::array();
     const auto count = effective.at("filament_settings_id").size();
     for (std::size_t i = 0; i < count; ++i) slot_map.push_back(i);
-    return {{"project_settings_json", project.dump()}, {"effective_settings", effective},
+    json result = {{"project_settings_json", project.dump()}, {"effective_settings", effective},
         {"metadata_defaults", {{"identify_id", 1}, {"plate_value", effective.at("curr_bed_type")},
-            {"sidecar_bed_value", effective.at("curr_bed_type")}, {"plate_summary", false}}},
+            {"sidecar_bed_value", effective.at("curr_bed_type")}, {"plate_summary", false},
+            {"geometry_layout", "core"}}},
         {"slot_projection", {{"output_slot_count", count}, {"source_to_output", slot_map}}},
         {"wipe_tower_dialect", {{"project_format", "prusa3"}}},
         {"build_item_properties", json::object()}};
+    result.update(merged);
+    return result;
 }
 
 json patch_tower(json project, const json &settings) {
@@ -546,38 +744,141 @@ json material_slots(const json &project) {
     return slots;
 }
 
+namespace {
+void remap_extruders(json &settings, const json &input, std::size_t capacity) {
+    if (!input.contains("source_slot_output_indexes")) return;
+    const auto &mapping = input.at("source_slot_output_indexes");
+    for (auto &[key, value] : settings.items()) {
+        if (key != "extruder" && (key.size() < 9 || key.substr(key.size() - 9) != "_extruder")) continue;
+        const auto slot = slot_index(value);
+        if (slot == 0) continue;
+        if (slot > mapping.size()) invalid("source object references an absent material slot");
+        const auto output = slot_index(mapping.at(slot - 1));
+        // Unselected slots use a sentinel at the logical palette length.
+        const auto used = slot_index(input.at("output_slot_count"));
+        if (output >= capacity || output >= used) invalid("source object uses a material absent from the selected merge palette");
+        value = output + 1;
+    }
+}
+
+void apply_ranges(json &object, const json &input, const json &target) {
+    const auto &fields = target.at("process_settings_contract").at("fields");
+    json ranges = json::array();
+    double previous_end = 0.0;
+    for (const auto &range : input.at("ranges")) {
+        const auto begin = number(range.at("min_z"));
+        const auto end = number(range.at("max_z"));
+        if (begin < previous_end || end <= begin) invalid("layer ranges must be positive, ordered and nonoverlapping");
+        previous_end = end;
+        json configuration = json::object();
+        if (range.contains("use_default_extruder")) {
+            if (range.at("use_default_extruder") != true) invalid("layer range use_default_extruder must be true");
+            configuration["extruder"] = 0;
+        }
+        if (range.contains("layer_height_mm")) {
+            const auto height = number(range.at("layer_height_mm"));
+            if (height <= 0) invalid("layer-range height must be positive");
+            configuration["layer_height"] = scalar(height, fields.at("layer_height"));
+        }
+        if (range.contains("infill_density_percent")) configuration["fill_density"] = scalar(range.at("infill_density_percent"), fields.at("fill_density"));
+        for (const auto &[key, value] : range.items()) {
+            if (key != "min_z" && key != "max_z" && key != "use_default_extruder" && key != "layer_height_mm" && key != "infill_density_percent") invalid("unsupported layer range business field: " + key);
+        }
+        ranges.push_back({{"zRange", json::array({begin, end})}, {"configuration", configuration}});
+    }
+    if (ranges.empty()) invalid("layer ranges must not be empty");
+    object["ranges"] = std::move(ranges);
+}
+}  // namespace
+
 json describe(json project, const json &request, const json &target) {
     check_identity(request, target);
     project = normalized_project(std::move(project));
     auto inputs = request.value("objects", json::array({request}));
     const auto slots = container(project).at("preset").at("materials").size();
     json objects = json::array();
+    json build_items = json::array();
     std::set<long long> ids;
     for (const auto &input : inputs) {
         if (!input.at("assembly_id").is_number_integer()) invalid("assembly ID must be an integer");
         const auto assembly = input.at("assembly_id").get<long long>();
         if (assembly <= 0 || !ids.insert(assembly).second) invalid("assembly ID must be positive and unique");
+        json object = {{"id", assembly}, {"object_settings", {{"extruder", 0}, {"wipe_into_objects", false}}}};
+        json original = json::object();
+        if (input.contains("source_model_settings_xml")) {
+            const auto source = normalized_project(json::parse(input.at("source_model_settings_xml").get<std::string>()));
+            for (const auto &candidate : source.at("objects")) {
+                if (candidate.at("id") == input.at("source_assembly_id")) original = candidate;
+            }
+            if (original.empty()) invalid("source assembly metadata is missing");
+            object = original;
+            object["id"] = assembly;
+            object.erase("instances"); // The writer owns the new build transforms.
+            object.erase("object_uuid");
+            if (object.contains("cutId") || object.contains("slaSupportPoints") || object.contains("slaDrainHoles")) invalid("cut/SLA geometry metadata is unsupported for FFF merge");
+            const auto overrides = object_process_overrides(source, project, target);
+            // Source object overrides remain authoritative over its source defaults.
+            auto settings = overrides;
+            settings.update(object.value("object_settings", json::object()));
+            object["object_settings"] = std::move(settings);
+            remap_extruders(object.at("object_settings"), input, slots);
+            if (object.contains("ranges")) {
+                for (auto &range : object.at("ranges")) remap_extruders(range.at("configuration"), input, slots);
+            }
+        }
         json volumes = json::array();
         for (const auto &part : input.at("parts")) {
-            if (!part.at("part_id").is_number_integer() || !part.at("material_index").is_number_integer()) invalid("part ID and material index must be integers");
+            if (!part.at("part_id").is_number_integer()) invalid("part ID must be an integer");
             const auto id = part.at("part_id").get<long long>();
-            const auto slot = part.at("material_index").get<long long>();
             if (id <= 0 || !ids.insert(id).second) invalid("part ID must be positive and unique");
-            if (slot < 0 || static_cast<std::size_t>(slot) >= slots) invalid("part material index is outside native slots");
-            volumes.push_back({{"id", id}, {"type", "ModelPart"},
-                {"volume_settings", {{"extruder", slot + 1}, {"wipe_into_infill", false}}}});
+            json volume;
+            if (!original.empty()) {
+                for (const auto &candidate : original.at("volumes")) {
+                    if (candidate.at("id") == part.at("source_part_id")) volume = candidate;
+                }
+                if (volume.is_null()) invalid("source volume metadata is missing");
+                volume["id"] = id;
+                remap_extruders(volume.at("volume_settings"), input, slots);
+            } else {
+                const auto slot = slot_index(part.at("material_index"));
+                if (slot >= slots) invalid("part material index is outside native slots");
+                volume = {{"id", id}, {"type", "ModelPart"},
+                    {"volume_settings", {{"extruder", slot + 1}, {"wipe_into_infill", false}}}};
+            }
+            volumes.push_back(std::move(volume));
         }
         if (volumes.empty()) invalid("model requires at least one part");
-        objects.push_back({{"id", assembly}, {"volumes", volumes},
-            {"object_settings", {{"extruder", 0}, {"wipe_into_objects", false}}}});
+        object["volumes"] = std::move(volumes);
+        objects.push_back(std::move(object));
+        if (request.contains("objects")) {
+            const auto values = input.value("transform", json::array({1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}));
+            if (!values.is_array() || values.size() != 12) invalid("build transform requires twelve numeric values");
+            std::string transform;
+            for (const auto &value : values) {
+                if (!transform.empty()) transform += ' ';
+                transform += decimal(number(value));
+            }
+            build_items.push_back({{"model_index", input.at("model_index")}, {"transform", transform}, {"properties", json::object()}});
+        }
     }
     const auto components = request.value("component_inputs", json::object());
+    json parts = json::array();
     for (const auto &[key, value] : components.items()) {
-        if (!value.is_null()) invalid("unsupported model component '" + key + "'; it will not be silently dropped (apply native tower settings to the project first)");
+        if (value.is_null()) continue;
+        if (key == "layer_config_ranges") {
+            const auto ranges = value.contains("objects") ? value.at("objects") : json::array({value});
+            for (const auto &range : ranges) {
+                const auto index = slot_index(range.at("model_index"));
+                if (index == 0 || index > objects.size()) invalid("layer range model index is absent");
+                apply_ranges(objects.at(index - 1), range, target);
+            }
+        } else if (key == "wipe_tower_placement") {
+            parts.push_back({{"role", key}, {"path", "Metadata/wipe_tower_placement.json"}, {"media_type", "application/json"}, {"content", value.dump()}});
+        } else invalid("unsupported model component '" + key + "'");
     }
     project["objects"] = objects;
-    return {{"parts", json::array({{{"role", "project_settings"}, {"path", project_path},
-                {"media_type", "application/json"}, {"content", project.dump()}}})},
+    parts.push_back({{"role", "project_settings"}, {"path", project_path}, {"media_type", "application/json"}, {"content", project.dump()}});
+    return {{"parts", parts}, {"build_items", build_items},
         {"relationships", json::array()}, {"content_types", json::array({{{"extension", "json"}, {"media_type", "application/json"}}})},
         {"root_model", {{"namespaces", json::array()}, {"metadata", json::array({
             {{"name", "Application"}, {"value", std::string("PrusaSlicer-") + version}}})},
