@@ -85,6 +85,11 @@ material names belong to its own writer base-material group.
 - `source_materials[i].native_settings` changes scalar native filament fields
   for that slot. Material arrays, tool assignments and unused hardware slots
   remain intact. More colours than native capacity raise an error.
+- The public catalogue reports `filament_slot_policy=preserve_native_capacity`.
+  Consumers select `preserve` even for a smaller logical palette; removing native
+  MMU slots or XL tools would change physical hardware. Explicit `compact` requests
+  remain unsupported. `PLA Basic` and `PETG Basic` are reviewed type labels for
+  native PLA and PETG; they do not change the selected material preset or tuning.
 - An explicit sheet UID must match `prusa-sheet:<native sheet type>` in the
   selected config. Omission retains the actual native default.
 - Bambu `auto_brim` has no reviewed exact Prusa equivalent. It raises an error;
@@ -102,18 +107,57 @@ material names belong to its own writer base-material group.
 | MK4S MMU3 0.4, four colours | Opened and sliced: 60 layers, 14 min 47 sec; four colour bands and wipe tower visible. |
 | XL 5T 0.4, four colours | Opened and sliced: 60 layers, 15 min 4 sec; native multi-tool configuration and coloured tower retained. |
 
+Lumina integration was also opened and sliced in the alpha12 GUI: MK4S MMU3
+single image (18 min 5 sec), two-image merge (21 min 50 sec), two-piece puzzle
+(19 min 6 sec), XL 5T image (9 min 45 sec), and a user-template image
+(17 min 15 sec). Four tool colours and native towers were visible. The
+user-template GUI-exported G-code retained 237 °C and 0.91 extrusion multipliers.
+No settings were changed in the slicer to bypass warnings.
+
 These are software observations, not physical print validation. The catalogue's
 other hardware selections have not each been sliced in the GUI. Unsupported:
-SLA, Prusa 2.x, multiple configuration containers, merged source tuning/slot
-compaction, layer-range components, and native multi-colour filament records.
+SLA, Prusa 2.x, multiple configuration containers, native hardware slot
+compaction, and native multi-colour filament records.
 Material remapping for combined multi-tool/feeder hardware is not yet supported.
-Unsupported component inputs are rejected rather than dropped. The SDK's
-single model and explicit object/part metadata use actual writer IDs and
-zero-based material indices. Source object-specific settings are not copied
-to newly described objects. Use a reviewed generator mapping when that is needed.
+Unsupported component inputs are rejected rather than dropped.
 
-本次没有验证实体打印。暂不支持项见上；目录存在不代表逐机型验过。新增支持发生在
-FatCat SDK，Lumina 的切片选择界面与合并生成流程没有因此自动获得 Prusa 支持。
+本次同时验了 Lumina 实际生成的单件、批量、拼图、XL 多工具及用户模板，并导出
+原生 Gcode 核对温度和流量。没有验证实体打印；目录存在不代表逐机型验过。
+
+## Geometry and merged projects / 几何与合并工程
+
+`metadata_defaults.geometry_layout=core` requests standard 3MF component objects
+in the root model. Alpha12's native volume settings look up root-model IDs;
+Production-extension external mesh IDs do not retain that mapping. The generator
+still owns meshes, transforms and actual object/part IDs. FatCat owns native
+object/volume configuration and zero-based palette to one-based extruder mapping.
+
+`merge_sources` retains native filament preset identities and all filament tuning.
+Logical slots must agree on material identity, colour and native values. Sources
+must share physical hardware and printer settings. Object-scoped process
+differences become object overrides; project-wide differences and nonuniform
+per-tool values that cannot become one object setting raise errors. A wiping
+matrix requires source values for every selected material transition. The final
+bed owns tower width and position.
+
+Model inputs with `source_model_settings_xml` pass the **native JSON string**
+(the shared argument name is retained for compatibility), `source_assembly_id`,
+each part's `source_part_id`, `source_slot_output_indexes` and `output_slot_count`.
+FatCat preserves source object/volume settings, height ranges and layer profiles
+while remapping IDs/extruders; the writer supplies new instance transforms.
+New objects without a source describe their own parts and material indices.
+
+The optional `layer_config_ranges` component accepts ordered nonoverlapping
+`min_z`/`max_z` ranges with `layer_height_mm`, `infill_density_percent` and
+`use_default_extruder=true`. These become native typed object ranges.
+`wipe_tower_placement` remains an optional generator sidecar. The layout summary
+uses native purge, ramming, spacing and brim values; `tower_cyclic_toolchanges`
+also accounts for the return to the first material between layers. The slicer
+computes actual tower geometry, so layout estimation is not a slicing guarantee.
+
+标准 3MF 组件布局让原生体积设置能找到真实 ID。合并保留各源耗材调校、局部设置和
+层高区间；无法表示的工程级差异明确拒绝。原生换料槽和工具数量保持不变。
+塔的摆放估算读取原生冲刷、卸料和边缘值，最终走线仍由切片器计算。
 
 ## Source maintenance / 来源维护
 
