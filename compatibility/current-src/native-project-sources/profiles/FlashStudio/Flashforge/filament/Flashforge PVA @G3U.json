@@ -1,0 +1,16 @@
+{
+    "filament_settings_id": [
+        "Flashforge PVA @G3U"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "inherits": "Flashforge Generic PVA",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge PVA @G3U",
+    "setting_id": "5i3SxtOzlFivwK8W",
+    "type": "filament",
+    "version": "2.1.1.0"
+}

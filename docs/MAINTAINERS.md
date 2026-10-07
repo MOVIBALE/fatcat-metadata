@@ -97,11 +97,16 @@ The updater verifies each exact application version, copies machine/process/
 material profile files and their exact inheritance/include closure, and writes
 `compatibility/current-src/native-project-sources/source-index.json`. A missing
 exact profile is recorded as unavailable. Do not create a substitute default
-or rename a different preset to satisfy an identity. A machine's declared default
-can contradict a material's explicit compatible_printers list. The updater keeps
-that declaration and records its incompatibility, then discovers instantiated
-materials in the same native catalogue whose inherited compatibility names the
-exact machine. It copies their real inheritance/include closure unchanged.
+or rename a different preset to satisfy an identity. Material options are always
+discovered from instantiated profiles in the same native catalogue whose
+inherited `compatible_printers` names the exact machine. A machine's ordered
+defaults are selection preferences, not its entire material catalogue. If a
+default contradicts that compatibility list, the updater preserves the declaration
+and records its incompatibility. Shared profile files and their inheritance/include
+closure are copied once, unchanged.
+
+材料目录始终按原生继承后的兼容关系采集，默认材料只决定优先选择。共享预设及其
+继承源只保留一份，不逐机型复制完整配置，也不为个别机型增加材料特判。
 
 The generated index keeps native source identities, ordered material defaults,
 preset options and exact inheritance links. Display names and supported plate

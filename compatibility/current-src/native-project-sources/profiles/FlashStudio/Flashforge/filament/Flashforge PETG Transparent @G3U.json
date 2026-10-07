@@ -1,0 +1,16 @@
+{
+    "filament_settings_id": [
+        "Flashforge PETG Transparent @G3U"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "inherits": "Flashforge Generic PETG @G3U",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge PETG Transparent @G3U",
+    "setting_id": "yZzxtXNPBGBroSc2",
+    "type": "filament",
+    "version": "2.1.1.0"
+}

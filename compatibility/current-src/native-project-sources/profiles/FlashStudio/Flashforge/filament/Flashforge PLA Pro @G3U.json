@@ -1,0 +1,16 @@
+{
+    "filament_settings_id": [
+        "Flashforge PLA Pro @G3U"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "inherits": "Flashforge Generic PLA @G3U",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge PLA Pro @G3U",
+    "setting_id": "ULPJDDSHm09G0j7z",
+    "type": "filament",
+    "version": "2.1.1.0"
+}

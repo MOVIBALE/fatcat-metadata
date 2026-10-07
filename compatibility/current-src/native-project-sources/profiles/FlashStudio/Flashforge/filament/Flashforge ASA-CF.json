@@ -1,0 +1,55 @@
+{
+    "filament_flow_ratio": [
+        "0.99"
+    ],
+    "filament_max_volumetric_speed": [
+        "5"
+    ],
+    "filament_settings_id": [
+        "Flashforge ASA-CF"
+    ],
+    "filament_type": [
+        "ASA"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "hot_plate_temp": [
+        "100"
+    ],
+    "hot_plate_temp_initial_layer": [
+        "100"
+    ],
+    "inherits": "FusRock Generic PAHT-CF",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge ASA-CF",
+    "nozzle_temperature": [
+        "250"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "250"
+    ],
+    "nozzle_temperature_range_high": [
+        "260"
+    ],
+    "nozzle_temperature_range_low": [
+        "240"
+    ],
+    "overhang_fan_speed": [
+        "20"
+    ],
+    "setting_id": "CI5dvVrCNk2XTU82",
+    "slow_down_layer_time": [
+        "10"
+    ],
+    "slow_down_min_speed": [
+        "10"
+    ],
+    "support_material_interface_fan_speed": [
+        "20"
+    ],
+    "type": "filament",
+    "version": "2.0.2.0"
+}

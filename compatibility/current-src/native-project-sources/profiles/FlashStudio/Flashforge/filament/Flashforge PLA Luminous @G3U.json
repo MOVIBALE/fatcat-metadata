@@ -1,0 +1,16 @@
+{
+    "filament_settings_id": [
+        "Flashforge PLA Luminous @G3U"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "inherits": "Flashforge Generic PLA @G3U",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge PLA Luminous @G3U",
+    "setting_id": "6qLxNPoZsQibJvO1",
+    "type": "filament",
+    "version": "2.1.1.0"
+}

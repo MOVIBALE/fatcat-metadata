@@ -1,0 +1,16 @@
+{
+    "filament_settings_id": [
+        "Flashforge ASA Basic @G3U"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "inherits": "Flashforge Generic ASA @G3U",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge ASA Basic @G3U",
+    "setting_id": "74CoIvPRCmFanxb8",
+    "type": "filament",
+    "version": "2.1.1.0"
+}
