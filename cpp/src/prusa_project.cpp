@@ -347,7 +347,7 @@ json object_process_overrides(const json &source, const json &destination, const
             if (std::find(scopes.begin(), scopes.end(), "Object") == scopes.end()) invalid("merged process difference is project-wide: " + key);
             auto value = rows;
             if (std::string(group) == "toolprint_settings") {
-                if (!rows.is_array() || rows.empty() || std::any_of(rows.begin(), rows.end(), [&](const json &row) { return row != rows.front(); })) invalid("different per-tool process values cannot become one object override: " + key);
+                if (!rows.is_array() || rows.empty() || std::any_of(rows.begin(), rows.end(), [&tool_values = rows](const json &row) { return row != tool_values.front(); })) invalid("different per-tool process values cannot become one object override: " + key);
                 value = rows.front();
             }
             result[key] = value;
