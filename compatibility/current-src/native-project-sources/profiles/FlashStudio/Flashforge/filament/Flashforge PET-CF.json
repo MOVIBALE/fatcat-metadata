@@ -1,0 +1,49 @@
+{
+    "filament_density": [
+        "1.1"
+    ],
+    "filament_max_volumetric_speed": [
+        "5"
+    ],
+    "filament_settings_id": [
+        "Flashforge PET-CF"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "hot_plate_temp": [
+        "80"
+    ],
+    "inherits": "FusRock Generic PET-CF",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge PET-CF",
+    "nozzle_temperature": [
+        "260"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "260"
+    ],
+    "nozzle_temperature_range_high": [
+        "270"
+    ],
+    "nozzle_temperature_range_low": [
+        "240"
+    ],
+    "pressure_advance": [
+        "0.035"
+    ],
+    "setting_id": "vflpXTS9GwnODQDH",
+    "slow_down_layer_time": [
+        "10"
+    ],
+    "slow_down_min_speed": [
+        "10"
+    ],
+    "support_material_interface_fan_speed": [
+        "20"
+    ],
+    "type": "filament",
+    "version": "2.0.2.0"
+}

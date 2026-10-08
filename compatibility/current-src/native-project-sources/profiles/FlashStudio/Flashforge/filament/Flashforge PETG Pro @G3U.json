@@ -1,0 +1,16 @@
+{
+    "filament_settings_id": [
+        "Flashforge PETG Pro @G3U"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "inherits": "Flashforge Generic PETG @G3U",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge PETG Pro @G3U",
+    "setting_id": "D6Septz5jHKmSFcb",
+    "type": "filament",
+    "version": "2.1.1.0"
+}

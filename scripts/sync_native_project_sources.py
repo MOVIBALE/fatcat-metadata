@@ -152,6 +152,27 @@ class ProfileCatalog:
         path = self.find_named(category, name, scope)
         return self.documents[path].get("name", name) if path is not None else name
 
+    def compatible_filament_names(self, machine_name: str, scope: str) -> list[str]:
+        """Discover instantiated materials by inherited native compatibility.
+
+        根据原生继承后的兼容关系列出可用材料，独立于机型的默认材料。
+        """
+        names: list[str] = []
+        for path, document in self.documents.items():
+            if _profile_category(path) != "filament" or self._scope(path, "filament") != scope:
+                continue
+            name = document.get("name")
+            if not isinstance(name, str) or not name:
+                continue
+            try:
+                profile = self.resolve("filament", path, {})
+            except ValueError:
+                continue
+            if (str(profile.get("instantiation", "")).lower() == "true"
+                    and machine_name in _names(profile.get("compatible_printers"))):
+                names.append(name)
+        return list(dict.fromkeys(names))
+
     @staticmethod
     def _scope(path: str, category: str) -> str:
         parts = PurePosixPath(path).parts
@@ -326,31 +347,11 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
     target_processes = [catalog.canonical_name("process", name, scope) for name in target_processes]
     target_materials = [catalog.canonical_name("filament", name, scope) for name in target_materials]
     process_names = list(dict.fromkeys((*machine_process_names, *target_processes)))
-    material_names = list(dict.fromkeys((*machine_material_names, *target_materials)))
-    # Some machines declare a default whose explicit compatibility list targets
-    # other printers. Include genuine compatible alternatives from that vendor's
-    # native files instead of treating the incomplete default list as the catalog.
-    incompatible_default = False
-    for name in machine_material_names:
-        path = catalog.find_named('filament', name, scope)
-        if path is not None:
-            profile = catalog.resolve('filament', path, {})
-            printers = profile.get('compatible_printers', [])
-            incompatible_default |= bool(printers and row['source_machine_profile_name'] not in printers)
-    if incompatible_default:
-        for path, document in catalog.documents.items():
-            if _profile_category(path) != 'filament' or ProfileCatalog._scope(path, 'filament') != scope:
-                continue
-            try:
-                profile = catalog.resolve('filament', path, {})
-            except ValueError:
-                continue
-            if str(profile.get('instantiation', '')).lower() != 'true':
-                continue
-            if row['source_machine_profile_name'] in profile.get('compatible_printers', []):
-                name = document.get('name')
-                if isinstance(name, str) and name not in material_names:
-                    material_names.append(name)
+    material_names = list(dict.fromkeys((
+        *machine_material_names,
+        *target_materials,
+        *catalog.compatible_filament_names(row["source_machine_profile_name"], scope),
+    )))
 
     process_options = [
         _profile_option(catalog, "process", name, ProfileCatalog._scope(machine_path, "machine"),

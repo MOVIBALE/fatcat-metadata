@@ -1,0 +1,16 @@
+{
+    "filament_settings_id": [
+        "Flashforge ABS Basic @G3U"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "inherits": "Flashforge Generic ABS @G3U",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge ABS Basic @G3U",
+    "setting_id": "7AakPyJrz60sBYuw",
+    "type": "filament",
+    "version": "2.1.1.0"
+}

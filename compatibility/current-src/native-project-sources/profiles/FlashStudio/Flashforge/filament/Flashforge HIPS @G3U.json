@@ -1,0 +1,16 @@
+{
+    "filament_settings_id": [
+        "Flashforge HIPS @G3U"
+    ],
+    "filament_vendor": [
+        "Flashforge"
+    ],
+    "from": "system",
+    "inherits": "Flashforge Generic HIPS",
+    "instantiation": "true",
+    "is_custom_defined": "0",
+    "name": "Flashforge HIPS @G3U",
+    "setting_id": "XzzoPhe8uqfKbgax",
+    "type": "filament",
+    "version": "2.1.1.0"
+}

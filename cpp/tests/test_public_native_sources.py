@@ -288,18 +288,37 @@ class PublicNativeSourceTests(unittest.TestCase):
             basic_project["filament_settings_id"], ["Bambu PETG Basic @BBL X1C"]
         )
 
-        for name, material_type in (
-            ("PETG HF", "PETG HF"),
-            ("PETG-CF", "PETG-CF"),
-            ("PETG Translucent", "PETG Translucent"),
+        for material_type, native_profile in (
+            ("PETG HF", "Bambu PETG HF @BBL X1C"),
+            ("PETG-CF", "Bambu PETG-CF @BBL X1C 0.4 nozzle"),
         ):
             with self.subTest(material_type=material_type):
-                request = self._orca_builtin_request({"name": name, "colour": "#345678"})
+                request = self._orca_builtin_request({
+                    "name": material_type, "colour": "#345678",
+                })
                 with self.assertRaisesRegex(
                     ValueError,
-                    rf"no available native filament profile matches source material slot 0 type '{material_type.upper()}'",
+                    rf"source material slot 0 type '{material_type}' matches multiple "
+                    r"native profiles .*select native_filament_profile_names explicitly",
                 ):
                     fatcat.compose_project_settings(json.dumps(request))
+
+                request["native_filament_profile_names"] = [native_profile]
+                result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+                project = json.loads(result["project_settings_json"])
+                self.assertEqual(project["filament_settings_id"], [native_profile])
+
+        translucent_request = self._orca_builtin_request({
+            "name": "PETG Translucent", "colour": "#345678",
+        })
+        translucent_result = json.loads(
+            fatcat.compose_project_settings(json.dumps(translucent_request))
+        )
+        translucent_project = json.loads(translucent_result["project_settings_json"])
+        self.assertEqual(
+            translucent_project["filament_settings_id"],
+            ["Bambu PETG Translucent @BBL X1C"],
+        )
 
         explicit_request = self._orca_builtin_request({
             "name": "PETG HF",

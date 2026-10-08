@@ -65,8 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y locales
+      # GitHub's Ubuntu image includes locales; generate the required data offline.
       - run: sudo locale-gen de_DE.UTF-8
       - run: locale -a
       - run: cmake -S cpp -B build-locale -DFATCAT_BUILD_PYTHON=OFF -DFATCAT_BUILD_TESTS=ON -DFATCAT_TEST_NON_C_LOCALE=ON -DCMAKE_BUILD_TYPE=Release
