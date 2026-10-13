@@ -16,6 +16,7 @@
 #include <initializer_list>
 #include <limits>
 #include <locale.h>
+#include <map>
 #include <optional>
 #include <set>
 #include <string>
@@ -37,6 +38,8 @@ struct Dialect {
     std::string rotation_key;
     std::string process_difference_key;
     bool record_process_differences = true;
+    std::string wall_type_key;
+    std::map<std::string, std::string> wall_types;
 };
 
 struct Position {
@@ -53,6 +56,7 @@ struct Settings {
     std::optional<double> rotation_deg;
     bool rotation_negative_zero = false;
     std::vector<Position> positions;
+    std::optional<std::string> wall_type;
 };
 
 struct NegativeZeroPosition {
@@ -281,7 +285,8 @@ bool scan_json_value_for_negative_zero_plate_index(std::string_view text,
     }
     if (text[cursor] == '"') {
         std::string ignored;
-        return parse_json_string_token(text, cursor, ignored);
+        parse_json_string_token(text, cursor, ignored);
+        return false;
     }
     if (text[cursor] == '[') {
         ++cursor;
@@ -491,7 +496,7 @@ Dialect parse_dialect(const json &value) {
     for (const auto &[key, ignored] : value.items()) {
         if (!is_known(key, {"enabled_key", "x_key", "y_key", "width_key",
                             "rotation_key", "process_difference_key",
-                            "record_process_differences"})) {
+                            "record_process_differences", "wall_type"})) {
             invalid("unknown wipe tower dialect field: " + key);
         }
     }
@@ -527,6 +532,25 @@ Dialect parse_dialect(const json &value) {
     };
     if (keys.size() != 6) {
         invalid("wipe tower dialect requires six distinct nonempty field names");
+    }
+    if (const auto it = value.find("wall_type"); it != value.end()) {
+        if (!it->is_object() ||
+            (it->size() != 2 && !(it->size() == 3 && it->contains("source_url"))) ||
+            !it->contains("key") || !it->contains("values") ||
+            !it->at("values").is_object() || it->at("values").empty()) {
+            invalid("wipe tower wall_type requires a key and nonempty values mapping");
+        }
+        dialect.wall_type_key = required_text(it->at("key"), "wall_type.key");
+        if (it->contains("source_url")) required_text(it->at("source_url"), "wall_type.source_url");
+        if (keys.count(dialect.wall_type_key)) {
+            invalid("wipe tower wall_type key must differ from the other dialect fields");
+        }
+        for (const auto &[name, native_value] : it->at("values").items()) {
+            if (!is_known(name, {"rib", "rectangle"})) {
+                invalid("unknown wipe tower wall type: " + name);
+            }
+            dialect.wall_types.emplace(name, required_text(native_value, "wall_type.values"));
+        }
     }
     return dialect;
 }
@@ -595,11 +619,14 @@ Settings parse_settings(const json &value,
         invalid("wipe tower settings must be an object");
     }
     for (const auto &[key, ignored] : value.items()) {
-        if (!is_known(key, {"enabled", "width_mm", "rotation_deg", "positions"})) {
+        if (!is_known(key, {"enabled", "width_mm", "rotation_deg", "positions", "wall_type"})) {
             invalid("unknown wipe tower settings field: " + key);
         }
     }
     Settings settings;
+    if (const auto it = value.find("wall_type"); it != value.end() && !it->is_null()) {
+        settings.wall_type = required_text(*it, "wall_type");
+    }
     if (const auto it = value.find("enabled"); it != value.end() && !it->is_null()) {
         if (!it->is_boolean()) {
             invalid("wipe tower enabled must be boolean");
@@ -875,6 +902,14 @@ std::string patch_wipe_tower(std::string_view project_json,
     const auto settings = parse_settings(settings_value, negative_zero_flags);
     json result = project;
     std::set<std::string> changed;
+    if (settings.wall_type.has_value()) {
+        const auto native_value = dialect.wall_types.find(*settings.wall_type);
+        if (native_value == dialect.wall_types.end()) {
+            invalid("wipe tower dialect does not support wall_type '" + *settings.wall_type + "'");
+        }
+        result[dialect.wall_type_key] = native_value->second;
+        changed.insert(dialect.wall_type_key);
+    }
     if (settings.enabled.has_value()) {
         result[dialect.enabled_key] = *settings.enabled ? "1" : "0";
         changed.insert(dialect.enabled_key);

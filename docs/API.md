@@ -213,3 +213,17 @@ target_link_libraries(my_generator PRIVATE FatCatMetadata::Core)
 Build/install commands and a consumer that supports both installed and source
 use are in [cpp/README.md](../cpp/README.md). Python wheels contain the extension,
 adapter, stub and data; the standalone C++ SDK is a separate opt-in installation.
+
+## Native tower wall styles
+
+The tower dialect may declare `wall_type` with a native `key`, logical-to-native
+`values` (`rib` and/or `rectangle`), and an optional `source_url`. The layout
+reader exposes these supported logical styles as `tower_wall_types`.
+`patch_wipe_tower` accepts optional `wall_type` only when the dialect declares
+that style. Changing the style preserves tower enablement and purge volumes;
+the existing process-difference index records the native field change.
+
+塔方言可声明 wall_type，包含原生字段 key、rib／rectangle 到原生值的 values
+映射及可选 source_url。布局读取器通过 tower_wall_types 返回支持的形状；
+patch_wipe_tower 仅接受目标已声明的 wall_type。形状选择保留擦料塔启用与
+冲刷量，原有工艺差异索引记录对应原生字段的变化。

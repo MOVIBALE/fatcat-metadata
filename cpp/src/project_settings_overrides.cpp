@@ -199,7 +199,7 @@ json target_tower_dialect(const json &target) {
     const json &tower = required_member(
         required_member(target, "package_dialect", "target data"),
         "wipe_tower", "package dialect");
-    return {
+    json result = {
         {"enabled_key", required_string(tower, "enabled_key", "wipe tower dialect")},
         {"x_key", required_string(tower, "x_key", "wipe tower dialect")},
         {"y_key", required_string(tower, "y_key", "wipe tower dialect")},
@@ -208,6 +208,8 @@ json target_tower_dialect(const json &target) {
         {"process_difference_key",
          required_string(tower, "process_difference_key", "wipe tower dialect")},
     };
+    if (tower.contains("wall_type")) result["wall_type"] = tower.at("wall_type");
+    return result;
 }
 
 std::string scalar_tower_settings(const json &request) {
