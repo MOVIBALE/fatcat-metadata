@@ -2195,6 +2195,14 @@
       }
     },
     "wipe_tower": {
+      "wall_type": {
+        "key": "prime_tower_rib_wall",
+        "values": {
+          "rib": "1",
+          "rectangle": "0"
+        },
+        "source_url": "https://github.com/bambulab/BambuStudio/blob/v02.08.02.61/src/libslic3r/GCode/WipeTower.cpp#L4524"
+      },
       "enabled_key": "enable_prime_tower",
       "x_key": "wipe_tower_x",
       "y_key": "wipe_tower_y",

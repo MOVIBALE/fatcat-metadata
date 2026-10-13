@@ -548,6 +548,13 @@ json project_layout(json project, const json &target) {
         }
     }
     const auto value = [&](const std::string &key) { return project.value(key, json(nullptr)); };
+    json wall_types = json::array();
+    if (package != target.end() && package->contains("wipe_tower") &&
+        package->at("wipe_tower").contains("wall_type")) {
+        const auto &types = required_object_member(
+            package->at("wipe_tower").at("wall_type"), "values", "wipe tower wall_type");
+        for (const auto &[name, ignored] : types.items()) wall_types.push_back(name);
+    }
     const auto nozzles = value("nozzle_diameter");
     const auto rib_prefix = slicer == "BambuStudio" ? "prime_tower" : "wipe_tower";
     const auto wall_type_key = placement_geometry.value("wall_type_key", std::string());
@@ -651,6 +658,7 @@ json project_layout(json project, const json &target) {
         {"tower_infill_spacing_ratio", std::max(0.01, infill_ratio)},
         {"tower_cyclic_toolchanges", placement_geometry.value("cyclic_toolchanges", false)},
         {"uses_rib_wall", uses_rib},
+        {"tower_wall_types", wall_types},
         {"tower_rib_width", std::max(0.0, number(value(rib_width_key)))},
         {"tower_extra_rib_length", number(value(extra_rib_length_key))},
         {"tower_square_rib_body", square_rib_body},
