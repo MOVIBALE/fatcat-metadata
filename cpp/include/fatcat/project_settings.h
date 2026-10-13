@@ -37,6 +37,11 @@ public:
 /// available and otherwise uses that source mode; imported tuning always uses source mode.
 /// preserve_source 保留来源硬件，按材料事实、工艺选择和槽位策略合成；auto 自动选择
 /// 完整匹配的原生绑定，无法匹配或使用已导入调校时采用来源设置。
+/// Optional `project_preset_name` names the exported process preset without
+/// changing process values, source defaults, or hardware/material identities.
+/// 可选 project_preset_name 为导出的工艺预设命名，保留工艺参数、来源默认值和硬件／材料身份。
+/// Bambu-compatible projects detach process inheritance only; material and
+/// printer inheritance remains unchanged. Bambu 兼容工程仅解除工艺继承，保留材料／机器继承。
 std::string compose_project_settings(std::string_view base_project_json,
                                      std::string_view request_json,
                                      std::string_view canonical_json,

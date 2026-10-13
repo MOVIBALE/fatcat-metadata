@@ -40,6 +40,7 @@ class _ProjectRequest(TypedDict, total=False):
     material_mode: str
     hardware_mode: str
     process_settings: _Object
+    project_preset_name: str
     merge_sources: list[_MergeSource]
     merge_default_project: _Object
     filament_slot_mode: str

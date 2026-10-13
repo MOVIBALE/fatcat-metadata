@@ -83,8 +83,8 @@ json source_slot_colour(const json &colours, std::size_t index) {
                          colours.value(std::to_string(index), json("#C8C8C8")));
 }
 
-void rebuild_flush_matrix_from_vector(json &project) {
-    const auto count = filament_count(project);
+void rebuild_flush_matrix_from_vector(json &project, std::size_t count,
+                                     std::size_t nozzle_count = 1) {
     const auto values = project.find("flush_volumes_vector");
     if (count == 0 || values == project.end() || !values->is_array() ||
         values->size() != count * 2) return;
@@ -96,10 +96,12 @@ void rebuild_flush_matrix_from_vector(json &project) {
     // an unconfigured transition is source unload plus destination load;
     // the same slot needs no flush. This is a default, not color prediction.
     // https://github.com/FlashForge/Orca-Flashforge/blob/84b7074b252af144a75fec04a0db3c21e6e65536/src/libslic3r/PresetBundle.cpp#L5538
-    for (std::size_t from = 0; from < count; ++from) {
-        for (std::size_t to = 0; to < count; ++to) {
-            matrix.push_back(from == to ? "0" :
-                json(volumes[from * 2] + volumes[to * 2 + 1]).dump());
+    for (std::size_t nozzle = 0; nozzle < nozzle_count; ++nozzle) {
+        for (std::size_t from = 0; from < count; ++from) {
+            for (std::size_t to = 0; to < count; ++to) {
+                matrix.push_back(from == to ? "0" :
+                    json(volumes[from * 2] + volumes[to * 2 + 1]).dump());
+            }
         }
     }
     project["flush_volumes_matrix"] = std::move(matrix);
@@ -534,6 +536,41 @@ void preserve_selected_slots(json &project, const json &source, const json &requ
 
 }  // namespace
 
+void complete_native_flush_defaults(json &project, const json &dialect,
+                                    std::size_t material_count) {
+    const auto defaults = dialect.find("flush_volume_defaults");
+    if (defaults == dialect.end() || material_count == 0) return;
+    const auto nozzles = defaults->value("matrix_per_nozzle", false)
+        ? project.at("nozzle_diameter").size() : std::size_t{1};
+    if (!project.contains("flush_volumes_vector")) {
+        json values = json::array();
+        for (std::size_t slot = 0; slot < material_count; ++slot) {
+            for (const auto &value : defaults->at("load_unload_volumes")) {
+                values.push_back(value);
+            }
+        }
+        project["flush_volumes_vector"] = std::move(values);
+    }
+    for (const auto &[key, value] : defaults->at("nozzle_multipliers").items()) {
+        if (!project.contains(key)) project[key] = repeat(value, nozzles);
+        else {
+            auto &multipliers = project.at(key);
+            if (!multipliers.is_array()) {
+                throw ProjectSettingsError("project." + key + " must be an array");
+            }
+            // Native resize keeps existing nozzle tuning and appends defaults.
+            while (multipliers.size() < nozzles) multipliers.push_back(value);
+        }
+    }
+    if (!project.contains("flush_volumes_matrix")) {
+        rebuild_flush_matrix_from_vector(project, material_count, nozzles);
+        if (!project.contains("flush_volumes_matrix")) {
+            throw ProjectSettingsError(
+                "project.flush_volumes_vector must contain load/unload volumes for each material");
+        }
+    }
+}
+
 std::string requested_material_type(const nlohmann::json &material) {
     if (!material.is_object()) {
         throw ProjectSettingsError("each source_materials slot must be an object");
@@ -602,10 +639,11 @@ json prepare_source_identity(const json &base, const json &request) {
 }
 
 void apply_source_flush_defaults(json &project, const json &request, const json &target) {
+    complete_native_flush_defaults(project, target.at("package_dialect"), filament_count(project));
     if (!request.contains("source_materials") || request.contains("merge_sources") ||
         request.value("preserve_source_material_settings", false) ||
         target.at("target_contract").value("slicer_id", "") != "FlashStudio") return;
-    rebuild_flush_matrix_from_vector(project);
+    rebuild_flush_matrix_from_vector(project, filament_count(project));
 }
 
 void apply_source_tower_defaults(json &project, const json &target) {

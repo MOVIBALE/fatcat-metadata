@@ -103,6 +103,39 @@ For a user-provided project, call
 selection policy. Existing unknown project fields are retained. `None` as the
 source is equivalent to the one-argument native-source call.
 
+Set `project_preset_name` to a non-empty string to give the exported process
+preset its own project identity. This works through the same composer for
+built-in sources, imported projects and merges. For Bambu-compatible projects,
+it sets `print_settings_id` while retaining the original `default_print_profile`;
+only the process entry in `inherits_group` is detached, leaving material and
+printer inheritance intact. The project already contains resolved process values;
+the slicer can then load a separate project preset instead of editing a system
+preset with the same name. For Prusa 3, it changes the native print preset's
+display name and retains its source ID and conditions. All process values,
+material/hardware identities and unknown source settings are retained. Omit the
+field to retain the source's existing preset name.
+
+`project_preset_name` 为非空字符串时，FatCat 为导出的工艺预设赋予独立项目名称。
+内置来源、导入工程和合并共用同一合成入口。Bambu 兼容工程修改 print_settings_id，
+保留原生 default_print_profile，仅解除工艺继承，保留材料／机器继承和已展开的工艺值；
+Prusa 3 修改显示名称，保留来源 ID 和适用条件。
+工艺参数、材料／硬件身份及未知来源设置不变；省略该字段则保留原有预设名称。
+
+Bambu projects also receive any missing native flush-volume vector, matrix and
+nozzle multipliers. FatCat expands the recorded slicer defaults to the actual
+material and physical-nozzle counts, avoiding dependence on the slicer's previous
+project. Existing nozzle multipliers retain their prefix; missing nozzle entries
+receive native defaults. Mixed old/new source merges prefer explicit transition
+values and use defaults only when no source supplies a value. Complete source
+matrices are retained; this does not calculate purging
+volumes from colours or validate physical print results.
+
+Bambu 工程缺少原生冲刷向量、矩阵或喷嘴倍率时，FatCat 按实际材料数和物理喷嘴数
+展开已记录的切片软件默认值，避免受切片软件上一个工程的状态影响。已有喷嘴倍率保留，
+仅补缺少的喷嘴项；新旧工程合并优先采用明确的冲刷值，仅在没有来源值时使用默认。
+已有完整矩阵保留；
+这里不按颜色预测冲刷量，也不代表实体打印已验证。
+
 Pass the final project and real model facts to
 `compose_model_metadata(project, model_request)`. The model request includes
 the exact target, real object/assembly IDs, ordered parts/material indices,

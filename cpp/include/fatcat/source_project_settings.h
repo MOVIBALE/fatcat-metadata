@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -26,6 +27,12 @@ nlohmann::json compose_source_project(const nlohmann::json &project,
 void apply_source_flush_defaults(nlohmann::json &project,
                                  const nlohmann::json &request,
                                  const nlohmann::json &target);
+
+// Complete missing native project fields for the actual material/nozzle axes.
+// 按实际材料／喷嘴轴补齐缺少的原生项目字段，保留已有明确值。
+void complete_native_flush_defaults(nlohmann::json &project,
+                                    const nlohmann::json &dialect,
+                                    std::size_t material_count);
 
 // Resolve omitted native tower geometry for both composition and layout reads.
 void apply_source_tower_defaults(nlohmann::json &project,

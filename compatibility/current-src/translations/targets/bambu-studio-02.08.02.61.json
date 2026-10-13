@@ -2182,6 +2182,18 @@
     }
   ],
   "package_dialect": {
+    "flush_volume_defaults": {
+      "source": {
+        "defaults_url": "https://github.com/bambulab/BambuStudio/blob/v02.08.02.61/src/libslic3r/PrintConfig.cpp#L6156",
+        "layout_url": "https://github.com/bambulab/BambuStudio/blob/v02.08.02.61/src/libslic3r/PresetBundle.cpp#L5576"
+      },
+      "load_unload_volumes": ["140", "140"],
+      "matrix_per_nozzle": true,
+      "nozzle_multipliers": {
+        "flush_multiplier": "1",
+        "flush_multiplier_fast": "1.2"
+      }
+    },
     "wipe_tower": {
       "enabled_key": "enable_prime_tower",
       "x_key": "wipe_tower_x",
