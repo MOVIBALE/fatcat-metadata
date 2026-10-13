@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "fatcat/project_settings.h"
+#include "project_settings_internal.h"
 
 namespace fatcat::detail::prusa {
 namespace {
@@ -642,7 +643,7 @@ json compose(json project, const json &request, const json &target) {
         "build_plate_uid", "hardware_mode", "source_materials", "filament_colour", "filament_multi_colour",
         "filament_slot_mode", "filament_source_slots", "material_mode", "process_settings",
         "native_print_profile_name", "native_filament_profile_names", "source_slot_colours",
-        "preserve_source_material_settings", "source_profile", "consumer_type", "merge_sources",
+        "preserve_source_material_settings", "source_profile", "consumer_type", "merge_sources", "project_preset_name",
         "enable_prime_tower", "prime_tower_width", "wipe_tower_x", "wipe_tower_y", "wipe_tower_rotation_angle"};
     json chosen = json::object();
     const auto accept = [&](const std::string &key, const json &value) {
@@ -681,6 +682,8 @@ json compose(json project, const json &request, const json &target) {
     }
     if (request.contains("wipe_tower_rotation_angle")) tower["rotation_deg"] = number(request.at("wipe_tower_rotation_angle"));
     if (!tower.is_null()) project = patch_tower(std::move(project), tower);
+    project_settings_internal::apply_project_preset_name(
+        container(project).at("preset").at("print"), "name", request);
     const auto effective = summary(project);
     json slot_map = json::array();
     const auto count = effective.at("filament_settings_id").size();

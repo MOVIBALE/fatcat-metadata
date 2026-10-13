@@ -1558,7 +1558,10 @@ std::string compose_project_settings_from_data(std::string_view project_json,
                 missing_pair = missing_pair || !supplied;
             }
         }
-        if (present.size() != palette.size() || missing_pair) {
+        const bool native_transition_defaults =
+            target.at("package_dialect").contains("flush_volume_defaults");
+        if (present.size() != palette.size() ||
+            (missing_pair && !native_transition_defaults)) {
             // Complete absent selections with the same packaged native-source
             // synthesis used by ordinary exports. Actual source slots remain
             // authoritative; the carrier contains no geometry or process.
@@ -1611,7 +1614,7 @@ std::string compose_project_settings_from_data(std::string_view project_json,
             if (!slots.empty()) request["merge_sources"].push_back({{"source_id", id}, {"project_settings", carrier}, {"slots", slots}});
             // Native transition defaults supply only pairs absent from every
             // source, while source transition values and conflicts survive.
-            request["merge_default_project"] = defaults;
+            if (!native_transition_defaults) request["merge_default_project"] = defaults;
         }
     }
     return compose_project_settings(project_json, request.dump(),

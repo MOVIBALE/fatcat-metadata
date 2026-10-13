@@ -97,6 +97,7 @@ void validate_request_keys(const json &request, const json &target) {
         "process_settings",
         "preserve_source_material_settings",
         "source_profile",
+        "project_preset_name",
         "consumer_type",  // Accepted for compatibility; does not affect composition.
         "source_slot_colours",
     };
@@ -1042,6 +1043,7 @@ json compose_preserved_source(json project, const json &request, const json &tar
     detail::apply_scalar_overrides(project, request, target, changed);
     json tower_dialect = required_member(dialect, "wipe_tower", "package dialect");
     detail::apply_tower_overrides(project, request, target);
+    apply_project_preset_name(project, "print_settings_id", request);
     auto summary = effective_summary(project, "preserve_template", "", "",
                                       plate.value("build_plate_uid", ""));
     summary["hardware_mode"] = "preserve_source";
@@ -1202,6 +1204,7 @@ std::string compose_project_settings(std::string_view base_project_json,
     json wipe_tower_dialect = required_member(dialect, "wipe_tower", "package dialect");
 
     detail::apply_source_flush_defaults(project, request, target);
+    apply_project_preset_name(project, "print_settings_id", request);
     json result = metadata_result(project, dialect, plate,
         std::move(wipe_tower_dialect),
         effective_summary(project, material_mode, machine_uid, nozzle_uid, plate_uid));

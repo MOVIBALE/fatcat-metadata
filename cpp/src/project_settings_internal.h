@@ -39,6 +39,20 @@ inline std::string required_string(const json &object, std::string_view key,
     return value.get<std::string>();
 }
 
+inline void apply_project_preset_name(json &preset, const char *name_field,
+                                     const json &request) {
+    if (request.contains("project_preset_name")) {
+        preset[name_field] = required_string(request, "project_preset_name", "request");
+        // A process inheritance match would select the system preset even
+        // under a new name. The project already carries resolved values.
+        if (preset.contains("inherits_group")) {
+            auto &inherits = preset.at("inherits_group");
+            if (!inherits.is_array()) invalid("project.inherits_group must be an array");
+            if (!inherits.empty()) inherits.at(0) = "";
+        }
+    }
+}
+
 inline bool contains_string(const json &array, const std::string &value) {
     if (!array.is_array()) {
         return false;

@@ -261,13 +261,6 @@ std::size_t merge_group_width(const json &project, const std::string &key,
             " does not match the target's declared slot shape");
 }
 
-json merge_transition_defaults(const json &request, const json &machine) {
-    if (!request.contains("merge_default_project")) return json();
-    const auto &defaults = merge_required_object(request, "merge_default_project", "request");
-    validate_source_hardware(defaults, machine);
-    return defaults;
-}
-
 json merged_colour_values(const MergeProjectInputs &inputs, const std::string &key,
                           std::vector<std::set<std::string>> &colour_overrides) {
     const std::size_t output_count = inputs.logical_by_id.size();
@@ -354,6 +347,7 @@ json merged_transition_matrix(const MergeProjectInputs &inputs, const std::strin
                 }
                 const auto &source = inputs.sources[source_index];
                 if (!source.project.contains(key)) {
+                    if (defaults.contains(key)) continue;
                     invalid("merged source " + source.source_id +
                             " is missing matrix field " + key);
                 }
@@ -410,7 +404,8 @@ json merged_transition_matrix(const MergeProjectInputs &inputs, const std::strin
 
 json merged_material_values(const MergeProjectInputs &inputs, const std::string &key,
                             const json &rule, std::size_t group_size, bool variable_group,
-                            std::vector<std::set<std::string>> &colour_overrides) {
+                            std::vector<std::set<std::string>> &colour_overrides,
+                            const json &defaults = json()) {
     const std::size_t output_count = inputs.logical_by_id.size();
     std::optional<std::size_t> output_width;
     std::vector<std::vector<json>> merged_values(output_count);
@@ -423,6 +418,7 @@ json merged_material_values(const MergeProjectInputs &inputs, const std::string 
             if (mapped == inputs.source_index_by_slot[source_index].end()) continue;
             const auto &source = inputs.sources[source_index];
             if (!source.project.contains(key)) {
+                if (defaults.contains(key)) continue;
                 invalid("merged source " + source.source_id +
                         " is missing slot field " + key + " for global slot " +
                         std::to_string(output_id));
@@ -467,6 +463,17 @@ json merged_material_values(const MergeProjectInputs &inputs, const std::string 
                 chosen_sources[output_index] = source.source_id;
             }
         }
+        if (merged_values[output_index].empty() && defaults.contains(key)) {
+            const auto width = merge_group_width(defaults, key, output_count,
+                group_size, false, variable_group, "native transition defaults");
+            if (output_width && *output_width != width) {
+                invalid("native transition default width differs from source");
+            }
+            output_width = width;
+            for (std::size_t variant = 0; variant < width; ++variant) {
+                merged_values[output_index].push_back(defaults.at(key).at(output_index * width + variant));
+            }
+        }
         if (merged_values[output_index].empty()) {
             invalid("no source supplies " + key + " for merged global slot " +
                     std::to_string(output_id));
@@ -477,6 +484,36 @@ json merged_material_values(const MergeProjectInputs &inputs, const std::string 
         for (const auto &value : slot_values) values.push_back(value);
     }
     return values;
+}
+
+json merge_transition_defaults(const json &request, const json &machine,
+                               const json &dialect, const MergeProjectInputs &inputs) {
+    json defaults;
+    if (request.contains("merge_default_project")) {
+        defaults = merge_required_object(request, "merge_default_project", "request");
+        validate_source_hardware(defaults, machine);
+    }
+    if (!dialect.contains("flush_volume_defaults")) return defaults;
+    if (defaults.is_null()) defaults = machine;
+    const auto count = inputs.logical_by_id.size();
+    const bool derive_matrix = !defaults.contains("flush_volumes_matrix");
+    complete_native_flush_defaults(defaults, dialect, count);
+    const auto &rules = dialect.at("filament_snapshot").at("array_rules");
+    for (const auto &rule : rules) {
+        if (!contains_string(rule.at("keys"), "flush_volumes_vector")) continue;
+        std::vector<std::set<std::string>> colour_overrides(count);
+        defaults["flush_volumes_vector"] = merged_material_values(
+            inputs, "flush_volumes_vector", rule, rule.at("group_size").get<std::size_t>(),
+            true, colour_overrides, defaults);
+        break;
+    }
+    if (derive_matrix) {
+        // Cross-source transitions use the selected source load/unload values.
+        // A caller's explicit transition matrix remains the fallback unchanged.
+        defaults.erase("flush_volumes_matrix");
+        complete_native_flush_defaults(defaults, dialect, count);
+    }
+    return defaults;
 }
 
 MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
@@ -517,7 +554,9 @@ MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
                 continue;
             }
 
-            if (!any_source_has_key) {
+            const bool transition_default = defaults.contains(key) &&
+                (selection == "matrix" || key == "flush_volumes_vector");
+            if (!any_source_has_key && !transition_default) {
                 project.erase(key);
                 continue;
             }
@@ -534,7 +573,8 @@ MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
 
             project[key] = merged_material_values(
                 inputs, key, rule, group_size,
-                material_group && selection == "default_or_group", colour_overrides);
+                material_group && selection == "default_or_group", colour_overrides,
+                key == "flush_volumes_vector" ? defaults : json());
         }
     }
 
@@ -659,11 +699,13 @@ MergedProjectSettings merge_project_settings(
                 source.at("project_settings"), snapshot);
         }
     }
-    const json merge_dialect = source_merge_dialect(dialect, project);
+    json shape_project = project;
+    complete_native_flush_defaults(shape_project, dialect, project.at("filament_settings_id").size());
+    const json merge_dialect = source_merge_dialect(dialect, shape_project);
     const auto inputs = collect_merge_project_inputs(
         project, merge_request, merge_dialect, machine, plate);
-    auto merged = compose_merged_slot_arrays(inputs, merge_dialect,
-        merge_transition_defaults(request, machine));
+    const json defaults = merge_transition_defaults(request, machine, merge_dialect, inputs);
+    auto merged = compose_merged_slot_arrays(inputs, merge_dialect, defaults);
     return {std::move(merged.project), std::move(merged.logical_slots),
             source_slot_mappings(inputs), merged.slot_count};
 }
