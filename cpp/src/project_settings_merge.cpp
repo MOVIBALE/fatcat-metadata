@@ -486,6 +486,24 @@ json merged_material_values(const MergeProjectInputs &inputs, const std::string 
     return values;
 }
 
+bool source_matrices_cover_all_pairs(const MergeProjectInputs &inputs) {
+    for (const auto &[row, row_slot] : inputs.logical_by_id) {
+        for (const auto &[column, column_slot] : inputs.logical_by_id) {
+            bool supplied = false;
+            for (std::size_t index = 0; index < inputs.sources.size(); ++index) {
+                const auto &slots = inputs.source_index_by_slot[index];
+                if (inputs.sources[index].project.contains("flush_volumes_matrix") &&
+                    slots.count(row) && slots.count(column)) {
+                    supplied = true;
+                    break;
+                }
+            }
+            if (!supplied) return false;
+        }
+    }
+    return true;
+}
+
 json merge_transition_defaults(const json &request, const json &machine,
                                const json &dialect, const MergeProjectInputs &inputs) {
     json defaults;
@@ -496,7 +514,8 @@ json merge_transition_defaults(const json &request, const json &machine,
     if (!dialect.contains("flush_volume_defaults")) return defaults;
     if (defaults.is_null()) defaults = machine;
     const auto count = inputs.logical_by_id.size();
-    const bool derive_matrix = !defaults.contains("flush_volumes_matrix");
+    const bool derive_matrix = !defaults.contains("flush_volumes_matrix") &&
+        !source_matrices_cover_all_pairs(inputs);
     complete_native_flush_defaults(defaults, dialect, count);
     const auto &rules = dialect.at("filament_snapshot").at("array_rules");
     for (const auto &rule : rules) {
