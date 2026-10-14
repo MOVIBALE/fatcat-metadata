@@ -20,6 +20,7 @@
 #include "fatcat/project_settings.h"
 #include "fatcat/metadata_components.h"
 #include "fatcat/source_project_settings.h"
+#include "fatcat/template_assembly.h"
 
 namespace fatcat {
 namespace {
@@ -1135,6 +1136,7 @@ json compose_builtin_project(const json &input_request, const json &canonical,
         }
     }
 
+    project = json::parse(assemble_project_template(project.dump(), std::nullopt, "{}"));
     json request = input_request;
     if (slicer_id == "OrcaSlicer") {
         auto process_settings = request.value("process_settings", json::object());
