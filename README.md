@@ -1,7 +1,8 @@
 # FatCat Metadata
 
 [![CI](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml)
-[![License: AGPL-3.0-only](https://img.shields.io/badge/license-AGPL--3.0--only-blue.svg)](LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/fatcat-metadata)](https://pypi.org/project/fatcat-metadata/)
+[![License: AGPL-3.0-only](https://img.shields.io/badge/license-AGPL--3.0--only-blue.svg)](https://github.com/MOVIBALE/fatcat-metadata/blob/main/LICENSE)
 ![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)
 ![Python 3.12–3.14](https://img.shields.io/badge/Python-3.12%E2%80%933.14-blue.svg)
 
@@ -12,9 +13,9 @@ printer, process and material profiles, composes final project settings, and
 describes the metadata a 3MF writer needs for a selected slicer.
 It can be used independently of Lumina or any other application.
 
-[English](README.md) · [简体中文](README_CN.md) · [API guide](docs/API.md) · [Examples](cpp/examples/python_neroued_consumer/) · [Report an issue](https://github.com/MOVIBALE/fatcat-metadata/issues)
+[English](https://github.com/MOVIBALE/fatcat-metadata/blob/main/README.md) · [简体中文](https://github.com/MOVIBALE/fatcat-metadata/blob/main/README_CN.md) · [API guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/API.md) · [Examples](https://github.com/MOVIBALE/fatcat-metadata/tree/main/cpp/examples/python_neroued_consumer/) · [Report an issue](https://github.com/MOVIBALE/fatcat-metadata/issues)
 
-**Start here:** [first result, command-line usage and complete 3MF example](docs/FIRST_USE.md).
+**Start here:** [first result, command-line usage and complete 3MF example](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/FIRST_USE.md).
 Use it to discover native choices, generate a model without Lumina, preserve
 user-project tuning, or compose merged material slots through the same core.
 
@@ -27,9 +28,9 @@ gyroid infill and brim settings. Each shown project was actually opened and
 sliced in the application; the animation uses enlarged GUI keyframes and
 compresses waiting time.
 
-![Custom process metadata opened and sliced in seven native applications](docs/images/custom-process-slicers.gif)
+![Custom process metadata opened and sliced in seven native applications](https://raw.githubusercontent.com/MOVIBALE/fatcat-metadata/main/docs/images/custom-process-slicers.gif)
 
-[Reproduce the exports and read the observed results](docs/SHOWCASE.md).
+[Reproduce the exports and read the observed results](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/SHOWCASE.md).
 All eight representative projects sliced successfully. Bambu/Snapmaker import
 notices and QIDI/Anycubic plate-label differences are recorded there. This is
 evidence for the listed combinations, rather than all printers or physical
@@ -37,9 +38,9 @@ print quality. A separate 3MF is composed for each target.
 
 ## Project status
 
-The current version is **0.1.0**, an early public SDK. Install from source or
-use a verified CI wheel; no tagged release is available yet. Until the first
-formal release, record the exact source commit alongside your dependency.
+The first PyPI release is **0.1.0**, an early public SDK. Install a matching
+prebuilt wheel using the command below. Source users should pin an exact commit;
+a published version is fixed and is not replaced with later development code.
 
 | Language | Current entry point |
 | --- | --- |
@@ -90,7 +91,7 @@ These are the exact versions currently bundled with the library:
 | Snapmaker Orca | `SnapmakerOrca` | `2.4.0` |
 | PrusaSlicer (preview) | `PrusaSlicer` | `3.0.0-alpha12` |
 
-The [target manifest](compatibility/current-src/translations/supported-targets.json)
+The [target manifest](https://github.com/MOVIBALE/fatcat-metadata/blob/main/compatibility/current-src/translations/supported-targets.json)
 is the authoritative version list. Unknown targets and incompatible selections
 are rejected. A supported slicer does not imply every printer/nozzle/material/plate
 combination is available; inspect its native source catalogue.
@@ -100,7 +101,7 @@ The seven stable snapshots were checked against official macOS downloads on
 its new native project format is separate from PrusaSlicer 2.x. Anycubic's Linux 2.0.0.5 build
 is a different release and is not claimed by the macOS 2.0.0.3 snapshot.
 
-Explicit [process settings](docs/PROCESS_SETTINGS.md) use a discoverable contract:
+Explicit [process settings](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/PROCESS_SETTINGS.md) use a discoverable contract:
 known equivalents are normalized, target array formats are respected, and
 unknown or unsupported inputs raise actionable errors. The seven stable targets cover 38 fields,
 not every slicer feature or every interaction between settings.
@@ -110,7 +111,7 @@ separately from an excluded native enum token; absent fields remain unverified.
 
 Some combinations use explicitly recorded historical sources. OrcaSlicer 2.4.2
 U1 0.4 mm, for example, uses a recorded 2.2.4 process and textured-plate material.
-The result identifies their actual versions. See [compatibility notes](docs/COMPATIBILITY.md).
+The result identifies their actual versions. See [compatibility notes](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/COMPATIBILITY.md).
 
 ### PrusaSlicer 3 preview
 
@@ -129,34 +130,34 @@ python -m fatcat_metadata_examples.prusa --machine prusa:mk4s --output prusa.3mf
 The complete example requires the optional Neroued writer. MK4S, MK4S + MMU3
 and XL 5T samples were opened and sliced in the actual alpha12 GUI. This does
 not establish every catalogue combination or physical print quality. See the
-[Prusa guide](docs/PRUSA.md) for configuration imports, aliases and limits.
+[Prusa guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/PRUSA.md) for configuration imports, aliases and limits.
 
 ## Python quick start
 
-### Install a prebuilt wheel
+### Install from PyPI
 
-Download a matching CPython 3.12–3.14 wheel from a successful
-[CI build](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml).
-Replace the path below with its actual filename. A matching wheel contains the
-compiled extension and native command; installing it does not compile C++.
+Use 64-bit CPython 3.12, 3.13 or 3.14 on Windows AMD64, macOS 14+ Apple Silicon,
+or Linux x86_64 with glibc 2.28+. Pip selects the matching precompiled extension
+and native command. The option below prevents an unexpected source build on
+unsupported platforms; installing a matching wheel requires no C++ compiler.
 
 ```bash
-python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.0
 fatcat --version
 fatcat catalog
 ```
 
-Actions downloads require GitHub sign-in and ordinary CI artifacts expire after
-30 days. There is no tagged or PyPI release yet. Match the wheel's OS/CPU/Python
-tags; existing native Linux builds do not promise portability to older distros.
-The manual [distribution preparation](docs/DISTRIBUTIONS.md) builds manylinux
-wheels and targets macOS 14+ for wheels (13.3+ for the C++ SDK), and does not
-publish them automatically.
+For the complete 3MF examples, install `fatcat-metadata[examples]==0.1.0` instead.
+The optional extra adds Neroued; the metadata core remains usable on its own.
+Downloads are also available on the [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.0/#files).
+Alpine/musl, Intel Macs, Windows ARM and free-threaded Python have no prebuilt
+wheel in this release. Building from source requires a compatible toolchain.
+Read the [distribution guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/DISTRIBUTIONS.md) for build and publishing details.
 
-The [installed cube example](docs/FIRST_USE.md#generate-a-complete-3mf--生成完整-3mf)
+The [installed cube example](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/FIRST_USE.md#generate-a-complete-3mf--生成完整-3mf)
 was opened and sliced in the pinned Bambu Studio version:
 
-![Installed cube, A1 mini and real slicing preview](docs/images/first-use-preview.png)
+![Installed cube, A1 mini and real slicing preview](https://raw.githubusercontent.com/MOVIBALE/fatcat-metadata/main/docs/images/first-use-preview.png)
 
 This demonstrates one example's settings and toolpaths. It does not establish
 all printer combinations or physical print quality.
@@ -190,7 +191,7 @@ project = result["project_settings"]
 Supply the final dictionary and your real model facts to
 `compose_model_metadata(project, model_request)` for the writer-facing description.
 For a user-provided project, use `compose_project_settings(source_project, request)`.
-Existing JSON-string calls remain supported. See the [API guide](docs/API.md)
+Existing JSON-string calls remain supported. See the [API guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/API.md)
 for both request contracts.
 
 ### Write a complete example 3MF
@@ -203,10 +204,10 @@ python -m pip install 'neroued-3mf==0.4.0'
 python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 ```
 
-The [minimal example](cpp/examples/python_neroued_consumer/minimal.py) shows
+The [minimal example](https://github.com/MOVIBALE/fatcat-metadata/blob/main/cpp/examples/python_neroued_consumer/minimal.py) shows
 settings composition, real geometry/ID creation, metadata application and one
 archive write. It uses Neroued's public core assembly layout. The
-[complete guide](cpp/examples/python_neroued_consumer/README.md) covers custom
+[complete guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/cpp/examples/python_neroued_consumer/README.md) covers custom
 sources, U1 compatibility and writer requirements for optional external
 production-model layouts.
 
@@ -236,7 +237,7 @@ print(fatcat.__source_dirty__)
 
 The revision identifies the actual build checkout; PR CI may use a merge
 revision. Git-free archives report `"unknown"` and `None` unless their packaging
-workflow supplies build provenance. See [distribution preparation](docs/DISTRIBUTIONS.md).
+workflow supplies build provenance. See the [distribution guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/DISTRIBUTIONS.md).
 These build fields
 are separate from the selected profiles' provenance.
 
@@ -263,8 +264,8 @@ target_link_libraries(my_generator PRIVATE FatCatMetadata::Core)
 Pass `FatCatMetadata_DATA_DIR` to the public composition APIs; the library
 resolves its internal profile/target paths. System JSON/XML packages used to
 build the SDK must also be available to the consumer. Python wheels do not
-include this C++ development SDK. See the [C++ guide](cpp/README.md) and
-[external CMake consumer](cpp/examples/out_of_tree_consumer/) for complete examples.
+include this C++ development SDK. See the [C++ guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/cpp/README.md) and
+[external CMake consumer](https://github.com/MOVIBALE/fatcat-metadata/tree/main/cpp/examples/out_of_tree_consumer/) for complete examples.
 
 ## Data and validation
 
@@ -277,21 +278,21 @@ indices are separate from those raw profiles.
 CI checks C++ Debug/Release builds, Python wheel installation, composition,
 independent consumers and generated archive structure on Windows, Linux and
 macOS. Native GUI opening/slicing and physical printer behavior require separate
-acceptance. See [validation scope](docs/VALIDATION.md) for what each check establishes.
+acceptance. See [validation scope](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/VALIDATION.md) for what each check establishes.
 
 ## Documentation and repository layout
 
 | Guide | Purpose |
 | --- | --- |
-| [API](docs/API.md) | Settings/metadata requests, dictionary and JSON calls, and build provenance. |
-| [First result](docs/FIRST_USE.md) | Installed CLI, choice discovery and the complete cube example. |
-| [Custom process showcase](docs/SHOWCASE.md) | Seven-slicer GUI montage, editable process JSON and eight reproducible exports. |
-| [Distributions](docs/DISTRIBUTIONS.md) | Fixed-version files and source/hash receipts without publishing. |
-| [Python examples](cpp/examples/python_neroued_consumer/README.md) | Complete independent generator and optional writer integration. |
-| [C++ SDK](cpp/README.md) | Source builds, installation and downstream CMake consumption. |
-| [Compatibility](docs/COMPATIBILITY.md) | Historical profiles and unavailable combinations. |
-| [Maintenance](docs/MAINTAINERS.md) | Updating snapshots, target bindings and source provenance. |
-| [Validation](docs/VALIDATION.md) | Automated checks and separate native GUI acceptance. |
+| [API](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/API.md) | Settings/metadata requests, dictionary and JSON calls, and build provenance. |
+| [First result](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/FIRST_USE.md) | Installed CLI, choice discovery and the complete cube example. |
+| [Custom process showcase](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/SHOWCASE.md) | Seven-slicer GUI montage, editable process JSON and eight reproducible exports. |
+| [Distributions](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/DISTRIBUTIONS.md) | PyPI installation, portable builds, Trusted Publishing and source/hash receipts. |
+| [Python examples](https://github.com/MOVIBALE/fatcat-metadata/blob/main/cpp/examples/python_neroued_consumer/README.md) | Complete independent generator and optional writer integration. |
+| [C++ SDK](https://github.com/MOVIBALE/fatcat-metadata/blob/main/cpp/README.md) | Source builds, installation and downstream CMake consumption. |
+| [Compatibility](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/COMPATIBILITY.md) | Historical profiles and unavailable combinations. |
+| [Maintenance](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/MAINTAINERS.md) | Updating snapshots, target bindings and source provenance. |
+| [Validation](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/VALIDATION.md) | Automated checks and separate native GUI acceptance. |
 
 ```text
 cpp/            C++ core, public headers, Python bindings and examples
@@ -312,16 +313,16 @@ data before sharing a reproduction.
 
 Keep public interfaces compatible, adopt new helpers in a real consumer and
 document behavior changes. Profile updates need exact upstream sources and
-license records: follow the [maintenance guide](docs/MAINTAINERS.md). Existing
-build/check commands are in the [C++ guide](cpp/README.md) and
-[CI workflow](.github/workflows/ci.yml). Record actual application versions and
+license records: follow the [maintenance guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/MAINTAINERS.md). Existing
+build/check commands are in the [C++ guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/cpp/README.md) and
+[CI workflow](https://github.com/MOVIBALE/fatcat-metadata/blob/main/.github/workflows/ci.yml). Record actual application versions and
 GUI outcomes separately from CI results.
 
 ## License
 
-Original FatCat code is licensed under **AGPL-3.0-only**; see [LICENSE](LICENSE).
+Original FatCat code is licensed under **AGPL-3.0-only**; see [LICENSE](https://github.com/MOVIBALE/fatcat-metadata/blob/main/LICENSE).
 Third-party profile data and dependencies retain their respective licenses.
-Their sources and notices are recorded in [NOTICE.md](NOTICE.md) and the
-[third-party manifest](licenses/third-party/manifest.json).
-[COPYRIGHT.md](COPYRIGHT.md) explains copyright ownership and separate licensing
+Their sources and notices are recorded in [NOTICE.md](https://github.com/MOVIBALE/fatcat-metadata/blob/main/NOTICE.md) and the
+[third-party manifest](https://github.com/MOVIBALE/fatcat-metadata/blob/main/licenses/third-party/manifest.json).
+[COPYRIGHT.md](https://github.com/MOVIBALE/fatcat-metadata/blob/main/COPYRIGHT.md) explains copyright ownership and separate licensing
 terms for original code. Neroued is a separate project with its own terms.

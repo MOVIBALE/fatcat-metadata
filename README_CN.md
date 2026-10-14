@@ -31,8 +31,8 @@ Snapmaker 的导入提示，以及 QIDI、Anycubic 的板型显示差异也如�
 
 ## 项目状态
 
-当前版本为 **0.1.0**，处于早期公开 SDK 阶段。可从源码安装，或使用通过 CI 检查的
-wheel；目前没有带版本标签的正式发行包。首次正式发行前，请在依赖中记录准确的源码提交。
+首次 PyPI 发行版本为 **0.1.0**，处于早期公开 SDK 阶段。可用下方命令安装匹配的
+预编译 wheel。源码用户应固定准确提交；已发布版本不会被后续开发代码同名替换。
 
 | 语言 | 当前提供的接口 |
 | --- | --- |
@@ -106,14 +106,14 @@ python -m fatcat_metadata_examples.prusa --machine prusa:mk4s --output prusa.3mf
 
 ## Python 快速上手
 
-### 安装预编译 wheel
+### 从 PyPI 安装
 
-从成功的 [CI 构建](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml)
-下载匹配 CPython 3.12–3.14、操作系统和 CPU 的 wheel，替换下方路径。
-匹配的 wheel 包含已编译扩展和原生命令，安装时不需要编译 C++。
+使用 64 位 CPython 3.12、3.13 或 3.14，支持 Windows AMD64、macOS 14 以上的
+Apple 芯片 Mac，以及 glibc 2.28 以上的 Linux x86_64。Pip 自动选择已编译扩展和
+原生命令。下方选项避免在不支持的平台上意外触发源码编译；安装匹配的 wheel 不需要 C++ 编译器。
 
 ```bash
-python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.0
 fatcat --version
 fatcat catalog
 ```
@@ -131,10 +131,10 @@ Prusa 3 则直接采用应用导出的 schema，支持 220 个单值工艺字段
 显式工艺覆盖范围。“SDK 尚未支持”与“原生标准枚举词不接受”分别说明；清单外字段仍为待确认。
 这不代表所有切片软件专属功能都能相互转换。
 
-Actions 下载需要登录 GitHub，普通 CI 附件保留 30 天。项目尚未提供正式 Release 或
-PyPI 发行。原生 Linux 构建不承诺兼容更旧的发行版；手动[发行准备流程](docs/DISTRIBUTIONS.md)
-使用 manylinux 构建 wheel；macOS wheel 最低版本为 14，C++ SDK 为 13.3，
-不会自动发布。
+需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.0`，它额外安装
+Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.0/#files)
+手动下载。此版不提供 Alpine/musl、Intel Mac、Windows ARM 或自由线程 Python 的
+预编译 wheel；源码构建需要相应工具链。构建与发布方式见[发行说明](docs/DISTRIBUTIONS.md)。
 
 [随包立方体示例](docs/FIRST_USE.md)已在指定版本 Bambu Studio 中真实打开和切片：
 

@@ -1,11 +1,32 @@
-# Preparing distributions / 准备发行文件
+# Distributions and publishing / 发行与发布
 
-The manual `Prepare distributions` workflow builds downloadable wheels and a
-standalone C++ SDK/CLI. It uploads Actions artifacts for review; it does not
-create a GitHub Release or publish to PyPI. The existing CI remains separate.
+The manual `Distributions` workflow builds nine portable Python wheels and one
+source distribution. With `publish=false` (the default), it saves reviewed
+Actions artifacts and also builds the standalone C++ SDK/CLI. With
+`publish=true` on `main`, a separate job publishes the complete Python release
+to PyPI through Trusted Publishing. It does not create a GitHub Release.
+The existing CI remains separate.
 
-手动工作流准备可下载的 wheel 和独立 C++ SDK/CLI，保存为 Actions 产物供审核。
-它不会创建 GitHub Release，也不会发布到 PyPI。原有 CI 独立保留。
+手动 `Distributions` 工作流构建九个预编译 Python wheel 和一个源码包。
+默认 `publish=false`，保存 Actions 产物供审核，并构建独立 C++ SDK/CLI；
+在 `main` 上选择 `publish=true`，独立发布任务通过 PyPI Trusted Publishing 上传完整 Python 发行。
+它不创建 GitHub Release，原有 CI 独立保留。
+
+## Install the Python release / 安装 Python 发行
+
+```bash
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.0
+fatcat --version
+fatcat catalog
+```
+
+For complete 3MF examples, install `fatcat-metadata[examples]==0.1.0`.
+The [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.0/#files)
+provides the same wheels for offline installation. PyPI files do not require
+GitHub sign-in and do not expire like Actions artifacts.
+
+完整示例可安装 `fatcat-metadata[examples]==0.1.0`。PyPI 文件页可下载相同 wheel 供离线安装，
+不需要登录 GitHub，也不受 Actions 附件有效期限制。
 
 ## Build targets / 构建目标
 
@@ -36,6 +57,52 @@ See [PyPA's compatibility tags](https://packaging.python.org/en/latest/specifica
 现有浮点格式化接口需要 macOS 13.3，但 macOS 11 之后的 wheel 标签只按大版本表示。
 因此 wheel 设为 14.0，避免误承诺 13.0 兼容；独立 C++ SDK 可设为 13.3。
 改名不会改变二进制兼容性。
+
+## Maintainer publishing / 维护者发布
+
+Configure PyPI's publisher once. For a new project, use an
+[account-level pending publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/):
+
+| PyPI field | Value |
+| --- | --- |
+| Project name | `fatcat-metadata` |
+| GitHub owner | `MOVIBALE` |
+| Repository | `fatcat-metadata` |
+| Workflow filename | `distributions.yml` |
+| Environment | `pypi` |
+
+Register it under the maintainer's PyPI account with verified email and 2FA.
+The first successful upload creates the project for that account. After it
+exists, manage the same publisher in the project's publishing settings.
+No long-lived PyPI API token is stored in GitHub.
+
+首次在已验证邮箱、启用双重验证的维护者 PyPI 账号中登记待创建项目的 publisher。
+首次上传成功后，项目归该账号所有；后续在项目发布设置中维护相同 publisher。
+GitHub 不保存长期 PyPI API 令牌。
+
+Before publishing, merge the reviewed changes and confirm the SDK CI passes.
+Run `Distributions` on `main` with `publish=true`. The workflow installs each
+wheel outside the checkout, rebuilds from the source archive, checks the package
+metadata, and collects all ten files before the upload job can start. Only that
+job has `id-token: write`, and it uploads existing artifacts without checking
+out or executing project code. The official publishing action also supplies
+[PyPI digital attestations](https://docs.pypi.org/attestations/).
+
+发布前合入已审核改动，并确认 SDK CI 通过。在 `main` 上运行工作流并选择发布。
+流程检查各 wheel 安装、从源码包重建、包元数据及十个发行文件的完整性后，才执行上传。
+只有上传任务拥有 OIDC 权限；它使用已构建产物，不检出或执行项目代码，并附上 PyPI 数字证明。
+
+```bash
+gh workflow run distributions.yml --repo MOVIBALE/fatcat-metadata --ref main -f publish=true
+```
+
+The initial release stays at **0.1.0**. Published files are immutable: update the
+project/CMake versions for a later release instead of trying to replace 0.1.0
+with another commit. A source install still needs C++17, CMake and build-time
+access to the pinned nlohmann/json and TinyXML2 downloads.
+
+首次发行保持 **0.1.0**。已发布文件不可同名替换；后续发行需同步更新项目与 CMake 版本。
+源码安装仍需 C++17、CMake，并在构建时下载固定版本的 nlohmann/json 和 TinyXML2。
 
 ## Local preparation / 本地准备
 
@@ -81,7 +148,7 @@ SDK 目录之外。源码构建需要编译器，安装匹配的预编译 wheel 
 ## Identity and receipts / 来源与清单
 
 `distribution.json` records the packaging checkout's version, source revision,
-dirty status, supported target manifest, wheel tags and each file's SHA-256.
+dirty status, supported target manifest, wheel tags, the source archive and each file's SHA-256.
 SDK provenance is compared with the executable before packaging. Wheel receipts
 describe the packaging run; they do not independently certify which source an
 arbitrary supplied wheel was built from. Supply only wheels from that build.
@@ -100,18 +167,13 @@ build provenance, not a cryptographic source attestation.
 
 Prepared SDK filenames include the revision and `-dirty` where applicable.
 For a public release, use a reviewed clean commit and retain the receipt beside
-the artifacts. Keep package version 0.1.0 during this pre-release phase. Do not
-silently replace a published artifact under the same filename/version; decide
-the release/version policy before publication. Actions artifacts expire after
-90 days and are not a durable public distribution channel.
+the artifacts. Do not replace a published artifact under the same filename/version.
+Actions artifacts expire after 90 days; PyPI is the durable Python distribution channel.
 
-公开发行应来自审核后的干净提交，并同时保留清单。当前预发布阶段版本保持 0.1.0；
-正式发布前再决定版本策略，不应同名覆盖已发布文件。Actions 产物 90 天后过期，
-不能代替长期公开发行渠道。
+公开发行应来自审核后的干净提交，并同时保留清单，不同名覆盖已发布文件。
+Actions 产物 90 天后过期，Python 的长期公开发行渠道为 PyPI。
 
 Hashes and a successful build do not establish slicer GUI acceptance, slicing
-success, or printer compatibility. License terms remain unchanged; publication
-and license decisions are separate from this artifact preparation.
+success, or printer compatibility. License terms remain unchanged.
 
-哈希与构建成功不等于切片软件打开、切片或实体兼容验收。许可条款保持不变；
-正式发布和许可决策需要另行处理。
+哈希与构建成功不等于切片软件打开、切片或实体兼容验收。许可条款保持不变。
