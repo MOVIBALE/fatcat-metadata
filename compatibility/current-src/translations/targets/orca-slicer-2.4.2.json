@@ -2661,6 +2661,15 @@
     }
   ],
   "package_dialect": {
+    "wipe_tower_placement": {
+      "native_defaults": {
+        "wipe_tower_wall_type": "rib",
+        "wipe_tower_rib_width": "8",
+        "wipe_tower_extra_rib_length": "0",
+        "prime_tower_infill_gap": "150%"
+      },
+      "native_defaults_source": "https://raw.githubusercontent.com/OrcaSlicer/OrcaSlicer/v2.4.2/src/libslic3r/PrintConfig.cpp"
+    },
     "wipe_tower": {
       "enabled_key": "enable_prime_tower",
       "x_key": "wipe_tower_x",

@@ -27,7 +27,7 @@ std::filesystem::path packaged_data_root(const char *relative_path) {
     const auto module = py::module_::import("fatcat_metadata");
     const auto module_file =
         module.attr("__file__").cast<std::string>();
-    return std::filesystem::path(module_file).parent_path() /
+    return std::filesystem::u8path(module_file).parent_path() /
         "fatcat_metadata_data" / relative_path;
 }
 
