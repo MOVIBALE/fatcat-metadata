@@ -2,23 +2,21 @@
 
 ## Install once / 安装
 
-Download a wheel that matches your OS, CPU and CPython 3.12–3.14 from a successful
-build. Use its real filename in place of the example path below. Installing a
-matching wheel does not compile C++. There is no PyPI release yet; do not assume
-`pip install fatcat-metadata` will fetch this project.
+Install version 0.1.0 from PyPI using 64-bit CPython 3.12–3.14. Pip selects a
+matching prebuilt wheel for Windows AMD64, macOS 14+ Apple Silicon, or Linux
+x86_64 with glibc 2.28+. Installing that wheel does not compile C++.
 
-下载与操作系统、CPU 和 CPython 3.12–3.14 匹配的 wheel，将下方路径换成真实文件名。
-安装匹配的 wheel 不编译 C++。项目尚未发布到 PyPI。
+使用 64 位 CPython 3.12–3.14 从 PyPI 安装 0.1.0。Pip 会自动选择 Windows AMD64、
+macOS 14 以上 Apple 芯片 Mac 或 glibc 2.28 以上 Linux x86_64 的预编译 wheel，不编译 C++。
 
-Prepared macOS wheels target macOS 14+ on Apple Silicon; other target details
-are in [DISTRIBUTIONS.md](DISTRIBUTIONS.md). Older CI downloads may require a
-newer OS and lack this command; use an artifact built from this implementation.
+The `--only-binary` option fails clearly when no compatible wheel exists instead
+of starting a source build. Other target details are in
+[DISTRIBUTIONS.md](DISTRIBUTIONS.md).
 
-本轮 macOS wheel 面向 Apple Silicon、macOS 14+；其他目标详见发行说明。
-旧 CI 附件可能要求更高系统版本，也没有新命令，需采用本轮代码构建的产物。
+`--only-binary` 选项在没有匹配 wheel 时明确报错，不自动开始源码编译。其他目标详见发行说明。
 
 ```bash
-python -m pip install "/path/to/fatcat_metadata-0.1.0-<matching-tags>.whl"
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.0
 fatcat --version
 fatcat catalog
 ```
@@ -120,7 +118,7 @@ checking out this repository:
 安装可选写包工具，运行随 wheel 安装的示例，不需要克隆源码：
 
 ```bash
-python -m pip install 'neroued-3mf==0.4.0'
+python -m pip install 'fatcat-metadata[examples]==0.1.0'
 python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 ```
 

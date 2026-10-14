@@ -15,17 +15,17 @@ and parameter/result panels enlarged. It is not uninterrupted screen recording.
 
 ## Reproduce / 复现
 
-Install a matching FatCat wheel from the reviewed source revision and the
-optional writer. See [FIRST_USE.md](FIRST_USE.md) for wheel selection/source
+Install the FatCat release and optional writer from PyPI.
+See [FIRST_USE.md](FIRST_USE.md) for wheel selection/source
 installation. No Lumina checkout or installed slicer is needed to generate files.
 The recorded exports used CPython 3.14 and the public Neroued 0.4.0 core layout.
 
-安装与环境匹配、由本轮源码构建的 FatCat wheel 及可选写包工具。
+从 PyPI 安装与环境匹配的 FatCat 发行及可选写包工具。
 安装方法见首次使用说明；生成不需要 Lumina 或本机安装的切片软件。
 本轮导出采用 CPython 3.14 和公开 Neroued 0.4.0 的核心模型布局。
 
 ```bash
-python -m pip install "/path/to/matching-fatcat-wheel.whl" 'neroued-3mf==0.4.0'
+python -m pip install 'fatcat-metadata[examples]==0.1.0'
 python -m fatcat_metadata_examples.showcase \
   --slicer OrcaSlicer --machine bambu-lab:a1-mini --output orca-a1-mini.3mf
 python -m fatcat_metadata_examples.showcase \

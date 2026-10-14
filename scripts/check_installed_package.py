@@ -6,7 +6,6 @@ from __future__ import annotations
 import hashlib
 import importlib.metadata
 import json
-import os
 from pathlib import Path
 import sys
 
@@ -15,9 +14,7 @@ def main() -> int:
     import fatcat_metadata
     import fatcat_metadata_neroued
 
-    source_root = Path(
-        os.environ.get("GITHUB_WORKSPACE", Path(__file__).resolve().parents[1])
-    ).resolve()
+    source_root = Path(__file__).resolve().parents[1]
     module_path = Path(fatcat_metadata.__file__).resolve()
     module_root = module_path.parent
     if not (module_root / "fatcat_metadata-stubs/__init__.pyi").is_file():
