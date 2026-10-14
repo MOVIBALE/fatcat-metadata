@@ -98,12 +98,13 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           pattern: fatcat-wheels-*
-          path: prepared/wheels
+          path: ${{ runner.temp }}/prepared/wheels
       - uses: actions/download-artifact@v8
         with:
           name: fatcat-source-${{ github.sha }}
-          path: prepared/source
+          path: ${{ runner.temp }}/prepared/source
       - name: Collect the complete Python release
+        working-directory: ${{ runner.temp }}
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -117,13 +118,13 @@ jobs:
           for artifact in wheels + sources:
               shutil.copy2(artifact, Path("dist") / artifact.name)
           PY
-          python scripts/package_distribution.py --dist-dir dist --output-dir release
+          python "${{ github.workspace }}/scripts/package_distribution.py" --dist-dir dist --output-dir release
           python -m pip install twine
           python -m twine check --strict release/*.whl release/*.tar.gz
       - uses: actions/upload-artifact@v7
         with:
           name: fatcat-python-release-${{ github.sha }}
-          path: release/
+          path: ${{ runner.temp }}/release/
           if-no-files-found: error
           retention-days: 90
           compression-level: 0
