@@ -846,8 +846,12 @@ void test_variant_shape_and_plate_support_are_machine_specific() {
                out.at("unknown_2n") == source.at("unknown_2n"),
            "array length or another machine's shape collapsed an undeclared field");
     target["machine_bindings"][0]["first_variant_per_slot_keys"] = json::array();
-    expect(parsed_result(compose(source, selection, canonical_data(), target)).at("project") == source,
-           "a machine with native dual variants must preserve grouped data");
+    json expected = source;
+    expected["wipe_tower_wall_type"] = "rib";
+    expected["wipe_tower_rib_width"] = "8";
+    expected["wipe_tower_extra_rib_length"] = "0";
+    expect(parsed_result(compose(source, selection, canonical_data(), target)).at("project") == expected,
+           "native dual variants must preserve source values and complete absent tower defaults");
     target["machine_bindings"][0]["supported_build_plate_uids"] = json::array();
     expect_error([&] { compose(source, selection, canonical_data(), target); }, "build plate");
 }
