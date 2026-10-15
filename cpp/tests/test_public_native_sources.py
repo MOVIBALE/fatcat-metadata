@@ -240,9 +240,16 @@ class PublicNativeSourceTests(unittest.TestCase):
                        "application_version": "2.4.2", "machine_uid": "snapmaker:u1",
                        "nozzle_uid": NOZZLE_UID,
                        "source_materials": [{"name": "PLA", "material_type": "PLA", "colour": "#123456"}]}
-            with patch.object(fatcat, "__file__", str(root / "fatcat_metadata.so")), self.assertRaisesRegex(
-                    ValueError, "retained material.*does not support selected build plate"):
-                fatcat.compose_project_settings(json.dumps(request))
+            with patch.object(fatcat, "__file__", str(root / "fatcat_metadata.so")):
+                selection = fatcat.resolve_project_materials(request)
+                self.assertFalse(selection["ready"])
+                self.assertIsNone(selection["materials"][0]["selected_profile_name"])
+                self.assertNotIn("Snapmaker PLA Basic @U1", [
+                    profile["name"] for profile in selection["materials"][0]["profiles"]
+                ])
+                with self.assertRaises(fatcat.ProjectValidationError) as error:
+                    fatcat.compose_project_settings(json.dumps(request))
+                self.assertEqual(error.exception.detail, selection)
 
     def test_available_specific_native_variant_is_selected_without_plain_pla_fallback(self):
         result = json.loads(fatcat.compose_project_settings(json.dumps({
@@ -260,8 +267,11 @@ class PublicNativeSourceTests(unittest.TestCase):
             request = self._orca_builtin_request({'name': 'PLA', 'colour': '#123456'})
             request.update(machine_uid='snapmaker:u1', nozzle_uid=nozzle,
                            native_filament_profile_names=['Snapmaker PLA'])
-            with self.subTest(nozzle=nozzle), self.assertRaisesRegex(ValueError, 'not compatible'):
-                fatcat.compose_project_settings(json.dumps(request))
+            with self.subTest(nozzle=nozzle):
+                with self.assertRaises(fatcat.ProjectValidationError) as error:
+                    fatcat.compose_project_settings(json.dumps(request))
+                self.assertEqual(error.exception.detail['issues'][0]['code'],
+                                 'native_material_selection_invalid')
 
     def test_missing_native_material_does_not_reuse_a_different_nozzle_source(self):
         request = self._orca_builtin_request({'name': 'PLA', 'colour': '#123456'})
@@ -274,8 +284,17 @@ class PublicNativeSourceTests(unittest.TestCase):
             request = self._orca_builtin_request({'name': material_type, 'material_type': material_type,
                                                  'colour': '#123456'})
             request['machine_uid'] = 'snapmaker:u1'
-            with self.subTest(material_type=material_type), self.assertRaisesRegex(ValueError, 'retained material'):
-                fatcat.compose_project_settings(json.dumps(request))
+            with self.subTest(material_type=material_type):
+                selection = fatcat.resolve_project_materials(request)
+                self.assertFalse(selection['ready'])
+                self.assertEqual(selection['materials'][0]['material_type'], material_type)
+                self.assertIsNone(selection['materials'][0]['selected_profile_name'])
+                self.assertNotIn('Snapmaker PLA Basic @U1', [
+                    profile['name'] for profile in selection['materials'][0]['profiles']
+                ])
+                with self.assertRaises(fatcat.ProjectValidationError) as error:
+                    fatcat.compose_project_settings(json.dumps(request))
+                self.assertEqual(error.exception.detail, selection)
 
     def test_native_petg_name_selects_real_profile_and_specialty_types_do_not_fall_back(self):
         basic_request = self._orca_builtin_request({

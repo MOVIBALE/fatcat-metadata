@@ -72,7 +72,8 @@ class DictionaryApiTests(unittest.TestCase):
         content = stub.read_text(encoding="utf-8")
         for name in dir(fatcat_metadata):
             if not name.startswith("_") and callable(getattr(fatcat_metadata, name)):
-                self.assertIn(f"def {name}(", content)
+                declaration = "class" if isinstance(getattr(fatcat_metadata, name), type) else "def"
+                self.assertIn(f"{declaration} {name}(", content)
 
 
 if __name__ == "__main__":
