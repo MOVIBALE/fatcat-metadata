@@ -31,8 +31,10 @@ Snapmaker 的导入提示，以及 QIDI、Anycubic 的板型显示差异也如�
 
 ## 项目状态
 
-首次 PyPI 发行版本为 **0.1.0**，处于早期公开 SDK 阶段。可用下方命令安装匹配的
-预编译 wheel。源码用户应固定准确提交；已发布版本不会被后续开发代码同名替换。
+**0.1.1** 处于早期公开 SDK 阶段，新增材料预检，与最终组装共用预设选择和
+打印板兼容规则。见[材料选择接口](docs/API.md#material-selection-before-composition)。
+可用下方命令安装匹配的预编译 wheel。源码用户应固定准确提交；已发布版本不会被
+后续开发代码同名替换。
 
 | 语言 | 当前提供的接口 |
 | --- | --- |
@@ -113,7 +115,7 @@ Apple 芯片 Mac，以及 glibc 2.28 以上的 Linux x86_64。Pip 自动选择�
 原生命令。下方选项避免在不支持的平台上意外触发源码编译；安装匹配的 wheel 不需要 C++ 编译器。
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.0
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.1
 fatcat --version
 fatcat catalog
 ```
@@ -131,8 +133,8 @@ Prusa 3 则直接采用应用导出的 schema，支持 220 个单值工艺字段
 显式工艺覆盖范围。“SDK 尚未支持”与“原生标准枚举词不接受”分别说明；清单外字段仍为待确认。
 这不代表所有切片软件专属功能都能相互转换。
 
-需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.0`，它额外安装
-Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.0/#files)
+需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.1`，它额外安装
+Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.1/#files)
 手动下载。此版不提供 Alpine/musl、Intel Mac、Windows ARM 或自由线程 Python 的
 预编译 wheel；源码构建需要相应工具链。构建与发布方式见[发行说明](docs/DISTRIBUTIONS.md)。
 
@@ -201,7 +203,7 @@ python -m pip install .
 
 未提供匹配产物或下载已过期时，可使用源码构建。
 
-当前所有构建均标记为 0.1.0。可查看实际安装的构建信息：
+可查看实际安装的版本与准确构建来源：
 
 ```python
 import fatcat_metadata as fatcat

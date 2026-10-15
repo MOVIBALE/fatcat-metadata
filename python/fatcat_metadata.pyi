@@ -7,6 +7,7 @@ class _SourceMaterial(TypedDict, total=False):
     name: str
     colour: str
     material_type: str | None
+    native_filament_profile_name: str
     native_settings: _Object
 
 
@@ -58,6 +59,52 @@ class _ProjectComposition(TypedDict):
     metadata_defaults: _Object
     process_source: NotRequired[_Object]
     material_source: NotRequired[_Object]
+
+
+class _MaterialProfile(TypedDict):
+    name: str
+    vendor: str
+    material_type: str
+    available: bool
+    supported_build_plate_uids: list[str]
+
+
+class _ResolvedMaterial(TypedDict):
+    name: str
+    material_type: str
+    selected_profile_name: str | None
+    profiles: list[_MaterialProfile]
+
+
+class _MaterialSelectionIssue(TypedDict):
+    code: str
+    material_index: int | None
+    material_name: str
+    material_type: str
+    build_plate_uid: str
+    message: str
+
+
+class _MaterialSelection(TypedDict):
+    schema_version: int
+    ready: bool
+    slicer_id: str
+    machine_uid: str
+    nozzle_uid: str
+    build_plate_uid: str
+    materials: list[_ResolvedMaterial]
+    build_plates: list[_Object]
+    issues: list[_MaterialSelectionIssue]
+
+
+class ProjectValidationError(ValueError):
+    """A user-correctable native selection failure with structured diagnostics."""
+    detail: _MaterialSelection
+
+
+def resolve_project_materials(request: _ProjectRequest) -> _MaterialSelection:
+    """Resolve material presets and compatible plates without changing process values."""
+    ...
 
 
 class _ModelPart(TypedDict):

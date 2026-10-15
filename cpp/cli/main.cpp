@@ -30,6 +30,7 @@ Usage:
   fatcat fields --slicer ID [--application-version VERSION]
   fatcat choices --slicer ID --application-version VERSION --machine UID --nozzle UID
                  [--plate UID]
+  fatcat resolve-materials --request REQUEST.json
   fatcat compose-settings --request REQUEST.json [--project SOURCE.json]
   fatcat compose-metadata --request MODEL.json --project SETTINGS.json
   fatcat --version
@@ -82,6 +83,8 @@ Options parse_options(const std::vector<std::string> &args, const std::string &c
     if (command == "catalog" || command == "choices" || command == "fields") {
         allowed.insert({"--slicer", "--application-version"});
         if (command == "choices") allowed.insert({"--machine", "--nozzle", "--plate"});
+    } else if (command == "resolve-materials") {
+        allowed.insert("--request");
     } else if (command == "compose-settings" || command == "compose-metadata") {
         allowed.insert({"--request", "--project"});
     } else {
@@ -135,6 +138,9 @@ std::string execute(const std::string &command, const Options &options, const fs
         return fatcat::native_project_options(request.dump(), root);
     }
     const auto request = read_file(required(options, "--request"));
+    if (command == "resolve-materials") {
+        return fatcat::resolve_project_materials(request, root);
+    }
     if (command == "compose-settings") {
         auto result = json::parse(options.count("--project")
             ? fatcat::compose_project_settings_from_data(

@@ -71,6 +71,66 @@ preset names can be selected with `native_print_profile_name` and
 `native_filament_profile_names`. Unknown or incompatible selections raise
 `ValueError`; they do not select a similar printer or invent material settings.
 
+### Material selection before composition
+
+In 0.1.1, `resolve_project_materials(selection)` returns `ready`, the ordered
+`materials`, shared-compatible `build_plates` and actionable `issues`. It uses
+the same resolver as composition; it neither writes a 3MF nor changes process
+values. A profile's `available` means it matches the machine and material type;
+`supported_build_plate_uids` describes its plate compatibility. Each returned
+plate's `compatible` covers the entire requested palette.
+
+```python
+plan = fatcat_metadata.resolve_project_materials(selection)
+if not plan["ready"]:
+    # Present the candidates to the caller; do not silently pick another brand.
+    print(plan["issues"], plan["materials"], plan["build_plates"])
+    selection["source_materials"][0]["native_filament_profile_name"] = chosen_name
+    selection["build_plate_uid"] = chosen_plate_uid
+    plan = fatcat_metadata.resolve_project_materials(selection)
+if plan["ready"]:
+    composed = fatcat_metadata.compose_project_settings(selection)
+```
+
+`native_filament_profile_name` selects an exact preset for one source material.
+The existing whole-palette `native_filament_profile_names` and material UID
+interfaces remain supported; do not combine the selection forms. Missing source
+types use the explicitly selected preset's type before the machine default.
+Explicitly provided or inferred types remain validated. Composition of an
+unresolved request raises `ProjectValidationError`, a `ValueError` subclass;
+its `detail` contains the same selection plan. The issue codes distinguish
+ambiguity, plate incompatibility, unavailable material and invalid selection.
+Other invalid inputs still raise `ValueError`.
+
+Preflight also composes the selected presets' material settings. Incompatible
+shared settings or missing exact native defaults produce
+`native_material_settings_incompatible` with `material_index: null`, because the
+issue concerns the combination rather than one material. A ready plan retains
+all native values; it does not invent defaults to make a combination fit.
+
+预检也会实际组合所选预设的材料参数。整组材料的共享设置冲突或缺少精确原生默认值时，
+返回 `native_material_settings_incompatible`，`material_index` 为 `null`，表示整组问题。
+库保留原生参数，不会为使组合通过而虚构默认值。
+
+Prusa's bundled sources are fixed native configurations. Preflight first checks
+their actual tool/feeder capacity, preset identity and material settings. A
+request that needs a different native material configuration raises `ValueError`
+with an instruction to export that configuration from PrusaSlicer; it cannot
+offer a preset absent from the selected source. Use the exported configuration
+through the source-project composition API for those materials.
+
+Prusa 内置来源是固定的原生配置，预检先检查真实工具/供料槽容量、预设身份与材料参数。
+需要不同材料配置的请求会抛出 `ValueError`，提示从 PrusaSlicer 导出所需配置；
+预检不会虚构该来源没有的预设。此类材料应通过来源工程组装接口传入导出的配置。
+
+The C++ SDK exposes `resolve_project_materials(request_json, data_root)` and the
+same diagnostic JSON through `ProjectSettingsError::diagnostic_json()`. The
+installed CLI exposes `fatcat resolve-materials --request REQUEST.json`.
+
+0.1.1 的材料预检与最终组装共用规则。界面可根据 `issues` 显示原生预设候选与整组
+材料共同兼容的板型；用户明确选择后再次预检，再用原来的工艺参数组装。库不会静默
+换品牌、换材料或换板型。旧版整组预设名和 UID 接口保持兼容。
+
 The result has one authoritative `project_settings` dictionary. Its
 `effective_settings` and `metadata_defaults` describe that final result.
 `process_source` and `material_source`, when present, identify actual native or

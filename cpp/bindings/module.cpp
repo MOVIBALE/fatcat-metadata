@@ -42,10 +42,21 @@ std::string read_requested_target(const std::string &request_json) {
                                        packaged_data_root(""));
 }
 
+[[noreturn]] void raise_project_validation(const fatcat::ProjectSettingsError &error) {
+    if (error.diagnostic_json().empty()) throw py::value_error(error.what());
+    const auto type = py::module_::import("fatcat_metadata").attr("ProjectValidationError");
+    const auto instance = type(error.what());
+    instance.attr("detail") = py::module_::import("json").attr("loads")(error.diagnostic_json());
+    PyErr_SetObject(type.ptr(), instance.ptr());
+    throw py::error_already_set();
+}
+
 std::string compose_builtin_from_package(const std::string &request_json) {
     try {
         return fatcat::compose_builtin_project_settings(
             request_json, packaged_data_root(""));
+    } catch (const fatcat::ProjectSettingsError &error) {
+        raise_project_validation(error);
     } catch (const std::exception &error) {
         throw py::value_error(error.what());
     }
@@ -61,6 +72,8 @@ std::string compose_from_package(const std::optional<std::string> &project_json,
         }
         return fatcat::compose_project_settings_from_data(
             *project_json, request_json, packaged_data_root(""));
+    } catch (const fatcat::ProjectSettingsError &error) {
+        raise_project_validation(error);
     } catch (const std::exception &error) {
         throw py::value_error(error.what());
     }
@@ -108,6 +121,8 @@ PYBIND11_MODULE(fatcat_metadata, module) {
     module.doc() =
         "C++17 core for Fat Cat 3MF project and slicer metadata components.";
     module.attr("__version__") = FATCAT_METADATA_VERSION;
+    module.attr("ProjectValidationError") = py::reinterpret_steal<py::object>(
+        PyErr_NewException("fatcat_metadata.ProjectValidationError", PyExc_ValueError, nullptr));
     module.attr("__source_revision__") = fatcat::detail::source_revision;
     module.attr("__source_dirty__") = fatcat::detail::source_dirty < 0
         ? py::object(py::none()) : py::object(py::bool_(fatcat::detail::source_dirty != 0));
@@ -377,6 +392,20 @@ PYBIND11_MODULE(fatcat_metadata, module) {
             throw py::value_error(error.what());
         }
     }, py::arg("request"), "List exact native choices and unavailable reasons. 查询原生候选及不可用原因。");
+
+    module.def("resolve_project_materials", [](const py::dict &request) {
+        try {
+            return py::module_::import("json").attr("loads")(
+                fatcat::resolve_project_materials(dictionary_json(request), packaged_data_root("")))
+                .cast<py::dict>();
+        } catch (const fatcat::ProjectSettingsError &error) {
+            raise_project_validation(error);
+        } catch (const std::exception &error) {
+            throw py::value_error(error.what());
+        }
+    }, py::arg("request"),
+       "Resolve selected native materials and common compatible build plates. "
+       "解析原生耗材选择、共同兼容板型与结构化问题。");
 
     module.def("list_native_fields", [](const std::string &slicer_id, const std::string &version) {
         try {
