@@ -15,17 +15,17 @@ The existing CI remains separate.
 ## Install the Python release / 安装 Python 发行
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.0
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.1
 fatcat --version
 fatcat catalog
 ```
 
-For complete 3MF examples, install `fatcat-metadata[examples]==0.1.0`.
-The [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.0/#files)
+For complete 3MF examples, install `fatcat-metadata[examples]==0.1.1`.
+The [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.1/#files)
 provides the same wheels for offline installation. PyPI files do not require
 GitHub sign-in and do not expire like Actions artifacts.
 
-完整示例可安装 `fatcat-metadata[examples]==0.1.0`。PyPI 文件页可下载相同 wheel 供离线安装，
+完整示例可安装 `fatcat-metadata[examples]==0.1.1`。PyPI 文件页可下载相同 wheel 供离线安装，
 不需要登录 GitHub，也不受 Actions 附件有效期限制。
 
 ## Build targets / 构建目标
@@ -96,12 +96,13 @@ out or executing project code. The official publishing action also supplies
 gh workflow run distributions.yml --repo MOVIBALE/fatcat-metadata --ref main -f publish=true
 ```
 
-The initial release stays at **0.1.0**. Published files are immutable: update the
-project/CMake versions for a later release instead of trying to replace 0.1.0
-with another commit. A source install still needs C++17, CMake and build-time
+The package and CMake versions are **0.1.1**. The first release was 0.1.0;
+published files are immutable. Update both versions for a later release instead
+of replacing an existing version with another commit. A source install still needs C++17, CMake and build-time
 access to the pinned nlohmann/json and TinyXML2 downloads.
 
-首次发行保持 **0.1.0**。已发布文件不可同名替换；后续发行需同步更新项目与 CMake 版本。
+发行包与 CMake 版本均为 **0.1.1**，首次发行为 0.1.0。已发布文件不可同名替换；
+后续发行需同步更新项目与 CMake 版本。
 源码安装仍需 C++17、CMake，并在构建时下载固定版本的 nlohmann/json 和 TinyXML2。
 
 ## Local preparation / 本地准备

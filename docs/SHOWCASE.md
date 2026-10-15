@@ -25,7 +25,7 @@ The recorded exports used CPython 3.14 and the public Neroued 0.4.0 core layout.
 本轮导出采用 CPython 3.14 和公开 Neroued 0.4.0 的核心模型布局。
 
 ```bash
-python -m pip install 'fatcat-metadata[examples]==0.1.0'
+python -m pip install 'fatcat-metadata[examples]==0.1.1'
 python -m fatcat_metadata_examples.showcase \
   --slicer OrcaSlicer --machine bambu-lab:a1-mini --output orca-a1-mini.3mf
 python -m fatcat_metadata_examples.showcase \
