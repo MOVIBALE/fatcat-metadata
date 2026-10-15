@@ -78,7 +78,7 @@ class _ResolvedMaterial(TypedDict):
 
 class _MaterialSelectionIssue(TypedDict):
     code: str
-    material_index: int
+    material_index: int | None
     material_name: str
     material_type: str
     build_plate_uid: str

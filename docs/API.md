@@ -102,6 +102,16 @@ its `detail` contains the same selection plan. The issue codes distinguish
 ambiguity, plate incompatibility, unavailable material and invalid selection.
 Other invalid inputs still raise `ValueError`.
 
+Preflight also composes the selected presets' material settings. Incompatible
+shared settings or missing exact native defaults produce
+`native_material_settings_incompatible` with `material_index: null`, because the
+issue concerns the combination rather than one material. A ready plan retains
+all native values; it does not invent defaults to make a combination fit.
+
+预检也会实际组合所选预设的材料参数。整组材料的共享设置冲突或缺少精确原生默认值时，
+返回 `native_material_settings_incompatible`，`material_index` 为 `null`，表示整组问题。
+库保留原生参数，不会为使组合通过而虚构默认值。
+
 Prusa's bundled sources are fixed native configurations. Preflight first checks
 their actual tool/feeder capacity, preset identity and material settings. A
 request that needs a different native material configuration raises `ValueError`

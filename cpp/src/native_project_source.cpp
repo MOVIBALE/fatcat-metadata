@@ -341,6 +341,7 @@ json compose_material_settings(const std::vector<json> &profiles,
             : detail::filament_array(key);
         if (!material_field) {
             const json *selected = nullptr;
+            std::size_t selected_slot = 0;
             bool missing = false;
             for (std::size_t slot = 0; slot < profiles.size(); ++slot) {
                 const auto found = profiles[slot].find(key);
@@ -350,9 +351,10 @@ json compose_material_settings(const std::vector<json> &profiles,
                 }
                 if (selected == nullptr) {
                     selected = &*found;
+                    selected_slot = slot;
                 } else if (*selected != *found) {
                     invalid("native material profiles disagree on non-material setting '" + key +
-                            "' between '" + profile_names.front() + "' and '" +
+                            "' between '" + profile_names[selected_slot] + "' and '" +
                             profile_names[slot] + "'; select profiles with a shared value");
                 }
             }
@@ -365,7 +367,7 @@ json compose_material_settings(const std::vector<json> &profiles,
             if (missing) {
                 const auto *default_value = native_schema_default(snapshot, key);
                 if (default_value == nullptr || *selected != *default_value) {
-                    invalid("native material profile '" + profile_names.front() +
+                    invalid("native material profile '" + profile_names[selected_slot] +
                             "' defines non-material setting '" + key +
                             "' while another selected profile omits it; no matching native schema default is recorded");
                 }
@@ -756,15 +758,12 @@ json compose_builtin_project(const json &input_request, const json &canonical,
             selection = std::move(retained_selection);
         }
     }
-    if (material_selection_only) return selection;
-    if (!selection.at("ready").get<bool>()) {
-        throw ProjectSettingsError(selection.at("issues").front().at("message").get<std::string>(),
-                                   selection.dump());
-    }
-    if (retained_materials) {
+    json material_settings = json::object();
+    std::vector<std::vector<std::string>> variant_groups;
+    if (selection.at("ready").get<bool>() && retained_materials) {
         const auto &identities = process.at("filament_settings_id");
         for (const auto &name : identities) material_names.push_back(name.get<std::string>());
-    } else {
+    } else if (selection.at("ready").get<bool>()) {
         for (const auto &selected : selection.at("materials")) {
             const auto name = selected.at("selected_profile_name").get<std::string>();
             const auto &option = find_profile_option(
@@ -774,14 +773,31 @@ json compose_builtin_project(const json &input_request, const json &canonical,
             material_profiles.push_back(catalog.resolve(
                 required_string(option, "path", "native material source")));
         }
+        // A compatible preset in each slot is insufficient: their shared
+        // settings must also compose. Prepare once for preflight and export.
+        try {
+            material_settings = compose_material_settings(
+                material_profiles, material_names, target, variant_groups);
+        } catch (const ProjectSettingsError &error) {
+            selection["ready"] = false;
+            selection["issues"].push_back({
+                {"code", "native_material_settings_incompatible"},
+                {"material_index", nullptr}, {"material_name", ""}, {"material_type", ""},
+                {"build_plate_uid", plate.at("build_plate_uid")},
+                {"message", std::string("Selected native filament profiles cannot be combined: ") +
+                    error.what() + ". Select profiles with compatible shared settings or "
+                    "provide an exported native project configuration for these materials."},
+            });
+        }
+    }
+    if (material_selection_only) return selection;
+    if (!selection.at("ready").get<bool>()) {
+        throw ProjectSettingsError(selection.at("issues").front().at("message").get<std::string>(),
+                                   selection.dump());
     }
 
     json project = std::move(plate_project);
-    std::vector<std::vector<std::string>> variant_groups;
-    if (!retained_materials) {
-        project.update(compose_material_settings(
-            material_profiles, material_names, target, variant_groups));
-    }
+    project.update(material_settings);
 
     for (const auto *key : {"printer_model", "nozzle_diameter"}) {
         if (!machine.contains(key) || !project.contains(key) ||
