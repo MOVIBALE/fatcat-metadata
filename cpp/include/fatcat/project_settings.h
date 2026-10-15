@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace fatcat {
 
@@ -11,6 +12,14 @@ namespace fatcat {
 class ProjectSettingsError final : public std::runtime_error {
 public:
     using std::runtime_error::runtime_error;
+
+    ProjectSettingsError(const std::string &message, std::string diagnostic_json)
+        : std::runtime_error(message), diagnostic_json_(std::move(diagnostic_json)) {}
+
+    const std::string &diagnostic_json() const noexcept { return diagnostic_json_; }
+
+private:
+    std::string diagnostic_json_;
 };
 
 /// Compose one final project-settings object and its effective-settings summary.

@@ -23,6 +23,12 @@ std::string native_field_inventory(std::string_view slicer_id,
 std::string native_project_options(std::string_view request_json,
                                    const std::filesystem::path &data_root);
 
+/// Resolve each selected material and the common compatible build plates.
+/// Uses the composition policy; unresolved selections return structured issues.
+/// 逐槽解析原生耗材与共同兼容板型；预检和组装共用同一选择规则。
+std::string resolve_project_materials(std::string_view request_json,
+                                     const std::filesystem::path &data_root);
+
 /// Read public machine-source identities and effective hardware facts for a
 /// packaged target, without exposing the installed source-file layout.
 std::string native_project_source_catalog(

@@ -523,6 +523,18 @@ json options(const json &request, const json &target, const std::filesystem::pat
     return result;
 }
 
+void validate_builtin_material_selection(const json &request, const json &target,
+                                        const std::filesystem::path &source_root) {
+    check_identity(request, target);
+    const auto data = read_catalog(source_root);
+    const auto &row = source_row(data, request);
+    auto project = normalized_project(source_config(data, row));
+    check_presets(container(project), request);
+    // Validate with the existing material composer on an isolated configuration.
+    // Capacity, source slots and native values therefore have one contract.
+    apply_materials(project, request, target);
+}
+
 json compose_builtin(const json &request, const json &target, const std::filesystem::path &source_root) {
     const auto data = read_catalog(source_root);
     const auto &row = source_row(data, request);

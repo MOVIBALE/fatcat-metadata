@@ -42,6 +42,11 @@ The first PyPI release is **0.1.0**, an early public SDK. Install a matching
 prebuilt wheel using the command below. Source users should pin an exact commit;
 a published version is fixed and is not replaced with later development code.
 
+The working version is **0.1.1 (unreleased)**. It adds material preflight with
+the same preset and build-plate rules as composition. See the
+[selection API](docs/API.md#material-selection-before-composition); the PyPI
+commands below install the existing 0.1.0 release.
+
 | Language | Current entry point |
 | --- | --- |
 | C++17 | Standalone static library, public headers and an installable CMake SDK; Python is not required. |
@@ -225,7 +230,7 @@ python -m pip install .
 
 Use source builds for unsupported platforms or expired download artifacts.
 
-All current builds are version 0.1.0. Inspect the installed build with:
+Inspect the installed version and exact source build with:
 
 ```python
 import fatcat_metadata as fatcat

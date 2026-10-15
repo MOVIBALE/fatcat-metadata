@@ -9,6 +9,9 @@ bool is_target(const nlohmann::json &target);
 nlohmann::json catalog(const std::filesystem::path &source_root);
 nlohmann::json options(const nlohmann::json &request, const nlohmann::json &target,
                        const std::filesystem::path &source_root);
+void validate_builtin_material_selection(const nlohmann::json &request,
+                                        const nlohmann::json &target,
+                                        const std::filesystem::path &source_root);
 nlohmann::json compose_builtin(const nlohmann::json &request,
                                const nlohmann::json &target,
                                const std::filesystem::path &source_root);

@@ -71,6 +71,45 @@ preset names can be selected with `native_print_profile_name` and
 `native_filament_profile_names`. Unknown or incompatible selections raise
 `ValueError`; they do not select a similar printer or invent material settings.
 
+### Material selection before composition
+
+In 0.1.1, `resolve_project_materials(selection)` returns `ready`, the ordered
+`materials`, shared-compatible `build_plates` and actionable `issues`. It uses
+the same resolver as composition; it neither writes a 3MF nor changes process
+values. A profile's `available` means it matches the machine and material type;
+`supported_build_plate_uids` describes its plate compatibility. Each returned
+plate's `compatible` covers the entire requested palette.
+
+```python
+plan = fatcat_metadata.resolve_project_materials(selection)
+if not plan["ready"]:
+    # Present the candidates to the caller; do not silently pick another brand.
+    print(plan["issues"], plan["materials"], plan["build_plates"])
+    selection["source_materials"][0]["native_filament_profile_name"] = chosen_name
+    selection["build_plate_uid"] = chosen_plate_uid
+    plan = fatcat_metadata.resolve_project_materials(selection)
+if plan["ready"]:
+    composed = fatcat_metadata.compose_project_settings(selection)
+```
+
+`native_filament_profile_name` selects an exact preset for one source material.
+The existing whole-palette `native_filament_profile_names` and material UID
+interfaces remain supported; do not combine the selection forms. Missing source
+types use the explicitly selected preset's type before the machine default.
+Explicitly provided or inferred types remain validated. Composition of an
+unresolved request raises `ProjectValidationError`, a `ValueError` subclass;
+its `detail` contains the same selection plan. The issue codes distinguish
+ambiguity, plate incompatibility, unavailable material and invalid selection.
+Other invalid inputs still raise `ValueError`.
+
+The C++ SDK exposes `resolve_project_materials(request_json, data_root)` and the
+same diagnostic JSON through `ProjectSettingsError::diagnostic_json()`. The
+installed CLI exposes `fatcat resolve-materials --request REQUEST.json`.
+
+0.1.1 的材料预检与最终组装共用规则。界面可根据 `issues` 显示原生预设候选与整组
+材料共同兼容的板型；用户明确选择后再次预检，再用原来的工艺参数组装。库不会静默
+换品牌、换材料或换板型。旧版整组预设名和 UID 接口保持兼容。
+
 The result has one authoritative `project_settings` dictionary. Its
 `effective_settings` and `metadata_defaults` describe that final result.
 `process_source` and `material_source`, when present, identify actual native or
