@@ -102,6 +102,17 @@ its `detail` contains the same selection plan. The issue codes distinguish
 ambiguity, plate incompatibility, unavailable material and invalid selection.
 Other invalid inputs still raise `ValueError`.
 
+Prusa's bundled sources are fixed native configurations. Preflight first checks
+their actual tool/feeder capacity, preset identity and material settings. A
+request that needs a different native material configuration raises `ValueError`
+with an instruction to export that configuration from PrusaSlicer; it cannot
+offer a preset absent from the selected source. Use the exported configuration
+through the source-project composition API for those materials.
+
+Prusa 内置来源是固定的原生配置，预检先检查真实工具/供料槽容量、预设身份与材料参数。
+需要不同材料配置的请求会抛出 `ValueError`，提示从 PrusaSlicer 导出所需配置；
+预检不会虚构该来源没有的预设。此类材料应通过来源工程组装接口传入导出的配置。
+
 The C++ SDK exposes `resolve_project_materials(request_json, data_root)` and the
 same diagnostic JSON through `ProjectSettingsError::diagnostic_json()`. The
 installed CLI exposes `fatcat resolve-materials --request REQUEST.json`.
