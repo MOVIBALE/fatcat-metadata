@@ -40,9 +40,9 @@ class WipeTowerBindingTests(unittest.TestCase):
         )
         if not fatcat_metadata.__fatcat_cpp_extension__:
             raise AssertionError("the installed module is not the C++ extension")
-        if importlib.metadata.version("fatcat-metadata") != "0.1.1":
+        if importlib.metadata.version("fatcat-metadata") != "0.1.2":
             raise AssertionError("unexpected C++ wheel distribution version")
-        if fatcat_metadata.__version__ != "0.1.1":
+        if fatcat_metadata.__version__ != "0.1.2":
             raise AssertionError("unexpected C++ module version")
         if not fatcat_metadata.__fatcat_project_settings__:
             raise AssertionError("project-settings support is not enabled")

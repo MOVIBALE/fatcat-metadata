@@ -69,6 +69,37 @@ class PublicNativeSourceTests(unittest.TestCase):
             "process_settings": {"wall_loops": "1"},
         }
 
+    def test_bambu_native_filament_ids_follow_selected_slots_and_inheritance(self):
+        names = [
+            "Bambu PLA Matte @BBL A2L 0.4 nozzle",
+            "Bambu PLA Basic @BBL A2L 0.4 nozzle",
+            "Bambu PLA Matte @BBL A2L 0.4 nozzle",
+        ]
+        request = {
+            "project_source": "fatcat_native",
+            "slicer_id": "BambuStudio",
+            "application_version": "02.08.02.61",
+            "machine_uid": "bambu-lab:a2l",
+            "nozzle_uid": NOZZLE_UID,
+            "build_plate_uid": "plate:smooth-pei",
+            "source_materials": [
+                {"name": f"Colour {index}", "colour": colour,
+                 "native_filament_profile_name": name}
+                for index, (name, colour) in enumerate(zip(
+                    names, ["#112233", "#445566", "#778899"]
+                ))
+            ],
+        }
+        result = json.loads(fatcat.compose_project_settings(json.dumps(request)))
+        project = json.loads(result["project_settings_json"])
+
+        # A2L's unmodified startup G-code indexes this vector. The native IDs
+        # are inherited from each preset's base, not its name or setting_id.
+        self.assertIn("filament_ids[initial_filament_id]", project["machine_start_gcode"])
+        self.assertEqual(project["filament_ids"], ["GFA01", "GFA00", "GFA01"])
+        self.assertEqual(project["filament_settings_id"], names)
+        self.assertEqual(project["filament_colour"], ["#112233", "#445566", "#778899"])
+
     def test_seven_targets_compose_from_exact_packaged_sources(self):
         self.assertEqual(self.source_index["schema_version"], 1)
         for slicer, version, machine_uid, expected_plate_uid in TARGETS:

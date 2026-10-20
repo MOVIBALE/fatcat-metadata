@@ -432,6 +432,22 @@ json compose_material_settings(const std::vector<json> &profiles,
         combined[key] = std::move(joined);
     }
 
+    // Preset identity is structural in the profile but a per-material vector
+    // in the project. Native startup G-code may index it directly. Resolve it
+    // from each inherited preset, independently of its parameter variants.
+    if (target_material_fields.find("filament_ids") != target_material_fields.end()) {
+        json ids = json::array();
+        for (std::size_t slot = 0; slot < profiles.size(); ++slot) {
+            const auto found = profiles[slot].find("filament_id");
+            if (found != profiles[slot].end() && !found->is_string()) {
+                invalid("native material profile '" + profile_names[slot] +
+                        "' has a non-text filament_id");
+            }
+            ids.push_back(found == profiles[slot].end() ? json("") : *found);
+        }
+        combined["filament_ids"] = std::move(ids);
+    }
+
     json types = combined.value("filament_type", json());
     if (!types.is_array() || types.size() != profiles.size()) {
         invalid("selected native filament profiles must each provide one material type per slot");

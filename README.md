@@ -38,8 +38,9 @@ print quality. A separate 3MF is composed for each target.
 
 ## Project status
 
-Version **0.1.1** is an early public SDK. It adds material preflight with the
-same preset and build-plate rules as composition. See the
+Version **0.1.2** restores each selected native filament's inherited ID in the
+project, including the vector referenced by Bambu A2L startup G-code.
+Material preflight uses the same preset and build-plate rules as composition. See the
 [selection API](docs/API.md#material-selection-before-composition).
 Install a matching prebuilt wheel using the command below. Source users should
 pin an exact commit; published versions are not replaced with later development code.
@@ -144,14 +145,14 @@ and native command. The option below prevents an unexpected source build on
 unsupported platforms; installing a matching wheel requires no C++ compiler.
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.1
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.2
 fatcat --version
 fatcat catalog
 ```
 
-For the complete 3MF examples, install `fatcat-metadata[examples]==0.1.1` instead.
+For the complete 3MF examples, install `fatcat-metadata[examples]==0.1.2` instead.
 The optional extra adds Neroued; the metadata core remains usable on its own.
-Downloads are also available on the [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.1/#files).
+Downloads are also available on the [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.2/#files).
 Alpine/musl, Intel Macs, Windows ARM and free-threaded Python have no prebuilt
 wheel in this release. Building from source requires a compatible toolchain.
 Read the [distribution guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/DISTRIBUTIONS.md) for build and publishing details.
