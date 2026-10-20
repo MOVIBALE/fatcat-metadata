@@ -2,11 +2,11 @@
 
 ## Install once / 安装
 
-Install version 0.1.1 from PyPI using 64-bit CPython 3.12–3.14. Pip selects a
+Install version 0.1.2 from PyPI using 64-bit CPython 3.12–3.14. Pip selects a
 matching prebuilt wheel for Windows AMD64, macOS 14+ Apple Silicon, or Linux
 x86_64 with glibc 2.28+. Installing that wheel does not compile C++.
 
-使用 64 位 CPython 3.12–3.14 从 PyPI 安装 0.1.1。Pip 会自动选择 Windows AMD64、
+使用 64 位 CPython 3.12–3.14 从 PyPI 安装 0.1.2。Pip 会自动选择 Windows AMD64、
 macOS 14 以上 Apple 芯片 Mac 或 glibc 2.28 以上 Linux x86_64 的预编译 wheel，不编译 C++。
 
 The `--only-binary` option fails clearly when no compatible wheel exists instead
@@ -16,7 +16,7 @@ of starting a source build. Other target details are in
 `--only-binary` 选项在没有匹配 wheel 时明确报错，不自动开始源码编译。其他目标详见发行说明。
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.1
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.2
 fatcat --version
 fatcat catalog
 ```
@@ -118,7 +118,7 @@ checking out this repository:
 安装可选写包工具，运行随 wheel 安装的示例，不需要克隆源码：
 
 ```bash
-python -m pip install 'fatcat-metadata[examples]==0.1.1'
+python -m pip install 'fatcat-metadata[examples]==0.1.2'
 python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 ```
 
