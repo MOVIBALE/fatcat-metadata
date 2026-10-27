@@ -93,15 +93,17 @@ py::dict project_dictionary(const std::string &result_json) {
     return result;
 }
 
-std::array<std::string, 6> read_import_targets() {
+std::array<std::string, 6> read_import_targets(const std::string &source_slicer) {
     // Preserve the legacy public six-target import signature. Typed formats
     // identify themselves through Application and use the selected target.
     std::array<std::string, 6> targets;
     std::size_t index = 0;
     for (const auto &target : fatcat::detail::supported_targets()) {
         if (target.at("template_import").get<bool>() && target.value("legacy_import_slot", true)) {
-            targets.at(index++) = read_packaged_target(
-                target.at("slicer_id").get<std::string>());
+            const auto slicer = target.at("slicer_id").get<std::string>();
+            targets.at(index++) = slicer == source_slicer
+                ? read_packaged_target(slicer)
+                : nlohmann::json{{"target_contract", {{"slicer_id", slicer}}}}.dump();
         }
     }
     return targets;
@@ -290,7 +292,10 @@ PYBIND11_MODULE(fatcat_metadata, module) {
         [](const std::optional<std::string> &source_model_xml,
            const std::optional<std::string> &slice_info_xml) {
             try {
-                const auto targets = read_import_targets();
+                const auto identity = nlohmann::json::parse(fatcat::detect_template_source(
+                    optional_view(source_model_xml), optional_view(slice_info_xml)));
+                const auto targets = read_import_targets(
+                    identity.at("source_slicer").is_null() ? "" : identity.at("source_slicer").get<std::string>());
                 return fatcat::detect_template_source(
                     optional_view(source_model_xml), optional_view(slice_info_xml),
                     targets[0], targets[1], targets[2], targets[3], targets[4], targets[5]);
@@ -311,7 +316,10 @@ PYBIND11_MODULE(fatcat_metadata, module) {
            const std::string &request_json, bool explicit_slicer_hint) {
             try {
                 const auto selected = read_requested_target(request_json);
-                const auto targets = read_import_targets();
+                const auto identity = nlohmann::json::parse(fatcat::detect_template_source(
+                    optional_view(source_model_xml), optional_view(slice_info_xml)));
+                const auto targets = read_import_targets(
+                    identity.at("source_slicer").is_null() ? "" : identity.at("source_slicer").get<std::string>());
                 return fatcat::import_template_metadata(
                     project_settings_json, optional_view(source_model_xml),
                     optional_view(slice_info_xml), optional_view(model_settings_xml),

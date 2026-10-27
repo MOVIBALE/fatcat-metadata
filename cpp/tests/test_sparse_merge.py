@@ -61,8 +61,15 @@ class SparseMergeTests(unittest.TestCase):
                         self.assertEqual(final['filament_flow_ratio'][2], '0.97')
                         if target[0] == 'SnapmakerOrca':
                             self.assertEqual(final['small_area_infill_flow_compensation_model'], ['user-flow-model'])
-                        for key in ('vendor_unknown', 'version', 'default_print_profile', 'inherits_group'):
+                        for key in ('vendor_unknown', 'version', 'default_print_profile'):
                             self.assertEqual(final[key], project[key], key)
+                        inheritance = final['inherits_group']
+                        self.assertEqual(len(inheritance), len(palette) + 2)
+                        self.assertEqual(inheritance[0], 'custom-process')
+                        self.assertEqual(inheritance[-1], 'custom-printer')
+                        self.assertEqual(inheritance[3], 'custom-material')
+                        for index in (0, 1, 3):
+                            self.assertEqual(inheritance[index + 1], final['filament_settings_id'][index])
                         self.assertEqual(result['source_slot_mappings'][0]['slots'][0]['output_slot_index'], 2)
 
     def test_disjoint_complete_palette_retains_both_source_materials(self):
@@ -72,6 +79,7 @@ class SparseMergeTests(unittest.TestCase):
         for project, temperature, diagonal in zip(projects, ['211', '233'], ['11', '17']):
             project['nozzle_temperature'] = [temperature]
             project['flush_volumes_matrix'] = [diagonal]
+            project['inherits_group'] = ['process', 'material-' + temperature, 'printer']
         request = native_request(target, palette)
         request.pop('project_source')
         request.pop('filament_slot_mode', None)
@@ -85,6 +93,7 @@ class SparseMergeTests(unittest.TestCase):
                 result = json.loads(fatcat.compose_project_settings(json.dumps(projects[0]), json.dumps(request)))
                 final = json.loads(result['project_settings_json'])
                 self.assertEqual(final['nozzle_temperature'], ['211', '233'])
+                self.assertEqual(final['inherits_group'], ['process', 'material-211', 'material-233', 'printer'])
                 self.assertEqual(len(final['flush_volumes_matrix']), 4)
                 self.assertEqual(final['flush_volumes_matrix'][0], '11')
                 self.assertEqual(final['flush_volumes_matrix'][3], '17')

@@ -307,7 +307,11 @@ json resolve_native_material_selection(
         json issue;
         if (!explicit_names[slot].empty()) {
             const auto requested = explicit_names[slot];
-            if (!explicit_matches) {
+            if (explicit_profile && explicit_profile->value("source_unavailable", false)) {
+                issue = selection_issue("native_material_unavailable", slot, name, type, plate_uid,
+                    "Selected native filament profile '" + requested + "' is unavailable: " +
+                    explicit_profile->value("unavailable_reason", std::string("native profile file is unavailable")));
+            } else if (!explicit_matches) {
                 issue = selection_issue("native_material_selection_invalid", slot, name, type, plate_uid,
                     "Selected native filament profile '" + requested +
                     "' does not match this machine and material; select a compatible native preset.");

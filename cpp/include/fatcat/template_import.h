@@ -36,6 +36,12 @@ void validate_template_hardware(std::string_view template_json,
 
 /// Identify a supported source slicer and its file-declared version.
 /// 识别受支持的来源切片软件及文件实际声明的版本。
+/// Without target data, version recognition is limited to explicit application markers.
+/// 不读取目标配置时，版本识别限于明确的应用标记。
+std::string detect_template_source(
+    std::optional<std::string_view> source_model_xml,
+    std::optional<std::string_view> slice_info_xml);
+
 std::string detect_template_source(
     std::optional<std::string_view> source_model_xml,
     std::optional<std::string_view> slice_info_xml,

@@ -270,6 +270,17 @@ values remain authoritative. Transition pairs absent from every source require
 recorded native defaults; unavailable defaults are errors. The material carrier
 retains the source's hardware values and missing-field state, so an omitted
 source plate or bed geometry is not replaced by a material-default field.
+It starts with the source process and copies only material fields described by
+the same slot projection used by the merger. It never supplies a second native
+process. Composite `inherits_group` entries retain the process/printer endpoints
+and follow the material slot mapping, including newly completed native slots.
+
+Bambu-family merges reject conflicting project/process fields that have no
+object-scoped representation in the package contract. Generated project labels,
+tower placement and projected material arrays are handled by their respective
+composers. Differing process values are never silently selected from the first
+input; callers must use matching settings or export separate projects. Prusa's
+native object-override policy remains separate.
 The explicit JSON
 composer accepts `merge_default_project` for these absent transition pairs and
 checks its hardware identity. Neither entry infers a substitute machine.

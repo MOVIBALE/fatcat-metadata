@@ -139,7 +139,8 @@ if(FATCAT_BUILD_CLI)
     add_executable(fatcat_cli cli/main.cpp)
     set_target_properties(fatcat_cli PROPERTIES OUTPUT_NAME fatcat)
     target_link_libraries(fatcat_cli PRIVATE fatcat_metadata_core)
-    target_include_directories(fatcat_cli PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
+    target_include_directories(fatcat_cli PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}/generated ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_compile_definitions(fatcat_cli PRIVATE FATCAT_METADATA_VERSION="${PROJECT_VERSION}")
     if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         # The executable is carried inside wheels too; auditwheel does not

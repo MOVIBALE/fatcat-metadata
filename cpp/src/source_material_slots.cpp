@@ -739,6 +739,7 @@ std::string read_source_metadata(
         const auto identity = detail::read_source_identity(root, nullptr, target);
         const auto slots = detail::prusa::material_slots(native);
         return json{{"project_settings", native}, {"slots", slots},
+            {"used_slot_indices", detail::prusa::used_material_slots(native)},
             {"project_filament_count", slots.size()},
             {"source_slicer", identity.at("source_slicer")},
             {"source_version", identity.at("source_version")},

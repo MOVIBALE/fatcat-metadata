@@ -140,6 +140,14 @@ per-tool values that cannot become one object setting raise errors. A wiping
 matrix requires source values for every selected material transition. The final
 bed owns tower width and position.
 
+`read_source_metadata` returns `used_slot_indices` separately from the native
+filament array capacity. These zero-based indices follow object, printable
+volume, layer-range and enabled support-extruder assignments. A five-slot MMU
+project does not imply that all five materials are used. Generators retain the
+native capacity but use the mapped usage set for merged tower planning. Painted
+support annotations outside the native project settings are not inspected by
+this metadata-only entry point.
+
 Model inputs with `source_model_settings_xml` pass the **native JSON string**
 (the shared argument name is retained for compatibility), `source_assembly_id`,
 each part's `source_part_id`, `source_slot_output_indexes` and `output_slot_count`.

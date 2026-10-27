@@ -51,6 +51,58 @@ class NativeSourceLookupTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "P2S.*machine_start_gcode"):
             fatcat.native_project_source(self.request())
 
+    def test_unrelated_target_corruption_does_not_block_material_selection(self):
+        targets = self.root / "fatcat_metadata_data/translations/targets"
+        path = next(targets.glob("prusa-*.json"))
+        path.write_text("{invalid", encoding="utf-8")
+        request = self.request(
+            project_source="fatcat_native",
+            build_plate_uid="plate:textured-pei",
+            source_materials=[{"name": "PLA", "material_type": "PLA", "colour": "#123456"}],
+        )
+        self.assertTrue(fatcat.resolve_project_materials(request)["ready"])
+
+    def test_source_identity_ignores_titles_and_unrelated_target_files(self):
+        targets = self.root / "fatcat_metadata_data/translations/targets"
+        for path in targets.glob("*.json"):
+            if not path.name.startswith("bambu-studio-"):
+                path.write_text("{invalid", encoding="utf-8")
+        model = '<model><metadata name="Application">BambuStudio-02.08.02.61</metadata>{}</model>'
+        for title in ("", '<metadata name="Title">Snapmaker adapter</metadata>',
+                      '<metadata name="Description">OrcaSlicer-0.0.0</metadata>'):
+            with self.subTest(title=title):
+                result = json.loads(fatcat.detect_template_source(model.format(title), None))
+                self.assertEqual(result, {"source_slicer": "BambuStudio", "source_version": "02.08.02.61"})
+
+    def test_unavailable_abs_does_not_block_pla_but_remains_unselectable(self):
+        index = json.loads((self.sources / "source-index.json").read_text(encoding="utf-8"))
+        source = next(row for row in index["sources"]
+                      if row["slicer_id"] == "BambuStudio"
+                      and row["machine_uid"] == "bambu-lab:p2s"
+                      and row["nozzle_uid"] == "nozzle:0.4mm")
+        material = next(row for row in source["filament_profile_options"]
+                        if "ABS" in row["name"] and "path" in row)
+        path = self.sources / material["path"]
+        original = json.loads(path.read_text(encoding="utf-8"))
+        request = self.request(
+            project_source="fatcat_native",
+            build_plate_uid="plate:textured-pei",
+            source_materials=[{"name": "PLA", "material_type": "PLA", "colour": "#123456"}],
+        )
+        for fault in (None, {"filament_type": ["ABS", "PLA"]},
+                      {"compatible_printers": "invalid"}):
+            with self.subTest(fault=fault):
+                if fault is None:
+                    path.unlink()
+                else:
+                    path.write_text(json.dumps(original | fault), encoding="utf-8")
+                request["source_materials"][0].pop("native_filament_profile_name", None)
+                self.assertTrue(fatcat.resolve_project_materials(request)["ready"])
+                request["source_materials"][0]["native_filament_profile_name"] = material["name"]
+                rejected = fatcat.resolve_project_materials(request)
+                self.assertFalse(rejected["ready"])
+                self.assertIn("native_material_unavailable", json.dumps(rejected["issues"]))
+
     def test_prusa_exact_lookup_retains_native_capacity_policy(self):
         catalog = fatcat.list_machines("PrusaSlicer", "3.0.0-alpha12")
         row = catalog["sources"][0]

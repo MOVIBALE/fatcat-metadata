@@ -463,6 +463,9 @@ void preserve_selected_slots(json &project, const json &source, const json &requ
     }
     for (std::size_t i = 0; i < count; ++i) {
         auto index = compact && count > old_count ? default_slot(source) : i;
+        if (selected != request.end() && selected->at(i).is_null()) {
+            index = default_slot(source);
+        }
         if (selected != request.end() && !selected->at(i).is_null()) {
             if (!selected->at(i).is_number_unsigned()) {
                 throw ProjectSettingsError(
