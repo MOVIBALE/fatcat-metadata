@@ -16,6 +16,7 @@
 #include <nlohmann/json.hpp>
 
 #include "filament_projection.h"
+#include "filesystem_path.h"
 #include "native_material_selection.h"
 #include "prusa_project.h"
 #include "fatcat/project_settings.h"
@@ -42,8 +43,8 @@ std::string required_string(const json &object, const char *key,
 }
 
 std::string read_text(const std::filesystem::path &path) {
-    std::ifstream stream(path, std::ios::binary);
-    if (!stream) invalid("native project source file is missing: " + path.string());
+    std::ifstream stream(detail::io_path(path), std::ios::binary);
+    if (!stream) invalid("native project source file is missing or unreadable: " + path.u8string());
     std::ostringstream contents;
     contents << stream.rdbuf();
     return contents.str();
@@ -51,7 +52,7 @@ std::string read_text(const std::filesystem::path &path) {
 
 std::filesystem::path safe_path(const std::filesystem::path &root,
                                 const std::string &relative) {
-    const std::filesystem::path rel(relative);
+    const auto rel = std::filesystem::u8path(relative);
     if (relative.empty() || rel.is_absolute() || rel.has_root_name() ||
         rel.has_root_directory()) {
         invalid("native source path must be relative: " + relative);
@@ -61,14 +62,20 @@ std::filesystem::path safe_path(const std::filesystem::path &root,
             invalid("native source path contains traversal: " + relative);
         }
     }
-    const auto canonical_root = std::filesystem::weakly_canonical(root);
-    const auto candidate = std::filesystem::weakly_canonical(root / rel);
+    const auto canonical_root = detail::canonical_io_path(root);
+    const auto candidate = detail::canonical_io_path(root / rel);
     const auto beneath = candidate.lexically_relative(canonical_root);
     if (beneath.empty() || beneath.is_absolute() ||
         *beneath.begin() == std::filesystem::path("..")) {
         invalid("native source path escapes its data root: " + relative);
     }
-    if (!std::filesystem::is_regular_file(candidate)) {
+    std::error_code access_error;
+    if (!std::filesystem::is_regular_file(candidate, access_error)) {
+        if (access_error && access_error != std::errc::no_such_file_or_directory) {
+            invalid("native source profile access failed: " + relative +
+                    " (" + access_error.category().name() + ":" +
+                    std::to_string(access_error.value()) + ": " + access_error.message() + ")");
+        }
         invalid("native source profile is missing: " + relative);
     }
     return candidate;
@@ -195,6 +202,27 @@ private:
         return result;
     }
 };
+
+json public_source_record(const json &source, NativeProfileCatalog &catalog) {
+    const auto machine_path = required_string(
+        source, "machine_profile_path", "native source");
+    const auto machine = catalog.resolve(machine_path);
+    json hardware = json::object();
+    for (const auto *key : {"printer_model", "nozzle_diameter"}) {
+        if (machine.contains(key)) hardware[key] = machine.at(key);
+    }
+    return json{
+        {"machine_uid", required_string(source, "machine_uid", "native source")},
+        {"nozzle_uid", required_string(source, "nozzle_uid", "native source")},
+        {"source_machine_profile_name", required_string(
+            source, "source_machine_profile_name", "native source")},
+        {"availability", source.value("availability", json::object())},
+        {"default_print_profile_name", source.value(
+            "default_print_profile_name", std::string())},
+        {"hardware_settings", std::move(hardware)},
+        {"compatibility_project", source.value("compatibility_project", json())},
+    };
+}
 
 bool structural_profile_key(const std::string &key) {
     static const std::set<std::string> keys = {
@@ -1112,6 +1140,56 @@ std::string native_project_options(std::string_view request_json,
     }
 }
 
+std::string native_project_source(std::string_view request_json,
+                                  const std::filesystem::path &data_root) {
+    try {
+        const auto request = json::parse(request_json);
+        const auto slicer = required_string(request, "slicer_id", "native source request");
+        const auto version = required_string(request, "application_version", "native source request");
+        const auto nozzle = required_string(request, "nozzle_uid", "native source request");
+        const bool by_uid = request.contains("machine_uid");
+        const bool by_name = request.contains("source_machine_profile_name");
+        if (by_uid == by_name) {
+            invalid("native source request requires exactly one machine_uid or source_machine_profile_name");
+        }
+        const char *selector = by_uid ? "machine_uid" : "source_machine_profile_name";
+        const auto identity = required_string(request, selector, "native source request");
+        auto matches = [&](const json &source) {
+            return source.is_object() && source.value(selector, std::string()) == identity &&
+                source.value("nozzle_uid", std::string()) == nozzle;
+        };
+        if (slicer == "PrusaSlicer") {
+            if (version != "3.0.0-alpha12") invalid("unsupported PrusaSlicer version");
+            const auto catalog = detail::prusa::catalog(data_root);
+            json selected;
+            for (const auto &source : catalog.at("sources")) {
+                if (!matches(source)) continue;
+                if (!selected.is_null()) invalid("no unique native source for requested machine/nozzle");
+                selected = source;
+            }
+            if (selected.is_null()) invalid("no unique native source for requested machine/nozzle");
+            selected["filament_slot_policy"] = catalog.at("filament_slot_policy");
+            return selected.dump();
+        }
+        NativeProfileCatalog catalog(data_root);
+        const json *selected = nullptr;
+        for (const auto &source : catalog.index().at("sources")) {
+            if (!matches(source) || source.value("slicer_id", std::string()) != slicer ||
+                source.value("application_version", std::string()) != version) continue;
+            if (selected) invalid("no unique native source for requested machine/nozzle");
+            selected = &source;
+        }
+        if (!selected) invalid("no unique native source for requested machine/nozzle");
+        return public_source_record(*selected, catalog).dump();
+    } catch (const ProjectSettingsError &) {
+        throw;
+    } catch (const json::exception &error) {
+        invalid(std::string("invalid native source request JSON: ") + error.what());
+    } catch (const std::filesystem::filesystem_error &error) {
+        invalid(std::string("native source file access failed: ") + error.what());
+    }
+}
+
 std::string native_project_source_catalog(
     std::string_view slicer_id,
     std::string_view application_version,
@@ -1130,24 +1208,7 @@ std::string native_project_source_catalog(
                 source.value("application_version", std::string()) != application_version) {
                 continue;
             }
-            const auto machine_path = required_string(
-                source, "machine_profile_path", "native source");
-            const auto machine = catalog.resolve(machine_path);
-            json hardware = json::object();
-            for (const auto *key : {"printer_model", "nozzle_diameter"}) {
-                if (machine.contains(key)) hardware[key] = machine.at(key);
-            }
-            sources.push_back({
-                {"machine_uid", required_string(source, "machine_uid", "native source")},
-                {"nozzle_uid", required_string(source, "nozzle_uid", "native source")},
-                {"source_machine_profile_name", required_string(
-                    source, "source_machine_profile_name", "native source")},
-                {"availability", source.value("availability", json::object())},
-                {"default_print_profile_name", source.value(
-                    "default_print_profile_name", std::string())},
-                {"hardware_settings", std::move(hardware)},
-                {"compatibility_project", source.value("compatibility_project", json())},
-            });
+            sources.push_back(public_source_record(source, catalog));
         }
         return json{{"schema_version", 1},
                     {"slicer_id", slicer_id},
@@ -1198,8 +1259,8 @@ std::string metadata_target_data(std::string_view slicer_id,
                                  std::string_view application_version,
                                  const std::filesystem::path &data_root) {
     json selected;
-    const auto targets = data_root / "translations" / "targets";
-    if (!std::filesystem::is_directory(targets)) invalid("packaged target directory is missing: " + targets.string());
+    const auto targets = detail::io_path(data_root / "translations" / "targets");
+    if (!std::filesystem::is_directory(targets)) invalid("packaged target directory is missing: " + targets.u8string());
     for (const auto &entry : std::filesystem::directory_iterator(targets)) {
         if (entry.path().extension() != ".json") continue;
         const auto path = safe_path(data_root, "translations/targets/" + entry.path().filename().string());

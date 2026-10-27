@@ -38,6 +38,11 @@ print quality. A separate 3MF is composed for each target.
 
 ## Project status
 
+Unreleased **0.1.3** fixes Windows native-data reads beyond MAX_PATH and adds
+`native_project_source` for exact machine/nozzle queries without loading unrelated
+printer profiles. Build a local wheel to test this branch; the 0.1.2 installation
+examples below describe the existing release.
+
 Version **0.1.2** restores each selected native filament's inherited ID in the
 project, including the vector referenced by Bambu A2L startup G-code.
 Material preflight uses the same preset and build-plate rules as composition. See the

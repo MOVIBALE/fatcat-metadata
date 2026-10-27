@@ -3,6 +3,19 @@ from typing import Any, NotRequired, Required, TypedDict, overload
 _Object = dict[str, Any]
 
 
+class _NativeSourceRequest(TypedDict):
+    slicer_id: str
+    application_version: str
+    nozzle_uid: str
+    machine_uid: NotRequired[str]
+    source_machine_profile_name: NotRequired[str]
+
+
+def native_project_source(request: _NativeSourceRequest) -> _Object:
+    """Resolve exactly one machine by UID or source profile name, plus nozzle."""
+    ...
+
+
 class _SourceMaterial(TypedDict, total=False):
     name: str
     colour: str

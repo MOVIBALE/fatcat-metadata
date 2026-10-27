@@ -13,6 +13,7 @@
 
 #include "fatcat/project_settings.h"
 #include "project_settings_internal.h"
+#include "filesystem_path.h"
 
 namespace fatcat::detail::prusa {
 namespace {
@@ -25,7 +26,7 @@ constexpr const char *project_path = "Metadata/PrusaSlicer3_project.json";
 }
 
 json read_catalog(const std::filesystem::path &root) {
-    std::ifstream file(root / "prusa-3/catalog.json", std::ios::binary);
+    std::ifstream file(io_path(root / "prusa-3/catalog.json"), std::ios::binary);
     if (!file) invalid("bundled native configuration catalog is missing");
     auto value = json::parse(file);
     if (value.at("application_version") != version) invalid("catalog version differs from target");

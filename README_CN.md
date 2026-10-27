@@ -31,6 +31,10 @@ Snapmaker 的导入提示，以及 QIDI、Anycubic 的板型显示差异也如�
 
 ## 项目状态
 
+待发布 **0.1.3** 修复 Windows 原生数据的长路径读取，并新增
+`native_project_source` 精确机型/喷嘴查询，避免加载无关机型配置。
+测试本分支需要本地构建 wheel；下方 0.1.2 安装示例对应已有发行版。
+
 **0.1.2** 补齐所选原生耗材继承的 ID，包括 Bambu A2L 启动 G-code 引用的
 耗材 ID 数组。材料预检与最终组装共用预设选择和打印板兼容规则。
 见[材料选择接口](docs/API.md#material-selection-before-composition)。

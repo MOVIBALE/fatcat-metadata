@@ -450,6 +450,16 @@ PYBIND11_MODULE(fatcat_metadata, module) {
         py::arg("slicer_id"),
         "Read the installed native machine identities and hardware facts.");
 
+    module.def("native_project_source", [](const py::dict &request) {
+        try {
+            return py::module_::import("json").attr("loads")(
+                fatcat::native_project_source(dictionary_json(request),
+                    packaged_data_root("native_project_sources"))).cast<py::dict>();
+        } catch (const std::exception &error) {
+            throw py::value_error(error.what());
+        }
+    }, py::arg("request"), "Resolve one exact machine/nozzle and its hardware facts.");
+
     module.def(
         "compose_model_metadata",
         [](const std::string &project_json, const std::string &request_json) {
