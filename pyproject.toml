@@ -33,7 +33,7 @@ classifiers = [
 fatcat = "fatcat_metadata_cli:main"
 
 [project.optional-dependencies]
-examples = ["neroued-3mf==0.4.0"]
+examples = ["neroued-3mf==0.4.2"]
 
 [project.urls]
 Homepage = "https://github.com/MOVIBALE/fatcat-metadata"

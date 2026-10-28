@@ -18,9 +18,9 @@ platforms. Those jobs do not require a non-C locale. A separate Linux job
 installs and generates `de_DE.UTF-8`, enables
 `FATCAT_TEST_NON_C_LOCALE=ON`, and uses `ctest --no-tests=error` to run the
 comma-decimal case. The `out-of-tree-consumer` job builds and runs a small
-downstream CMake project. The `neroued-3mf` job writes a sample archive using
-the optional `neroued-3mf` integration and reads it back to check archive
-members and CRCs.
+downstream CMake project. The `neroued-3mf` job installs the examples extra
+with the official Neroued 0.4.2 wheel and writes both core and Production
+layouts. Read-back checks cover archive members, CRCs, materials and geometry.
 
 ## Native GUI acceptance
 
