@@ -13,6 +13,7 @@
 
 #include "fatcat/project_settings.h"
 #include "project_settings_internal.h"
+#include "filesystem_path.h"
 
 namespace fatcat::detail::prusa {
 namespace {
@@ -25,7 +26,7 @@ constexpr const char *project_path = "Metadata/PrusaSlicer3_project.json";
 }
 
 json read_catalog(const std::filesystem::path &root) {
-    std::ifstream file(root / "prusa-3/catalog.json", std::ios::binary);
+    std::ifstream file(io_path(root / "prusa-3/catalog.json"), std::ios::binary);
     if (!file) invalid("bundled native configuration catalog is missing");
     auto value = json::parse(file);
     if (value.at("application_version") != version) invalid("catalog version differs from target");
@@ -757,6 +758,60 @@ json material_slots(const json &project) {
         {"preview_color", effective.at("filament_colour").at(i)},
         {"material_id", materials.at(i).at("id")}});
     return slots;
+}
+
+json used_material_slots(const json &project) {
+    const auto capacity = container(project).at("preset").at("materials").size();
+    const auto &defaults = container(project).at("configuration").at("print_settings");
+    std::set<std::size_t> used;
+    const auto add = [&](std::size_t extruder) {
+        if (extruder == 0 || extruder > capacity) invalid("object references an absent material slot");
+        used.insert(extruder - 1);
+    };
+    const auto collect = [&](const json &settings, bool has_support_enforcer) {
+        const auto extruder = slot_index(settings.value("extruder", json(0)));
+        if (extruder != 0) {
+            add(extruder);
+        } else {
+            for (const auto *key : {"perimeter_extruder", "infill_extruder", "solid_infill_extruder"}) {
+                const auto value = slot_index(settings.value(key, json(1)));
+                add(value == 0 ? 1 : value);
+            }
+        }
+        const auto support = settings.value("support_material", json("none"));
+        if (support == "everywhere" || support == true ||
+            (support == "enforcers_only" && has_support_enforcer)) {
+            for (const auto *key : {"support_material_extruder", "support_material_interface_extruder"}) {
+                const auto value = slot_index(settings.value(key, json(0)));
+                if (value != 0) add(value);
+            }
+        }
+    };
+    for (const auto &object : project.at("objects")) {
+        const auto &volumes = object.at("volumes");
+        const bool has_support_enforcer = std::any_of(volumes.begin(), volumes.end(), [](const json &volume) {
+            return volume.value("type", std::string()) == "SupportEnforcer";
+        });
+        json object_settings = defaults;
+        object_settings.update(object.value("object_settings", json::object()));
+        for (const auto &volume : volumes) {
+            if (volume.value("type", std::string("ModelPart")) != "ModelPart" &&
+                volume.value("type", std::string()) != "ParameterModifier") continue;
+            auto settings = object_settings;
+            auto overrides = volume.value("volume_settings", json::object());
+            if (overrides.value("extruder", json(0)) == 0) overrides.erase("extruder");
+            settings.update(overrides);
+            collect(settings, has_support_enforcer);
+            for (const auto &range : object.value("ranges", json::array())) {
+                auto ranged = settings;
+                auto configuration = range.at("configuration");
+                if (configuration.value("extruder", json(0)) == 0) configuration.erase("extruder");
+                ranged.update(configuration);
+                collect(ranged, has_support_enforcer);
+            }
+        }
+    }
+    return json(used);
 }
 
 namespace {

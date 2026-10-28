@@ -3,7 +3,7 @@
 The wheel installs these examples independently of the source checkout:
 
 ```bash
-python -m pip install 'neroued-3mf==0.4.0'
+python -m pip install 'neroued-3mf==0.4.2'
 python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 ```
 
@@ -72,7 +72,7 @@ placement and production-layout options. Both examples use the same writer
 layout and generator geometry.
 
 This example creates a 20 mm cube and writes a 3MF using Fat Cat's metadata
-composer and the public Neroued 0.4.0 writer API:
+composer and the public Neroued 0.4.2 writer API:
 
 1. `builtin_project_request.json` selects the exact FatCat-bundled Bambu Studio
    02.08.02.61 A1 mini 0.4 mm source and textured PEI plate. The one-argument
@@ -99,7 +99,7 @@ Install `fatcat-metadata` from the repository root and install the optional
 writer dependency separately:
 
 ```bash
-python -m pip install . 'neroued-3mf==0.4.0'
+python -m pip install '.[examples]'
 ```
 
 Then run the built-in source example:
@@ -142,9 +142,9 @@ the default center but must keep the cube strictly inside the declared rectangle
 The example supports rectangular beds and rejects unsupported shapes or a cube
 that exceeds the selected bed or height; it does not arrange models in a slicer.
 
-The optional `--production` switch writes an external production model and
-requires a writer that preserves its material groups, such as the B7 writer
-used by Lumina. Original Neroued 0.4.0 omits material groups in both production
-modes; its supported default here is the core assembly layout. Both layouts
+The optional `--production` switch writes an external production model using
+the official `neroued-3mf==0.4.2` PyPI package. It includes the upstream
+Production material-group support and Windows Unicode/long-path fixes;
+no downstream writer build is required. Both core and production layouts
 are checked for real material references, colours, slot indices, UUIDs and
 transformed geometry. No generated ZIP member is rewritten.

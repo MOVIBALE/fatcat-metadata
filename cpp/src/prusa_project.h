@@ -22,6 +22,7 @@ nlohmann::json describe(nlohmann::json project, const nlohmann::json &request,
 nlohmann::json normalized_project(nlohmann::json source);
 nlohmann::json summary(const nlohmann::json &project);
 nlohmann::json material_slots(const nlohmann::json &project);
+nlohmann::json used_material_slots(const nlohmann::json &project);
 nlohmann::json patch_tower(nlohmann::json project, const nlohmann::json &settings);
 
 }  // namespace fatcat::detail::prusa

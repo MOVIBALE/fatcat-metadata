@@ -38,6 +38,11 @@ print quality. A separate 3MF is composed for each target.
 
 ## Project status
 
+Version **0.1.3** fixes Windows native-data reads beyond MAX_PATH and adds
+`native_project_source` for exact machine/nozzle queries without loading unrelated
+printer profiles. Its optional writer integration uses the official Neroued 0.4.2
+release, including Production layout and Windows Unicode/long-path fixes.
+
 Version **0.1.2** restores each selected native filament's inherited ID in the
 project, including the vector referenced by Bambu A2L startup G-code.
 Material preflight uses the same preset and build-plate rules as composition. See the
@@ -145,14 +150,14 @@ and native command. The option below prevents an unexpected source build on
 unsupported platforms; installing a matching wheel requires no C++ compiler.
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.2
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.3
 fatcat --version
 fatcat catalog
 ```
 
-For the complete 3MF examples, install `fatcat-metadata[examples]==0.1.2` instead.
+For the complete 3MF examples, install `fatcat-metadata[examples]==0.1.3` instead.
 The optional extra adds Neroued; the metadata core remains usable on its own.
-Downloads are also available on the [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.2/#files).
+Downloads are also available on the [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.3/#files).
 Alpine/musl, Intel Macs, Windows ARM and free-threaded Python have no prebuilt
 wheel in this release. Building from source requires a compatible toolchain.
 Read the [distribution guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/DISTRIBUTIONS.md) for build and publishing details.
@@ -203,7 +208,7 @@ Install the optional writer and run the example shipped by the wheel, without
 cloning this repository:
 
 ```bash
-python -m pip install 'neroued-3mf==0.4.0'
+python -m pip install 'neroued-3mf==0.4.2'
 python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 ```
 

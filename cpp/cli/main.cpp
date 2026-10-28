@@ -12,6 +12,7 @@
 
 #include "fatcat/native_project_source.h"
 #include "build_info.h"
+#include "filesystem_path.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -42,7 +43,7 @@ Exit codes: 0 success; 2 invalid arguments, input, or file access.
 )";
 
 std::string read_file(const std::string &name) {
-    std::ifstream stream(fs::u8path(name), std::ios::binary);
+    std::ifstream stream(fatcat::detail::io_path(fs::u8path(name)), std::ios::binary);
     if (!stream) throw std::runtime_error("cannot read file: " + name);
     std::ostringstream text;
     text << stream.rdbuf();
@@ -172,7 +173,7 @@ int run(const std::vector<std::string> &args) {
             : executable_path(args[0]).parent_path().parent_path() / "share" / "fatcat-metadata";
         const auto result = json::parse(execute(args[1], options, root)).dump(2) + "\n";
         if (options.count("--output")) {
-            std::ofstream stream(fs::u8path(required(options, "--output")), std::ios::binary);
+            std::ofstream stream(fatcat::detail::io_path(fs::u8path(required(options, "--output"))), std::ios::binary);
             if (!stream) throw std::runtime_error("cannot write output file");
             stream << result;
             if (!stream) throw std::runtime_error("output file write failed");

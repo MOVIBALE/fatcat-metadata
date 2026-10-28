@@ -239,6 +239,33 @@ MergeProjectInputs collect_merge_project_inputs(
     }
     const std::string difference_key =
         required_string(snapshot, "difference_list_key", "filament snapshot");
+    // Slot fields are projected below; layout and project labels are generated
+    // for the merged document. Every other source setting must agree: this
+    // dialect has no contract allowing arbitrary process fields on objects.
+    auto projected_keys = slot_array_keys;
+    projected_keys.insert({difference_key, "print_settings_id", "name", "inherits",
+                           "version", "from", "type", "is_custom_defined",
+                           "default_filament_profile", "inherits_group"});
+    const auto &tower = required_member(dialect, "wipe_tower", "package dialect");
+    for (const auto *field : {"x_key", "y_key", "width_key", "rotation_key"}) {
+        if (tower.contains(field)) projected_keys.insert(tower.at(field).get<std::string>());
+    }
+    const auto &baseline = result.sources.front();
+    for (std::size_t i = 1; i < result.sources.size(); ++i) {
+        const auto &source = result.sources.at(i);
+        std::set<std::string> keys;
+        for (const auto &[key, value] : baseline.project.items()) keys.insert(key);
+        for (const auto &[key, value] : source.project.items()) keys.insert(key);
+        for (const auto &key : keys) {
+            if (projected_keys.count(key)) continue;
+            if (!baseline.project.contains(key) || !source.project.contains(key) ||
+                baseline.project.at(key) != source.project.at(key)) {
+                invalid("merged sources " + baseline.source_id + " and " + source.source_id +
+                        " have conflicting project setting '" + key +
+                        "'; use matching process settings or export separate projects");
+            }
+        }
+    }
     return result;
 }
 
@@ -535,6 +562,40 @@ json merge_transition_defaults(const json &request, const json &machine,
     return defaults;
 }
 
+void merge_inheritance_groups(json &project, const MergeProjectInputs &inputs) {
+    if (std::none_of(inputs.sources.begin(), inputs.sources.end(), [](const auto &source) {
+            return source.project.contains("inherits_group");
+        })) return;
+    std::optional<std::pair<std::string, std::string>> endpoints;
+    std::vector<std::optional<std::string>> materials(inputs.logical_by_id.size());
+    for (const auto &source : inputs.sources) {
+        const auto entries = string_array(
+            required_member(source.project, "inherits_group", "merge source " + source.source_id),
+            "merge source inherits_group");
+        if (entries.size() != source.slot_count + 2) {
+            invalid("merge source " + source.source_id + " has a mismatched inherits_group slot count");
+        }
+        const auto current = std::make_pair(entries.front(), entries.back());
+        if (endpoints && *endpoints != current) {
+            invalid("merged sources have different process or machine inheritance");
+        }
+        endpoints = current;
+        for (const auto &slot : source.slots) {
+            auto &chosen = materials.at(slot.output_slot_index);
+            const auto &value = entries.at(slot.source_slot_index + 1);
+            if (chosen && *chosen != value) {
+                invalid("merged source conflict for inherits_group at global slot " +
+                        std::to_string(slot.output_slot_id));
+            }
+            chosen = value;
+        }
+    }
+    json merged = json::array({endpoints->first});
+    for (const auto &material : materials) merged.push_back(material.value());
+    merged.push_back(endpoints->second);
+    project["inherits_group"] = std::move(merged);
+}
+
 MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
                                                const json &dialect,
                                                const json &defaults = json()) {
@@ -545,6 +606,7 @@ MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
     const json &rules = merge_required_array(snapshot, "array_rules", "filament snapshot");
     const json merged_preserve_first_source_keys = snapshot.value(
         "merged_preserve_first_source_keys", json::array());
+    merge_inheritance_groups(project, inputs);
 
     for (const auto &rule : rules) {
         const std::string selection = required_string(rule, "selection", "filament array rule");

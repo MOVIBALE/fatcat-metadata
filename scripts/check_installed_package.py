@@ -26,7 +26,7 @@ def main() -> int:
     if module_path.suffix == ".py":
         raise SystemExit(f"expected the compiled C++ extension, imported {module_path}")
     distribution = importlib.metadata.distribution("fatcat-metadata")
-    if distribution.version != "0.1.2":
+    if distribution.version != "0.1.3":
         raise SystemExit("unexpected fatcat-metadata distribution version")
     if not fatcat_metadata.__fatcat_cpp_extension__:
         raise SystemExit("fatcat_metadata is not the compiled C++ extension")

@@ -16,6 +16,7 @@
 #include <nlohmann/json.hpp>
 
 #include "filament_projection.h"
+#include "filesystem_path.h"
 #include "native_material_selection.h"
 #include "prusa_project.h"
 #include "fatcat/project_settings.h"
@@ -42,8 +43,8 @@ std::string required_string(const json &object, const char *key,
 }
 
 std::string read_text(const std::filesystem::path &path) {
-    std::ifstream stream(path, std::ios::binary);
-    if (!stream) invalid("native project source file is missing: " + path.string());
+    std::ifstream stream(detail::io_path(path), std::ios::binary);
+    if (!stream) invalid("native project source file is missing or unreadable: " + path.u8string());
     std::ostringstream contents;
     contents << stream.rdbuf();
     return contents.str();
@@ -51,7 +52,7 @@ std::string read_text(const std::filesystem::path &path) {
 
 std::filesystem::path safe_path(const std::filesystem::path &root,
                                 const std::string &relative) {
-    const std::filesystem::path rel(relative);
+    const auto rel = std::filesystem::u8path(relative);
     if (relative.empty() || rel.is_absolute() || rel.has_root_name() ||
         rel.has_root_directory()) {
         invalid("native source path must be relative: " + relative);
@@ -61,14 +62,20 @@ std::filesystem::path safe_path(const std::filesystem::path &root,
             invalid("native source path contains traversal: " + relative);
         }
     }
-    const auto canonical_root = std::filesystem::weakly_canonical(root);
-    const auto candidate = std::filesystem::weakly_canonical(root / rel);
+    const auto canonical_root = detail::canonical_io_path(root);
+    const auto candidate = detail::canonical_io_path(root / rel);
     const auto beneath = candidate.lexically_relative(canonical_root);
     if (beneath.empty() || beneath.is_absolute() ||
         *beneath.begin() == std::filesystem::path("..")) {
         invalid("native source path escapes its data root: " + relative);
     }
-    if (!std::filesystem::is_regular_file(candidate)) {
+    std::error_code access_error;
+    if (!std::filesystem::is_regular_file(candidate, access_error)) {
+        if (access_error && access_error != std::errc::no_such_file_or_directory) {
+            invalid("native source profile access failed: " + relative +
+                    " (" + access_error.category().name() + ":" +
+                    std::to_string(access_error.value()) + ": " + access_error.message() + ")");
+        }
         invalid("native source profile is missing: " + relative);
     }
     return candidate;
@@ -195,6 +202,27 @@ private:
         return result;
     }
 };
+
+json public_source_record(const json &source, NativeProfileCatalog &catalog) {
+    const auto machine_path = required_string(
+        source, "machine_profile_path", "native source");
+    const auto machine = catalog.resolve(machine_path);
+    json hardware = json::object();
+    for (const auto *key : {"printer_model", "nozzle_diameter"}) {
+        if (machine.contains(key)) hardware[key] = machine.at(key);
+    }
+    return json{
+        {"machine_uid", required_string(source, "machine_uid", "native source")},
+        {"nozzle_uid", required_string(source, "nozzle_uid", "native source")},
+        {"source_machine_profile_name", required_string(
+            source, "source_machine_profile_name", "native source")},
+        {"availability", source.value("availability", json::object())},
+        {"default_print_profile_name", source.value(
+            "default_print_profile_name", std::string())},
+        {"hardware_settings", std::move(hardware)},
+        {"compatibility_project", source.value("compatibility_project", json())},
+    };
+}
 
 bool structural_profile_key(const std::string &key) {
     static const std::set<std::string> keys = {
@@ -931,8 +959,13 @@ json process_choices(const json &source, NativeProfileCatalog &catalog) {
     for (const auto &option : profile_options(source, "print_profile_options", "native source")) {
         json choice = {{"name", option.at("name")}, {"available", option.contains("path")}};
         if (option.contains("path")) {
-            const auto profile = catalog.resolve(required_string(option, "path", "native process"));
-            if (profile.contains("layer_height")) choice["layer_height"] = profile.at("layer_height");
+            try {
+                const auto profile = catalog.resolve(required_string(option, "path", "native process"));
+                if (profile.contains("layer_height")) choice["layer_height"] = profile.at("layer_height");
+            } catch (const ProjectSettingsError &error) {
+                choice["available"] = false;
+                choice["unavailable_reason"] = error.what();
+            }
         } else {
             choice["unavailable_reason"] = option.value("unavailable_reason", "native profile file is unavailable");
         }
@@ -950,17 +983,28 @@ json material_choices(const json &source, const json &target, const json &plates
         json choice = {{"name", name}, {"available", false}};
         if (!option.contains("path")) {
             choice["unavailable_reason"] = option.value("unavailable_reason", "native profile file is unavailable");
+            choice["source_unavailable"] = true;
             choices.push_back(std::move(choice));
             continue;
         }
-        const auto profile = catalog.resolve(required_string(option, "path", "native material"));
-        const auto type = native_profile_material_type(profile, name);
+        json profile;
+        std::string type;
+        bool machine_compatible = false;
+        try {
+            profile = catalog.resolve(required_string(option, "path", "native material"));
+            type = native_profile_material_type(profile, name);
+            machine_compatible = material_compatible_with_machine(profile, machine_name);
+        } catch (const ProjectSettingsError &error) {
+            choice["unavailable_reason"] = error.what();
+            choice["source_unavailable"] = true;
+            choices.push_back(std::move(choice));
+            continue;
+        }
         choice["material_type"] = type;
         const auto vendors = profile.value("filament_vendor", json::array());
         choice["vendor"] = vendors.is_array() && !vendors.empty() && vendors.front().is_string()
             ? vendors.front().get<std::string>() : std::string();
-        choice["machine_compatible"] = material_compatible_with_machine(profile, machine_name) &&
-                                       !type.empty();
+        choice["machine_compatible"] = machine_compatible && !type.empty();
         choice["supported_build_plate_uids"] = json::array();
         for (const auto &plate : target.at("build_plate_bindings")) {
             const auto uid = plate.at("build_plate_uid");
@@ -968,7 +1012,7 @@ json material_choices(const json &source, const json &target, const json &plates
                 choice["supported_build_plate_uids"].push_back(uid);
             }
         }
-        if (!material_compatible_with_machine(profile, machine_name)) {
+        if (!machine_compatible) {
             choice["unavailable_reason"] = "native profile is incompatible with the selected machine";
         } else if (type.empty()) {
             choice["unavailable_reason"] = "native profile has no material type";
@@ -1112,6 +1156,56 @@ std::string native_project_options(std::string_view request_json,
     }
 }
 
+std::string native_project_source(std::string_view request_json,
+                                  const std::filesystem::path &data_root) {
+    try {
+        const auto request = json::parse(request_json);
+        const auto slicer = required_string(request, "slicer_id", "native source request");
+        const auto version = required_string(request, "application_version", "native source request");
+        const auto nozzle = required_string(request, "nozzle_uid", "native source request");
+        const bool by_uid = request.contains("machine_uid");
+        const bool by_name = request.contains("source_machine_profile_name");
+        if (by_uid == by_name) {
+            invalid("native source request requires exactly one machine_uid or source_machine_profile_name");
+        }
+        const char *selector = by_uid ? "machine_uid" : "source_machine_profile_name";
+        const auto identity = required_string(request, selector, "native source request");
+        auto matches = [&](const json &source) {
+            return source.is_object() && source.value(selector, std::string()) == identity &&
+                source.value("nozzle_uid", std::string()) == nozzle;
+        };
+        if (slicer == "PrusaSlicer") {
+            if (version != "3.0.0-alpha12") invalid("unsupported PrusaSlicer version");
+            const auto catalog = detail::prusa::catalog(data_root);
+            json selected;
+            for (const auto &source : catalog.at("sources")) {
+                if (!matches(source)) continue;
+                if (!selected.is_null()) invalid("no unique native source for requested machine/nozzle");
+                selected = source;
+            }
+            if (selected.is_null()) invalid("no unique native source for requested machine/nozzle");
+            selected["filament_slot_policy"] = catalog.at("filament_slot_policy");
+            return selected.dump();
+        }
+        NativeProfileCatalog catalog(data_root);
+        const json *selected = nullptr;
+        for (const auto &source : catalog.index().at("sources")) {
+            if (!matches(source) || source.value("slicer_id", std::string()) != slicer ||
+                source.value("application_version", std::string()) != version) continue;
+            if (selected) invalid("no unique native source for requested machine/nozzle");
+            selected = &source;
+        }
+        if (!selected) invalid("no unique native source for requested machine/nozzle");
+        return public_source_record(*selected, catalog).dump();
+    } catch (const ProjectSettingsError &) {
+        throw;
+    } catch (const json::exception &error) {
+        invalid(std::string("invalid native source request JSON: ") + error.what());
+    } catch (const std::filesystem::filesystem_error &error) {
+        invalid(std::string("native source file access failed: ") + error.what());
+    }
+}
+
 std::string native_project_source_catalog(
     std::string_view slicer_id,
     std::string_view application_version,
@@ -1130,24 +1224,7 @@ std::string native_project_source_catalog(
                 source.value("application_version", std::string()) != application_version) {
                 continue;
             }
-            const auto machine_path = required_string(
-                source, "machine_profile_path", "native source");
-            const auto machine = catalog.resolve(machine_path);
-            json hardware = json::object();
-            for (const auto *key : {"printer_model", "nozzle_diameter"}) {
-                if (machine.contains(key)) hardware[key] = machine.at(key);
-            }
-            sources.push_back({
-                {"machine_uid", required_string(source, "machine_uid", "native source")},
-                {"nozzle_uid", required_string(source, "nozzle_uid", "native source")},
-                {"source_machine_profile_name", required_string(
-                    source, "source_machine_profile_name", "native source")},
-                {"availability", source.value("availability", json::object())},
-                {"default_print_profile_name", source.value(
-                    "default_print_profile_name", std::string())},
-                {"hardware_settings", std::move(hardware)},
-                {"compatibility_project", source.value("compatibility_project", json())},
-            });
+            sources.push_back(public_source_record(source, catalog));
         }
         return json{{"schema_version", 1},
                     {"slicer_id", slicer_id},
@@ -1197,21 +1274,24 @@ std::string compose_builtin_project_settings(
 std::string metadata_target_data(std::string_view slicer_id,
                                  std::string_view application_version,
                                  const std::filesystem::path &data_root) {
+    const auto index = read_json(safe_path(data_root, "translations/supported-targets.json"),
+                                 "supported targets");
     json selected;
-    const auto targets = data_root / "translations" / "targets";
-    if (!std::filesystem::is_directory(targets)) invalid("packaged target directory is missing: " + targets.string());
-    for (const auto &entry : std::filesystem::directory_iterator(targets)) {
-        if (entry.path().extension() != ".json") continue;
-        const auto path = safe_path(data_root, "translations/targets/" + entry.path().filename().string());
-        auto target = read_json(path, "packaged target");
-        const auto &contract = target.at("target_contract");
-        if (contract.at("slicer_id") != std::string(slicer_id) ||
-            (!application_version.empty() && contract.at("application_version") != std::string(application_version))) continue;
+    for (const auto &entry : index.at("targets")) {
+        if (entry.at("slicer_id") != std::string(slicer_id) ||
+            (!application_version.empty() && entry.at("application_version") != std::string(application_version))) continue;
         if (!selected.is_null()) invalid("packaged slicer/version selection is not unique");
-        selected = std::move(target);
+        selected = entry;
     }
     if (selected.is_null()) invalid("unsupported metadata target version: " + std::string(slicer_id) + " " + std::string(application_version));
-    return selected.dump();
+    const auto target = read_json(safe_path(data_root,
+        "translations/targets/" + required_string(selected, "filename", "supported target")), "packaged target");
+    const auto &contract = target.at("target_contract");
+    if (contract.at("slicer_id") != selected.at("slicer_id") ||
+        contract.at("application_version") != selected.at("application_version")) {
+        invalid("packaged target identity does not match its index entry");
+    }
+    return target.dump();
 }
 
 std::string native_field_inventory(std::string_view slicer_id,
@@ -1355,7 +1435,8 @@ std::string compose_project_settings_from_data(std::string_view project_json,
             (missing_pair && !native_transition_defaults)) {
             // Complete absent selections with the same packaged native-source
             // synthesis used by ordinary exports. Actual source slots remain
-            // authoritative; the carrier contains no geometry or process.
+            // authoritative; the carrier has no geometry and retains the
+            // source process instead of introducing a replacement process.
             json native_request = {
                 {"project_source", "fatcat_native"},
                 {"slicer_id", request.at("slicer_id")},
@@ -1371,19 +1452,23 @@ std::string compose_project_settings_from_data(std::string_view project_json,
             for (const auto *key : {"printer_model", "nozzle_diameter"}) {
                 if (first.at(key) != defaults.at(key)) invalid("missing palette completion hardware differs from source");
             }
-            json carrier = defaults;
-            // This carrier supplies materials, not replacement hardware. Keep
-            // the source's missing fields missing as well as its present values.
-            for (const auto *key : {"printable_area", "printable_height", "curr_bed_type"}) {
-                if (first.contains(key)) {
-                    carrier[key] = first.at(key);
-                } else {
-                    carrier.erase(key);
-                }
-            }
             const auto &snapshot = target.at("package_dialect").at("filament_snapshot");
             const auto normalized = detail::prepare_source_merge_project(first, snapshot);
+            // Retain the source process and hardware, including unknown fields.
+            // Only fields declared by the target as material-slot data come
+            // from the native defaults; this is not another process authority.
+            json carrier = normalized;
+            const auto merge_dialect = detail::source_merge_dialect(
+                target.at("package_dialect"), normalized);
+            for (const auto &rule : merge_dialect.at("filament_snapshot").at("array_rules")) {
+                for (const auto &key_value : rule.at("keys")) {
+                    const auto key = key_value.get<std::string>();
+                    if (defaults.contains(key)) carrier[key] = defaults.at(key);
+                    else carrier.erase(key);
+                }
+            }
             const auto difference_key = snapshot.at("difference_list_key").get<std::string>();
+            if (defaults.contains(difference_key)) carrier[difference_key] = defaults.at(difference_key);
             const auto offset = snapshot.at("filament_slot_offset").get<std::size_t>();
             const auto tail = snapshot.at("trailing_entry_count").get<std::size_t>();
             if (normalized.contains(difference_key) && carrier.contains(difference_key)) {
@@ -1391,6 +1476,16 @@ std::string compose_project_settings_from_data(std::string_view project_json,
                 const auto &original = normalized.at(difference_key);
                 for (std::size_t i = 0; i < offset; ++i) entries.at(i) = original.at(i);
                 for (std::size_t i = 0; i < tail; ++i) entries.at(entries.size() - tail + i) = original.at(original.size() - tail + i);
+            }
+            if (first.contains("inherits_group")) {
+                const auto &original = first.at("inherits_group");
+                if (!original.is_array() || original.size() != first.at("filament_settings_id").size() + 2) {
+                    invalid("source inherits_group does not match its material slots");
+                }
+                json inheritance = json::array({original.front()});
+                for (const auto &material : defaults.at("filament_settings_id")) inheritance.push_back(material);
+                inheritance.push_back(original.back());
+                carrier["inherits_group"] = std::move(inheritance);
             }
             std::string id = "native-material-defaults";
             while (source_ids.count(id)) id += "-";

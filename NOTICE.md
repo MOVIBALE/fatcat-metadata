@@ -62,5 +62,5 @@ Exact tags, resolved commits, and source URLs for the files above are recorded
 in [`licenses/third-party/manifest.json`](licenses/third-party/manifest.json).
 The Python build backend is not linked into or shipped as part of the runtime
 library. The optional Neroued example and integration job use
-`neroued-3mf==0.4.0`; that separate project retains its own license and terms,
+`neroued-3mf==0.4.2`; that separate project retains its own license and terms,
 and is not a runtime dependency of `fatcat-metadata`.

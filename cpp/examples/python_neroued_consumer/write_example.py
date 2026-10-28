@@ -157,8 +157,7 @@ def _create_builder(
         builder.add_build_item(object_id, uuid=str(uuid.uuid4()))
         assembly_id = object_id + 1
     else:
-        # Original 0.4.0 preserves material groups in core model resources.
-        # Its production serialization omits them; use its public core assembly API.
+        # The core layout keeps geometry and material groups in the root model.
         assembly_id = builder.add_component_object(
             name + " assembly", [n3mf.Component(object_id, n3mf.Transform.identity())]
         )
@@ -186,7 +185,7 @@ def main() -> None:
     )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--production", action="store_true",
-                        help="external production model layout; requires a writer with material serialization support")
+                        help="external production model layout with the official neroued writer")
     parser.add_argument("--bed-center", type=float, nargs=2, metavar=("X", "Y"),
                         help="generator placement center; required if the custom project has no printable area")
     args = parser.parse_args()

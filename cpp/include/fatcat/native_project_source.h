@@ -36,6 +36,12 @@ std::string native_project_source_catalog(
     std::string_view application_version,
     const std::filesystem::path &data_root);
 
+/// Resolve one machine/nozzle without opening any other machine's profiles.
+/// Request requires slicer_id, application_version, nozzle_uid and exactly one
+/// of machine_uid or source_machine_profile_name. data_root is the native source root.
+std::string native_project_source(
+    std::string_view request_json, const std::filesystem::path &data_root);
+
 /// Compose a project from an explicitly selected, bundled native profile source.
 /// The existing four-JSON-argument composer remains the source-project entry.
 std::string compose_builtin_project_settings(

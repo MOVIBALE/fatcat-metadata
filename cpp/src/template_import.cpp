@@ -77,6 +77,16 @@ std::string_view local_name(std::string_view name) {
     return separator == std::string_view::npos ? name : name.substr(separator + 1);
 }
 
+bool identity_marker(std::string_view name) {
+    const auto key = lower(name);
+    return key == "application" || key == "orcaslicer" || key == "orcaslicer-version" ||
+           key == "bambustudio:3mfversion" || key == "qidistudio:3mfversion" ||
+           key == "x-bbl-client-name" || key == "x-bbl-client-type" ||
+           key == "x-bbl-client-version" || key == "x-qdt-client-type" ||
+           key == "x-qdt-client-version" || key == "x-acnext-client-type" ||
+           key == "x-acnext-client-version";
+}
+
 void collect_markers(const tinyxml2::XMLElement *element,
                      std::vector<Marker> &markers, std::string &marker_text) {
     for (auto *current = element; current != nullptr;
@@ -91,16 +101,9 @@ void collect_markers(const tinyxml2::XMLElement *element,
             if (marker_value == nullptr) {
                 marker_value = current->GetText();
             }
-            markers.push_back({marker_name == nullptr ? "" : marker_name,
-                               marker_value == nullptr ? "" : marker_value});
-            for (const auto *attribute = current->FirstAttribute();
-                 attribute != nullptr; attribute = attribute->Next()) {
-                marker_text += " ";
-                marker_text += attribute->Value();
-            }
-            if (const char *text = current->GetText(); text != nullptr) {
-                marker_text += " ";
-                marker_text += text;
+            if (marker_name != nullptr && identity_marker(marker_name)) {
+                markers.push_back({marker_name, marker_value == nullptr ? "" : marker_value});
+                marker_text += " " + markers.back().name + " " + markers.back().value;
             }
         }
         collect_markers(current->FirstChildElement(), markers, marker_text);
@@ -486,6 +489,18 @@ void validate_template_hardware(std::string_view template_json,
     if (project.value("nozzle_diameter", json(nullptr)) != expected.value("nozzle_diameter", json(nullptr))) {
         invalid("Custom 3MF template nozzles do not match the selected nozzles");
     }
+}
+
+std::string detect_template_source(
+    std::optional<std::string_view> source_model_xml,
+    std::optional<std::string_view> slice_info_xml) {
+    std::vector<Marker> markers;
+    std::string marker_text;
+    read_markers(source_model_xml, markers, marker_text);
+    read_markers(slice_info_xml, markers, marker_text);
+    const auto source = identify_source(markers, marker_text, {});
+    return json{{"source_slicer", source.slicer.empty() ? json(nullptr) : json(source.slicer)},
+                {"source_version", source.version.has_value() ? json(*source.version) : json(nullptr)}}.dump();
 }
 
 std::string detect_template_source(

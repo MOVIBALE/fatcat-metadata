@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(fatcat_3mf_metadata_cpp VERSION 0.1.2 LANGUAGES CXX)
+project(fatcat_3mf_metadata_cpp VERSION 0.1.3 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -139,7 +139,8 @@ if(FATCAT_BUILD_CLI)
     add_executable(fatcat_cli cli/main.cpp)
     set_target_properties(fatcat_cli PROPERTIES OUTPUT_NAME fatcat)
     target_link_libraries(fatcat_cli PRIVATE fatcat_metadata_core)
-    target_include_directories(fatcat_cli PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
+    target_include_directories(fatcat_cli PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}/generated ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_compile_definitions(fatcat_cli PRIVATE FATCAT_METADATA_VERSION="${PROJECT_VERSION}")
     if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         # The executable is carried inside wheels too; auditwheel does not
@@ -188,6 +189,18 @@ endif()
 
 if(FATCAT_BUILD_TESTS)
     enable_testing()
+    if(WIN32)
+        add_executable(fatcat_windows_native_paths_test tests/windows_native_paths_test.cpp)
+        target_link_libraries(fatcat_windows_native_paths_test PRIVATE fatcat_metadata_core)
+        target_compile_definitions(fatcat_windows_native_paths_test PRIVATE
+            FATCAT_TEST_REPOSITORY_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/..")
+        if(MSVC)
+            target_compile_options(fatcat_windows_native_paths_test PRIVATE /utf-8)
+            target_link_options(fatcat_windows_native_paths_test PRIVATE
+                "/MANIFEST:EMBED" "/MANIFESTINPUT:${CMAKE_CURRENT_SOURCE_DIR}/tests/no_long_path.manifest")
+        endif()
+        add_test(NAME fatcat_windows_native_paths_test COMMAND fatcat_windows_native_paths_test)
+    endif()
     add_executable(fatcat_wipe_tower_test
         tests/wipe_tower_test.cpp
     )

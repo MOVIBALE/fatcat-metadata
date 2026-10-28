@@ -31,6 +31,10 @@ Snapmaker 的导入提示，以及 QIDI、Anycubic 的板型显示差异也如�
 
 ## 项目状态
 
+**0.1.3** 修复 Windows 原生数据的长路径读取，并新增
+`native_project_source` 精确机型/喷嘴查询，避免加载无关机型配置。
+可选写包集成使用官方 Neroued 0.4.2，包含 Production 布局和 Windows 中文/长路径修复。
+
 **0.1.2** 补齐所选原生耗材继承的 ID，包括 Bambu A2L 启动 G-code 引用的
 耗材 ID 数组。材料预检与最终组装共用预设选择和打印板兼容规则。
 见[材料选择接口](docs/API.md#material-selection-before-composition)。
@@ -116,7 +120,7 @@ Apple 芯片 Mac，以及 glibc 2.28 以上的 Linux x86_64。Pip 自动选择�
 原生命令。下方选项避免在不支持的平台上意外触发源码编译；安装匹配的 wheel 不需要 C++ 编译器。
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.2
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.3
 fatcat --version
 fatcat catalog
 ```
@@ -134,8 +138,8 @@ Prusa 3 则直接采用应用导出的 schema，支持 220 个单值工艺字段
 显式工艺覆盖范围。“SDK 尚未支持”与“原生标准枚举词不接受”分别说明；清单外字段仍为待确认。
 这不代表所有切片软件专属功能都能相互转换。
 
-需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.2`，它额外安装
-Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.2/#files)
+需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.3`，它额外安装
+Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.3/#files)
 手动下载。此版不提供 Alpine/musl、Intel Mac、Windows ARM 或自由线程 Python 的
 预编译 wheel；源码构建需要相应工具链。构建与发布方式见[发行说明](docs/DISTRIBUTIONS.md)。
 
@@ -181,7 +185,7 @@ project = result["project_settings"]
 安装可选写包工具，然后运行随 wheel 提供的示例，不需要克隆源码：
 
 ```bash
-python -m pip install 'neroued-3mf==0.4.0'
+python -m pip install 'neroued-3mf==0.4.2'
 python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 ```
 

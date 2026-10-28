@@ -23,6 +23,25 @@ materials = [item for item in choices["filament_profiles"] if item["available"]]
 ```
 
 `list_targets` returns exact installed software/version identities.
+For an export with an already selected machine, use `native_project_source`
+instead of loading the full machine catalog:
+
+```python
+source = fatcat.native_project_source({
+    "slicer_id": "BambuStudio", "application_version": "02.08.02.61",
+    "machine_uid": "bambu-lab:p2s", "nozzle_uid": "nozzle:0.4mm",
+})
+```
+
+The request requires exactly one of `machine_uid` or
+`source_machine_profile_name`, together with slicer, version, and nozzle.
+The returned record has the same identity, availability, default process, and
+effective hardware fields as a catalog row. Only the selected machine's
+inheritance/include chain is opened. Missing selected dependencies still fail;
+broken files belonging to other machines do not block the query. Unknown or
+ambiguous identities fail without falling back to another printer.
+Prusa records additionally expose their `filament_slot_policy`.
+
 `list_machines` accepts an exact version or the unique installed version by
 omission. `list_project_options` requires software/version/machine/nozzle; a
 plate is optional. It returns `build_plates`, `print_profiles`,
