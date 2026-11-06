@@ -31,6 +31,9 @@ Snapmaker 的导入提示，以及 QIDI、Anycubic 的板型显示差异也如�
 
 ## 项目状态
 
+**0.1.4** 更新六个切片软件的原生配置，新增 Bambu H3C，并在槽位重排与合并时
+完整保留原生材料参数组。
+
 **0.1.3** 修复 Windows 原生数据的长路径读取，并新增
 `native_project_source` 精确机型/喷嘴查询，避免加载无关机型配置。
 可选写包集成使用官方 Neroued 0.4.2，包含 Production 布局和 Windows 中文/长路径修复。
@@ -119,7 +122,7 @@ Apple 芯片 Mac，以及 glibc 2.28 以上的 Linux x86_64。Pip 自动选择�
 原生命令。下方选项避免在不支持的平台上意外触发源码编译；安装匹配的 wheel 不需要 C++ 编译器。
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.3
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.4
 fatcat --version
 fatcat catalog
 ```
@@ -129,7 +132,7 @@ fatcat catalog
 Orca 2.5.0-rc 是候选版，稳定目标仍为 2.4.2。Anycubic 2.0.0.6 已通过软件自身
 更新器取得，已导入原生配置和默认值，并完成 Kobra X 示例的实际切片。
 Prusa 3.0.0-alpha13 是明确支持的预览版；它的工程格式独立于 Prusa 2.x。
-本次源码更新尚未作为新版本发布到 PyPI。
+本轮更新包含在 0.1.4 发行中。
 
 [工艺参数契约](docs/PROCESS_SETTINGS.md)可查询原有七个目标的 38 个字段及其范围、枚举与别名。
 Prusa 3 则直接采用应用导出的 schema，支持 222 个单值工艺字段与 65 个材料字段。
@@ -138,8 +141,8 @@ Prusa 3 则直接采用应用导出的 schema，支持 222 个单值工艺字段
 显式工艺覆盖范围。“SDK 尚未支持”与“原生标准枚举词不接受”分别说明；清单外字段仍为待确认。
 这不代表所有切片软件专属功能都能相互转换。
 
-需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.3`，它额外安装
-Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.3/#files)
+需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.4`，它额外安装
+Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.4/#files)
 手动下载。此版不提供 Alpine/musl、Intel Mac、Windows ARM 或自由线程 Python 的
 预编译 wheel；源码构建需要相应工具链。构建与发布方式见[发行说明](docs/DISTRIBUTIONS.md)。
 
