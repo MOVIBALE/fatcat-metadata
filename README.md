@@ -38,6 +38,9 @@ print quality. A separate 3MF is composed for each target.
 
 ## Project status
 
+Version **0.1.4** refreshes six native slicer snapshots, adds Bambu H3C, and
+preserves native material parameter groups through slot reorder and merge.
+
 Version **0.1.3** fixes Windows native-data reads beyond MAX_PATH and adds
 `native_project_source` for exact machine/nozzle queries without loading unrelated
 printer profiles. Its optional writer integration uses the official Neroued 0.4.2
@@ -111,7 +114,7 @@ Orca 2.5.0-rc remains separate from the stable 2.4.2 target. Anycubic 2.0.0.6
 was obtained through its native updater; its profiles and defaults were imported
 and the Kobra X example was sliced in the application.
 PrusaSlicer is an explicitly supported preview whose project format is separate
-from PrusaSlicer 2.x. These source changes are not yet a new PyPI release.
+from PrusaSlicer 2.x. These changes are included in the 0.1.4 release.
 
 Explicit [process settings](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/PROCESS_SETTINGS.md) use a discoverable contract:
 known equivalents are normalized, target array formats are respected, and
@@ -154,14 +157,14 @@ and native command. The option below prevents an unexpected source build on
 unsupported platforms; installing a matching wheel requires no C++ compiler.
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.3
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.4
 fatcat --version
 fatcat catalog
 ```
 
-For the complete 3MF examples, install `fatcat-metadata[examples]==0.1.3` instead.
+For the complete 3MF examples, install `fatcat-metadata[examples]==0.1.4` instead.
 The optional extra adds Neroued; the metadata core remains usable on its own.
-Downloads are also available on the [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.3/#files).
+Downloads are also available on the [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.4/#files).
 Alpine/musl, Intel Macs, Windows ARM and free-threaded Python have no prebuilt
 wheel in this release. Building from source requires a compatible toolchain.
 Read the [distribution guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/DISTRIBUTIONS.md) for build and publishing details.
