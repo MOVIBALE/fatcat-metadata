@@ -26,7 +26,7 @@ json repeated(std::size_t count, const json &value) {
 }
 
 std::string target_filename(const std::string &slicer) {
-    return slicer == "BambuStudio" ? "bambu-studio-02.08.02.61.json"
+    return slicer == "BambuStudio" ? "bambu-studio-02.09.01.70.json"
                                      : "orca-slicer-2.4.2.json";
 }
 
@@ -90,7 +90,7 @@ struct Fixture {
     json project, request, canonical, target;
 
     Fixture(const std::string &slicer, std::size_t count = 2) {
-        const std::string version = slicer == "BambuStudio" ? "02.08.02.61" : "2.4.2";
+        const std::string version = slicer == "BambuStudio" ? "02.09.01.70" : "2.4.2";
         target = read_json("compatibility/current-src/translations/targets/" +
                            target_filename(slicer));
         const auto machine = std::find_if(
@@ -244,7 +244,7 @@ void missing_exact_bindings_and_values_identify_the_slot() {
     Fixture missing("BambuStudio");
     missing.request["material_uids"] = json::array({"material:pla", "material:petg"});
     missing.parameter_set("material:pla")["target_parameters"].erase("first_x_layer_fan_speed");
-    expect_error(missing, {"BambuStudio", "02.08.02.61", "bambu-lab:p1s", "nozzle:0.2mm", "material:pla", "slot 0", "first_x_layer_fan_speed"});
+    expect_error(missing, {"BambuStudio", "02.09.01.70", "bambu-lab:p1s", "nozzle:0.2mm", "material:pla", "slot 0", "first_x_layer_fan_speed"});
     Fixture absent("BambuStudio");
     absent.request["material_uids"] = json::array({"material:pla", "material:petg"});
     auto &petg = absent.parameter_set("material:petg");
@@ -346,7 +346,7 @@ void registry_only_x1_defaults_apply_to_machine_shaped_source() {
         const auto target = read_json("compatibility/current-src/translations/targets/" +
             target_filename(slicer));
         const std::string application_version =
-            slicer == std::string("BambuStudio") ? "02.08.02.61" : "2.4.2";
+            slicer == std::string("BambuStudio") ? "02.09.01.70" : "2.4.2";
         for (const auto &machine : target.at("machine_bindings")) {
             if (machine.at("machine_uid") != "bambu-lab:x1") continue;
             json source = synthetic_project(machine, 8, true);

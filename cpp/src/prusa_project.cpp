@@ -14,11 +14,22 @@
 #include "fatcat/project_settings.h"
 #include "project_settings_internal.h"
 #include "filesystem_path.h"
+#include "supported_targets.h"
 
 namespace fatcat::detail::prusa {
 namespace {
 using json = nlohmann::json;
-constexpr const char *version = "3.0.0-alpha12";
+const std::string &application_version() {
+    static const std::string version = [] {
+        for (const auto &target : supported_targets()) {
+            if (target.at("slicer_id") == "PrusaSlicer") {
+                return target.at("application_version").get<std::string>();
+            }
+        }
+        throw ProjectSettingsError("PrusaSlicer is missing from the supported target registry");
+    }();
+    return version;
+}
 constexpr const char *project_path = "Metadata/PrusaSlicer3_project.json";
 
 [[noreturn]] void invalid(const std::string &message) {
@@ -29,7 +40,7 @@ json read_catalog(const std::filesystem::path &root) {
     std::ifstream file(io_path(root / "prusa-3/catalog.json"), std::ios::binary);
     if (!file) invalid("bundled native configuration catalog is missing");
     auto value = json::parse(file);
-    if (value.at("application_version") != version) invalid("catalog version differs from target");
+    if (value.at("application_version") != application_version()) invalid("catalog version differs from target");
     return value;
 }
 
@@ -496,7 +507,7 @@ json catalog(const std::filesystem::path &source_root) {
         sources.push_back(std::move(source));
     }
     return {{"schema_version", 1}, {"slicer_id", "PrusaSlicer"},
-            {"application_version", version}, {"source", data.at("source")},
+            {"application_version", application_version()}, {"source", data.at("source")},
             {"filament_slot_policy", "preserve_native_capacity"}, {"sources", sources}};
 }
 
@@ -508,7 +519,7 @@ json options(const json &request, const json &target, const std::filesystem::pat
     result.erase("config_patch");
     result.erase("config_parent");
     result["slicer_id"] = "PrusaSlicer";
-    result["application_version"] = version;
+    result["application_version"] = application_version();
     const auto native = source_config(data, row);
     const auto &sheet = native.at("preset").at("hw_config").at("sheet");
     result["build_plates"] = json::array({{{"build_plate_uid", "prusa-sheet:" + sheet.at("type").get<std::string>()},
@@ -541,9 +552,9 @@ json compose_builtin(const json &request, const json &target, const std::filesys
     const auto &row = source_row(data, request);
     auto result = compose(source_config(data, row), request, target);
     result["process_source"] = {{"source_slicer_id", "PrusaSlicer"},
-        {"source_application_version", version}, {"source_profile_name", row.at("default_print_profile_name")}};
+        {"source_application_version", application_version()}, {"source_profile_name", row.at("default_print_profile_name")}};
     result["material_source"] = {{"source_slicer_id", "PrusaSlicer"},
-        {"source_application_version", version}, {"source_profile_names", row.at("default_filament_profile_names")}};
+        {"source_application_version", application_version()}, {"source_profile_names", row.at("default_filament_profile_names")}};
     return result;
 }
 
@@ -951,7 +962,7 @@ json describe(json project, const json &request, const json &target) {
     return {{"parts", parts}, {"build_items", build_items},
         {"relationships", json::array()}, {"content_types", json::array({{{"extension", "json"}, {"media_type", "application/json"}}})},
         {"root_model", {{"namespaces", json::array()}, {"metadata", json::array({
-            {{"name", "Application"}, {"value", std::string("PrusaSlicer-") + version}}})},
+            {{"name", "Application"}, {"value", "PrusaSlicer-" + application_version()}}})},
             {"external_metadata", json::array()}}},
         {"settings_parts", {{"project_settings", project_path}, {"model_settings", project_path}, {"slice_info", ""}}}};
 }

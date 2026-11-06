@@ -47,12 +47,12 @@ int main() {
             if (target.at("target_contract").at("slicer_id") != "BambuStudio")
                 throw std::runtime_error("wrong target");
             const auto catalog = json::parse(fatcat::native_project_source_catalog(
-                "BambuStudio", "02.08.02.61", data_root / "native_project_sources"));
+                "BambuStudio", "02.09.01.70", data_root / "native_project_sources"));
             if (catalog.at("sources").empty()) throw std::runtime_error("empty catalog");
             for (const auto *machine : {"bambu-lab:p2s", "bambu-lab:x2d"}) {
                 const json request = {
                     {"project_source", "fatcat_native"}, {"slicer_id", "BambuStudio"},
-                    {"application_version", "02.08.02.61"}, {"machine_uid", machine},
+                    {"application_version", "02.09.01.70"}, {"machine_uid", machine},
                     {"nozzle_uid", "nozzle:0.4mm"}, {"build_plate_uid", "plate:textured-pei"},
                     {"source_materials", json::array({{{"name", "PLA"}, {"colour", "#FF0000"},
                                                      {"material_type", "PLA"}}})}};

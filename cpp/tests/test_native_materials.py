@@ -29,7 +29,7 @@ class NativeMaterialTests(unittest.TestCase):
                 target_filename = (
                     "orca-slicer-2.4.2.json"
                     if slicer == "OrcaSlicer"
-                    else "bambu-studio-02.08.02.61.json"
+                    else "bambu-studio-02.09.01.70.json"
                 )
                 target = json.loads(
                     (data_root / "translations" / "targets" / target_filename)

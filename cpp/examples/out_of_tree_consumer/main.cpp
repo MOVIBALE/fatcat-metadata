@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
         const std::filesystem::path data_root = argc > 1 ? argv[1] : FATCAT_PUBLIC_DATA_ROOT;
         json request = read_json(FATCAT_EXAMPLE_REQUEST);
         json selection = {{"project_source", "fatcat_native"},
-            {"slicer_id", "BambuStudio"}, {"application_version", "02.08.02.61"},
+            {"slicer_id", "BambuStudio"}, {"application_version", "02.09.01.70"},
             {"machine_uid", "bambu-lab:a1"}, {"nozzle_uid", "nozzle:0.4mm"},
             {"build_plate_uid", "plate:textured-pei"},
             {"source_materials", json::array({{{"name", "PLA"}, {"material_type", "PLA"}, {"colour", "#123456"}}})}};

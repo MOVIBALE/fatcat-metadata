@@ -79,14 +79,14 @@ Neroued 是可选集成，FatCat 核心不依赖它运行。其他写包工具�
 
 | 应用 | `slicer_id` | 版本 |
 | --- | --- | --- |
-| Bambu Studio | `BambuStudio` | `02.08.02.61` |
+| Bambu Studio | `BambuStudio` | `02.09.01.70` |
 | OrcaSlicer | `OrcaSlicer` | `2.4.2` |
-| QIDI Studio | `QIDIStudio` | `02.07.02.60` |
+| QIDI Studio | `QIDIStudio` | `02.07.02.73` |
 | ElegooSlicer | `ElegooSlicer` | `1.5.3.5` |
-| Anycubic Slicer Next | `AnycubicSlicerNext` | `2.0.0.3` |
-| Flash Studio | `FlashStudio` | `1.7.18` |
-| Snapmaker Orca | `SnapmakerOrca` | `2.4.0` |
-| PrusaSlicer（预览版） | `PrusaSlicer` | `3.0.0-alpha12` |
+| Anycubic Slicer Next | `AnycubicSlicerNext` | `2.0.0.6` |
+| Flash Studio | `FlashStudio` | `1.7.19` |
+| Snapmaker Orca | `SnapmakerOrca` | `2.4.1` |
+| PrusaSlicer（预览版） | `PrusaSlicer` | `3.0.0-alpha13` |
 
 [目标清单](compatibility/current-src/translations/supported-targets.json)是版本范围的权威来源。
 未知目标和不兼容的选择会明确拒绝。支持某款软件不代表其所有机型、喷嘴、材料和打印板
@@ -109,7 +109,6 @@ python -m fatcat_metadata_examples.prusa --machine prusa:mk4s --output prusa.3mf
 完整示例需要可选的 Neroued 写包库。MK4S、MK4S＋MMU3、XL 五头三个样本已经
 在 alpha12 界面中真实打开并切片，包含改过的工艺、温度、流量和四色分层。
 这不代表目录中的每个组合或实体打印都已验收。详见 [Prusa 使用指南](docs/PRUSA.md)。
-本次新增的是 SDK 支持，Lumina 界面和合并流程尚未接入 Prusa。
 
 ## Python 快速上手
 
@@ -125,14 +124,15 @@ fatcat --version
 fatcat catalog
 ```
 
-当前原生配置已对齐 2026-10-06 核对的 macOS 稳定版：Snapmaker Orca 2.4.0、
-Flash Studio 1.7.18、Anycubic Slicer Next 2.0.0.3；其他版本见
-[完整版本表](README.md#supported-slicer-snapshots)。Prusa 3.0.0-alpha12 是另行核对的
-预览版目标；其他 Beta/nightly 不包含在内。
-Anycubic Linux 2.0.0.5 是不同版本，尚未纳入此快照。
+11 月更新新增 H3C 的四种原生喷嘴配置，并更新六个切片器目标。
+版本核对包含软件自身的更新通道，详见[本次记录](docs/SLICER_REFRESH_20261106.md)。
+Orca 2.5.0-rc 是候选版，稳定目标仍为 2.4.2。Anycubic 2.0.0.6 已通过软件自身
+更新器取得，已导入原生配置和默认值，并完成 Kobra X 示例的实际切片。
+Prusa 3.0.0-alpha13 是明确支持的预览版；它的工程格式独立于 Prusa 2.x。
+本次源码更新尚未作为新版本发布到 PyPI。
 
 [工艺参数契约](docs/PROCESS_SETTINGS.md)可查询原有七个目标的 38 个字段及其范围、枚举与别名。
-Prusa 3 则直接采用应用导出的 schema，支持 220 个单值工艺字段与 65 个材料字段。
+Prusa 3 则直接采用应用导出的 schema，支持 222 个单值工艺字段与 65 个材料字段。
 已知等价项自动转换，速度使用目标的原生单值或数组格式；未知或不支持的输入明确报错。
 通过 `fatcat fields --slicer BambuStudio` 或 Python `list_native_fields` 可查原生证据与
 显式工艺覆盖范围。“SDK 尚未支持”与“原生标准枚举词不接受”分别说明；清单外字段仍为待确认。
@@ -152,7 +152,7 @@ Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](
 无需安装切片软件。可先查询参数候选，再合成工程：
 
 ```bash
-fatcat choices --slicer BambuStudio --application-version 02.08.02.61 \
+fatcat choices --slicer BambuStudio --application-version 02.09.01.70 \
   --machine bambu-lab:a1-mini --nozzle nozzle:0.4mm --plate plate:textured-pei
 ```
 
@@ -164,7 +164,7 @@ import fatcat_metadata as fatcat
 result = fatcat.compose_project_settings({
     "project_source": "fatcat_native",
     "slicer_id": "BambuStudio",
-    "application_version": "02.08.02.61",
+    "application_version": "02.09.01.70",
     "machine_uid": "bambu-lab:a1-mini",
     "nozzle_uid": "nozzle:0.4mm",
     "build_plate_uid": "plate:textured-pei",

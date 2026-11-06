@@ -20,6 +20,7 @@
 #include "fatcat/source_project_settings.h"
 #include "difference_index.h"
 #include "filament_projection.h"
+#include "material_context.h"
 #include "project_settings_internal.h"
 #include "project_settings_merge.h"
 #include "project_settings_overrides.h"
@@ -335,28 +336,21 @@ void remap_filament_differences(json &project, const json &source, const json &s
     project[key] = std::move(result);
 }
 
-std::size_t filament_group_width(const json &values, const FilamentSelection &selection,
-                                  std::size_t declared_width, bool variable_group,
-                                  const std::string &key) {
-    if (values.size() == selection.source_count) {
-        return 1;
-    }
-    if (values.size() == selection.source_count * declared_width) {
-        return declared_width;
-    }
-    if (variable_group && selection.source_count > 0 && !values.empty() &&
-        values.size() % selection.source_count == 0) {
-        return values.size() / selection.source_count;
-    }
-    if (selection.compact && values.size() == selection.output_count) {
-        return 1;
-    }
-    invalid("project." + key + " does not match its declared filament array shape");
+detail::MaterialLayout projection_layout(const json &source, const std::string &key,
+    const FilamentSelection &selection, std::size_t declared_width, bool variable_group,
+    const detail::MaterialContext &materials) {
+    const auto size = source.at(key).size();
+    // Some imported projects already compact a field while retaining unused identities.
+    const auto count = selection.compact && size == selection.output_count &&
+        size % selection.source_count != 0 ? selection.output_count : selection.source_count;
+    return materials.layout(source, key, count, false, declared_width, variable_group);
 }
 
 void record_material_value_overrides(const json &project, const json &source,
                                       const json &rules, const FilamentSelection &selection,
                                       const FilamentSources &field_sources,
+                                      const std::map<std::string, detail::MaterialLayout> &output_layouts,
+                                      const detail::MaterialContext &materials,
                                       std::vector<std::set<std::string>> &generated_fields) {
     const auto &identity_sources = field_sources.at("filament_settings_id");
     for (const auto &rule : rules) {
@@ -372,14 +366,17 @@ void record_material_value_overrides(const json &project, const json &source,
             }
             const auto &original = source.at(key);
             const auto &final = project.at(key);
-            const auto source_width = filament_group_width(
-                original, selection, declared_width, variable_group, key);
-            const auto output_width = final.size() / selection.output_count;
+            const auto source_layout = projection_layout(source, key, selection,
+                declared_width, variable_group, materials);
             for (std::size_t slot = 0; slot < selection.output_count; ++slot) {
-                const auto identity_start = *identity_sources.at(slot) * source_width;
-                bool differs = identity_start + output_width > original.size();
-                for (std::size_t variant = 0; !differs && variant < output_width; ++variant) {
-                    differs = final.at(slot * output_width + variant) != original.at(identity_start + variant);
+                const auto identity_slot = *identity_sources.at(slot);
+                const auto output = output_layouts.at(key).group(final, slot);
+                bool differs = identity_slot >= source_layout.slots.size();
+                if (!differs) {
+                    auto identity = source_layout.group(original, identity_slot);
+                    // Hardware policies may intentionally retain only the first variant.
+                    if (identity.size() > output.size()) identity.erase(identity.begin() + output.size(), identity.end());
+                    differs = identity != output;
                 }
                 if (differs) {
                     generated_fields[slot].insert(key);
@@ -391,13 +388,14 @@ void record_material_value_overrides(const json &project, const json &source,
 
 void compose_filament_arrays(json &project, const json &request, const json &dialect,
                              const json &machine, const FilamentSelection &selection,
-                             std::vector<std::string> &changed_keys) {
+                             std::vector<std::string> &changed_keys, const detail::MaterialContext &materials) {
     const json source = project;
     const auto &snapshot = required_member(dialect, "filament_snapshot", "package dialect");
     const auto &rules = required_member(snapshot, "array_rules", "filament snapshot");
     const json first_variants = machine.value("first_variant_per_slot_keys", json::array());
     const json default_groups = machine.value("compact_default_group_keys", json::array());
     FilamentSources field_sources;
+    std::map<std::string, detail::MaterialLayout> output_layouts;
     std::set<std::string> known_fields;
     std::vector<std::set<std::string>> generated_fields(selection.output_count);
     for (const auto &rule : rules) {
@@ -424,41 +422,34 @@ void compose_filament_arrays(json &project, const json &request, const json &dia
                 project[key] = detail::project_filament_matrix(
                     values, selection.source_count, selection.output_count);
             } else {
-                const auto source_width = filament_group_width(
-                    values, selection, declared_width,
-                    material_copy && rule_selection == "default_or_group", key);
-                const bool first_variant = source_width == 2 && contains_string(first_variants, key);
-                // A source K*N group is still grouped when its raw length
-                // coincides with the requested slot count (for example M=2N).
-                const bool already_output = source_width == 1 &&
-                    values.size() == selection.output_count;
-                const bool retain_groups = rule_selection == "group" || rule_selection == "slot_index" ||
-                    (rule_selection == "default_or_group" && source_width > 1);
-                const auto output_width = first_variant ? 1 :
-                    (!selection.compact || retain_groups || contains_string(default_groups, key) ? source_width : 1);
+                const auto layout = projection_layout(source, key, selection, declared_width,
+                    material_copy && rule_selection == "default_or_group", materials);
+                const bool already_output = values.size() == selection.output_count &&
+                    std::all_of(layout.slots.begin(), layout.slots.end(), [](const auto &range) { return range.size == 1; });
+                const bool retain_groups = (material_copy && layout.native_groups) ||
+                    rule_selection == "group" || rule_selection == "slot_index" ||
+                    (rule_selection == "default_or_group" &&
+                     std::any_of(layout.slots.begin(), layout.slots.end(), [](const auto &range) { return range.size > 1; }));
                 json resized = json::array();
                 std::vector<std::optional<std::size_t>> sources;
                 for (std::size_t slot = 0; slot < selection.output_count; ++slot) {
-                    if (selection.compact && rule_selection == "slot_index") {
-                        // The slicer uses this 1-based output slot to split
-                        // variant groups, independently of material selection.
-                        sources.push_back(slot < selection.source_count ? std::make_optional(slot) : std::nullopt);
-                        for (std::size_t variant = 0; variant < output_width; ++variant) {
-                            resized.push_back(std::to_string(slot + 1));
-                        }
-                        continue;
-                    }
                     const bool retain_source_slot = !selection.compact || already_output ||
                         (retain_groups && selection.output_count <= selection.source_count);
                     auto from = retain_source_slot ? slot : selection.default_source;
-                    if (material_copy && selection.material_sources.at(slot)) {
-                        from = *selection.material_sources.at(slot);
+                    if (material_copy && selection.material_sources.at(slot)) from = *selection.material_sources.at(slot);
+                    if (from >= layout.slots.size()) invalid("project." + key + " does not contain the requested material source slot");
+                    const auto range = layout.slots.at(from);
+                    const bool first_variant = range.size == 2 && contains_string(first_variants, key);
+                    const auto output_width = first_variant ? 1 :
+                        (!selection.compact || retain_groups || contains_string(default_groups, key) ? range.size : 1);
+                    output_layouts[key].slots.push_back({resized.size(), output_width});
+                    if (selection.compact && rule_selection == "slot_index") {
+                        sources.push_back(slot < selection.source_count ? std::make_optional(slot) : std::nullopt);
+                        for (std::size_t variant = 0; variant < output_width; ++variant) resized.push_back(std::to_string(slot + 1));
+                    } else {
+                        sources.push_back(from);
+                        for (std::size_t variant = 0; variant < output_width; ++variant) resized.push_back(values.at(range.begin + variant));
                     }
-                    if (from * source_width + output_width > values.size()) {
-                        invalid("project." + key + " does not contain the requested material source slot");
-                    }
-                    sources.push_back(from);
-                    detail::append_filament_group(resized, values, from, source_width, output_width);
                 }
                 // Source provenance is independent of whether a caller may
                 // redirect this field with an explicit material selection.
@@ -474,7 +465,7 @@ void compose_filament_arrays(json &project, const json &request, const json &dia
     // selected identity. Register those actual value differences even when the
     // source preset had no overrides of its own.
     record_material_value_overrides(project, source, rules, selection,
-                                    field_sources, generated_fields);
+                                    field_sources, output_layouts, materials, generated_fields);
     // Colours are independent caller input, not material-preset selection.
     for (const auto *key : {"filament_colour", "filament_multi_colour"}) {
         if (!request.contains(key)) {
@@ -1005,7 +996,8 @@ json source_plate(const json &project, const json &request, const json &target) 
             {"plate_value", bed}, {"sidecar_value", fallback.is_null() ? "textured_plate" : fallback.at("sidecar_value")}};
 }
 
-json compose_preserved_source(json project, const json &request, const json &target) {
+json compose_preserved_source(json project, const json &request, const json &target,
+                              const detail::MaterialContext &materials) {
     if (request.value("material_mode", "preserve_template") != "preserve_template" ||
         request.contains("material_uid") || request.contains("material_uids")) {
         invalid("preserve_source hardware requires source materials rather than native material bindings");
@@ -1032,12 +1024,12 @@ json compose_preserved_source(json project, const json &request, const json &tar
         const json machine = {{"printer_model", required_member(project, "printer_model", "source project")},
                               {"nozzle_diameter", required_member(project, "nozzle_diameter", "source project")}};
         auto merged = detail::merge_project_settings(
-            std::move(project), request, dialect, machine, plate);
+            std::move(project), request, dialect, machine, plate, materials);
         project = std::move(merged.project);
         logical_slots = std::move(merged.logical_slots);
         mappings = std::move(merged.source_slot_mappings);
     }
-    project = detail::compose_source_project(project, request, target);
+    project = detail::compose_source_project(project, request, target, materials);
     if (request.contains("build_plate_uid")) project["curr_bed_type"] = plate.at("project_value");
     std::vector<std::string> changed;
     detail::apply_scalar_overrides(project, request, target, changed);
@@ -1071,6 +1063,13 @@ std::string compose_project_settings(std::string_view base_project_json,
     const json canonical = detail::parse_json_object<ProjectSettingsError>(canonical_json, "canonical data");
     const json target = detail::parse_json_object<ProjectSettingsError>(target_json, "target data");
     if (detail::prusa::is_target(target)) return detail::prusa::compose(project, request, target).dump();
+    const detail::MaterialContext materials(target.at("package_dialect").at("filament_snapshot"));
+    return detail::compose_project_with_context(std::move(project), std::move(request), canonical, target, materials);
+}
+
+std::string detail::compose_project_with_context(json project, json request,
+    const json &canonical, const json &target, const MaterialContext &materials) {
+    if (detail::prusa::is_target(target)) return detail::prusa::compose(project, request, target).dump();
     validate_request_keys(request, target);
     detail::resolve_process_overrides(request, target);
     if (request.value("hardware_mode", "target_binding") == "auto" &&
@@ -1100,7 +1099,7 @@ std::string compose_project_settings(std::string_view base_project_json,
         }
     }
     if (hardware_mode == "preserve_source") {
-        return compose_preserved_source(std::move(project), request, target).dump();
+        return compose_preserved_source(std::move(project), request, target, materials).dump();
     }
     if (hardware_mode != "target_binding") invalid("unsupported request.hardware_mode");
     const std::string machine_uid = required_string(request, "machine_uid", "request");
@@ -1145,7 +1144,7 @@ std::string compose_project_settings(std::string_view base_project_json,
         // Hardware binding does not change the already-composed material shape.
         // Derive the merge plan from actual source fields, as preserve_source does.
         auto merged = detail::merge_project_settings(
-            std::move(project), request, dialect, machine, plate);
+            std::move(project), request, dialect, machine, plate, materials);
         project = std::move(merged.project);
         if (!project.contains("curr_bed_type")) {
             project["curr_bed_type"] = required_string(
@@ -1163,7 +1162,7 @@ std::string compose_project_settings(std::string_view base_project_json,
     if (material_mode == "preserve_template" && !merging_sources) {
         validate_preserved_build_plate(project, plate);
     }
-    const auto materials = material_mode == "target_native_preset"
+    const auto selected_materials = material_mode == "target_native_preset"
         ? resolve_native_materials(request, canonical, target, selection.output_count)
         : std::vector<NativeMaterialSlot>();
 
@@ -1172,7 +1171,7 @@ std::string compose_project_settings(std::string_view base_project_json,
         selection.material_sources.begin(), selection.material_sources.end(),
         [](const auto &slot) { return slot.has_value(); });
     if (!merging_sources && (selection.compact || material_source_selected)) {
-        compose_filament_arrays(project, request, dialect, machine, selection, changed_keys);
+        compose_filament_arrays(project, request, dialect, machine, selection, changed_keys, materials);
         slot_count = selection.output_count;
     } else if (!merging_sources) {
         select_first_slot_variants(project, machine, slot_count);
@@ -1185,8 +1184,8 @@ std::string compose_project_settings(std::string_view base_project_json,
     }
     detail::apply_scalar_overrides(project, request, target, changed_keys);
     if (material_mode == "target_native_preset") {
-        apply_target_native_materials(project, materials, machine);
-        clear_native_differences(project, dialect, slot_count, materials, request);
+        apply_target_native_materials(project, selected_materials, machine);
+        clear_native_differences(project, dialect, slot_count, selected_materials, request);
         apply_native_default_material(project, dialect, slot_count);
     } else if (material_source_selected) {
         apply_selected_default_material(project, dialect, selection);

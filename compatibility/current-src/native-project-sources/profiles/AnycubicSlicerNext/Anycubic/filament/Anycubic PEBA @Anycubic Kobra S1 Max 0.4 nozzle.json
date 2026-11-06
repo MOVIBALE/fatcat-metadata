@@ -228,7 +228,10 @@
         "55"
     ],
     "idle_temperature": [
-        "nil"
+        "0"
+    ],
+    "internal_bridge_fan_speed": [
+        "100"
     ],
     "nozzle_temperature": [
         "230"

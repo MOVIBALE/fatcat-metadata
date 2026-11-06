@@ -29,7 +29,7 @@ def main() -> None:
     colours = ["#E63946", "#FFD166", "#118AB2", "#FFFFFF"][:count]
     request = {
         "project_source": "fatcat_native", "slicer_id": "PrusaSlicer",
-        "application_version": "3.0.0-alpha12", "machine_uid": args.machine,
+        "application_version": "3.0.0-alpha13", "machine_uid": args.machine,
         "nozzle_uid": source["nozzle_uid"],
         "source_materials": [{"name": f"Colour {i + 1}", "material_type": "PLA",
             "colour": colour, "native_settings": {"temperature": 237,
@@ -62,7 +62,7 @@ def main() -> None:
     builder.add_build_item(assembly_id, writer.Transform.translation(bed["width"] / 2 - 10,
         bed["height"] / 2 - 10, 0), uuid=str(uuid.uuid4()))
     description = fatcat.compose_model_metadata(project, {
-        "slicer_id": "PrusaSlicer", "application_version": "3.0.0-alpha12",
+        "slicer_id": "PrusaSlicer", "application_version": "3.0.0-alpha13",
         "assembly_id": assembly_id, "parts": parts})
     adapter.apply_root_model_metadata(builder, description["root_model"])
     adapter.apply_metadata_components(builder, description, {})

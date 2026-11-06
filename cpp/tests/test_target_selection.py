@@ -7,7 +7,7 @@ from pathlib import Path
 
 import fatcat_metadata as fatcat
 TARGETS = (
-    ("BambuStudio", "02.08.02.61"),
+    ("BambuStudio", "02.09.01.70"),
     ("OrcaSlicer", "2.4.2"),
 )
 
@@ -119,7 +119,7 @@ class TargetSelectionTests(unittest.TestCase):
                 request["material_uid"] = "material:pla"
                 result = json.loads(fatcat.compose_project_settings(json.dumps(original), json.dumps(request)))
                 final = json.loads(result["project_settings_json"])
-                filename = "orca-slicer-2.4.2.json" if slicer == "OrcaSlicer" else "bambu-studio-02.08.02.61.json"
+                filename = "orca-slicer-2.4.2.json" if slicer == "OrcaSlicer" else "bambu-studio-02.09.01.70.json"
                 target_path = Path(fatcat.__file__).parent / "fatcat_metadata_data/translations/targets" / filename
                 target = json.loads(target_path.read_text(encoding="utf-8"))
                 material = target["material_bindings"][0]
@@ -192,8 +192,8 @@ class TargetSelectionTests(unittest.TestCase):
 
     def test_missing_unknown_and_wrong_version_targets_do_not_choose_bambu(self):
         for composer, request in (
-            (fatcat.compose_project_settings, project_request("BambuStudio", "02.08.02.61")),
-            (fatcat.compose_model_metadata, model_request("BambuStudio", "02.08.02.61")),
+            (fatcat.compose_project_settings, project_request("BambuStudio", "02.09.01.70")),
+            (fatcat.compose_model_metadata, model_request("BambuStudio", "02.09.01.70")),
         ):
             for change in ({"slicer_id": "Unknown"}, {"application_version": "0.0"}):
                 invalid = {**request, **change}

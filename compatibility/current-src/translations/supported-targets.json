@@ -2,8 +2,8 @@
   "targets": [
     {
       "slicer_id": "BambuStudio",
-      "application_version": "02.08.02.61",
-      "filename": "bambu-studio-02.08.02.61.json",
+      "application_version": "02.09.01.70",
+      "filename": "bambu-studio-02.09.01.70.json",
       "template_import": true
     },
     {
@@ -14,8 +14,8 @@
     },
     {
       "slicer_id": "QIDIStudio",
-      "application_version": "02.07.02.60",
-      "filename": "qidi-studio-02.07.02.60.json",
+      "application_version": "02.07.02.73",
+      "filename": "qidi-studio-02.07.02.73.json",
       "template_import": true
     },
     {
@@ -26,26 +26,26 @@
     },
     {
       "slicer_id": "AnycubicSlicerNext",
-      "application_version": "2.0.0.3",
-      "filename": "anycubic-slicer-next-2.0.0.3.json",
+      "application_version": "2.0.0.6",
+      "filename": "anycubic-slicer-next-2.0.0.6.json",
       "template_import": true
     },
     {
       "slicer_id": "FlashStudio",
-      "application_version": "1.7.18",
-      "filename": "flash-studio-1.7.18.json",
+      "application_version": "1.7.19",
+      "filename": "flash-studio-1.7.19.json",
       "template_import": false
     },
     {
       "slicer_id": "SnapmakerOrca",
-      "application_version": "2.4.0",
-      "filename": "snapmaker-orca-2.4.0.json",
+      "application_version": "2.4.1",
+      "filename": "snapmaker-orca-2.4.1.json",
       "template_import": true
     },
     {
       "slicer_id": "PrusaSlicer",
-      "application_version": "3.0.0-alpha12",
-      "filename": "prusa-slicer-3.0.0-alpha12.json",
+      "application_version": "3.0.0-alpha13",
+      "filename": "prusa-slicer-3.0.0-alpha13.json",
       "template_import": true,
       "legacy_import_slot": false
     }

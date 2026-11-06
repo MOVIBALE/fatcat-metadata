@@ -13,9 +13,9 @@ native source index and compatibility rules as composition:
 import fatcat_metadata as fatcat
 
 targets = fatcat.list_targets()["targets"]
-machines = fatcat.list_machines("BambuStudio", "02.08.02.61")["sources"]
+machines = fatcat.list_machines("BambuStudio", "02.09.01.70")["sources"]
 choices = fatcat.list_project_options({
-    "slicer_id": "BambuStudio", "application_version": "02.08.02.61",
+    "slicer_id": "BambuStudio", "application_version": "02.09.01.70",
     "machine_uid": "bambu-lab:a1-mini", "nozzle_uid": "nozzle:0.4mm",
     "build_plate_uid": "plate:textured-pei",
 })
@@ -28,7 +28,7 @@ instead of loading the full machine catalog:
 
 ```python
 source = fatcat.native_project_source({
-    "slicer_id": "BambuStudio", "application_version": "02.08.02.61",
+    "slicer_id": "BambuStudio", "application_version": "02.09.01.70",
     "machine_uid": "bambu-lab:p2s", "nozzle_uid": "nozzle:0.4mm",
 })
 ```
@@ -71,7 +71,7 @@ import fatcat_metadata
 selection = {
     "project_source": "fatcat_native",
     "slicer_id": "BambuStudio",
-    "application_version": "02.08.02.61",
+    "application_version": "02.09.01.70",
     "machine_uid": "bambu-lab:a1-mini",
     "nozzle_uid": "nozzle:0.4mm",
     "build_plate_uid": "plate:textured-pei",

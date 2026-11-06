@@ -13,7 +13,7 @@ the installed `fatcat` command; see [first use](../../../docs/FIRST_USE.md).
 
 ## Custom process across slicers
 
-For PrusaSlicer 3.0.0-alpha12, use the installed `prusa` example. It exports
+For PrusaSlicer 3.0.0-alpha13, use the installed `prusa` example. It exports
 a native single-material MK4S project or four coloured parts for MMU3/XL:
 
 ```bash
@@ -45,8 +45,9 @@ it does not read whichever application happens to be installed.
 
 The adjacent `.settings.json` records the request, final composition and model
 facts. Each target needs a separate export. FatCat supplies metadata, the
-example supplies geometry, and Neroued writes once. The example also supplies
-Flash Studio's required slice UUID and requested plate summary facts.
+example supplies geometry, and Neroued writes once. Both `showcase.py` and
+`write_example.py` supply Flash Studio's required slice UUID and requested plate
+summary facts through their shared generator helper.
 The [GUI montage and result matrix](../../../docs/SHOWCASE.md) cover seven
 applications and eight representative combinations, including observed import
 notices and plate-label differences. File generation alone is not GUI acceptance.
@@ -75,7 +76,7 @@ This example creates a 20 mm cube and writes a 3MF using Fat Cat's metadata
 composer and the public Neroued 0.4.2 writer API:
 
 1. `builtin_project_request.json` selects the exact FatCat-bundled Bambu Studio
-   02.08.02.61 A1 mini 0.4 mm source and textured PEI plate. The one-argument
+   02.09.01.70 A1 mini 0.4 mm source and textured PEI plate. The one-argument
    `compose_project_settings` dictionary entry resolves its native machine, process, and
    material profile inheritance and returns `project_settings` as a dictionary.
 2. The generator centers the cube on the selected project's rectangular
@@ -125,6 +126,21 @@ serialized cube geometry with component and production transforms applied,
 plus material name, colour, and slot against the same selected request.
 The builder reads that palette too; custom sources without an explicit palette
 use the composed project's first material and colour.
+
+For Flash Studio 1.7.19 / AD5X, this request selects blue PLA and overrides layer
+height to 0.2 mm, wall loops to 3 and outer-wall speed to 47 mm/s:
+
+```bash
+python cpp/examples/python_neroued_consumer/write_example.py \
+  --project-request-json cpp/examples/python_neroued_consumer/flash_ad5x_project_request.json \
+  --output /tmp/fatcat-flash-example.3mf
+python cpp/examples/python_neroued_consumer/verify_3mf.py /tmp/fatcat-flash-example.3mf \
+  cpp/examples/python_neroued_consumer/flash_ad5x_project_request.json
+```
+
+The integration CI generates this project with the public Neroued writer; the
+[November acceptance report](../../../docs/SLICER_REFRESH_20261106.md) separately
+records native Flash slicing with these process values.
 
 To use a custom source JSON, pass the explicit project fixture and its request:
 

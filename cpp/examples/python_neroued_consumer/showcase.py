@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import uuid
 from pathlib import Path
 
 import fatcat_metadata as fatcat
@@ -67,17 +66,7 @@ def main() -> None:
                   "filament_map_mode": "Auto For Flush"},
         "component_inputs": {}, "resource_roles": [],
     }
-    defaults = settings["metadata_defaults"]
-    if "slice_uuid_seed_prefix" in defaults:
-        model["slice_uuid"] = str(uuid.uuid4())
-    if defaults["plate_summary"]:
-        model["component_inputs"]["plate_summary"] = {
-            "bbox_all": [placement[0], placement[1], placement[0] + 20, placement[1] + 20],
-            "filament_colors": project["filament_colour"],
-            "nozzle_diameter": project["nozzle_diameter"],
-            "layer_height": project["layer_height"], "name": args.name,
-            "bed_type": defaults["plate_value"],
-        }
+    geometry._complete_cube_metadata(model, settings, placement)
     description = fatcat.compose_model_metadata(project, model)
     adapter.apply_root_model_metadata(builder, description["root_model"])
     adapter.apply_metadata_components(builder, description, {})

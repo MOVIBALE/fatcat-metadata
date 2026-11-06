@@ -9,7 +9,7 @@
         "5"
     ],
     "filament_cost": [
-        "19.99"
+        "15.99"
     ],
     "filament_density": [
         "1.26"
@@ -28,6 +28,9 @@
     ],
     "filament_vendor": [
         "Bambu Lab"
+    ],
+    "fins_extrude_safe_temp": [
+        "57"
     ],
     "impact_strength_z": [
         "13.8"

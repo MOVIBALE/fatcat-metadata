@@ -44,6 +44,11 @@
         "2",
         "2"
     ],
+    "hotend_cooling_rate_on_rack": [
+        "2",
+        "2",
+        "2"
+    ],
     "hotend_heating_rate": [
         "2",
         "2",
@@ -72,20 +77,20 @@
         "10000"
     ],
     "machine_max_speed_x": [
-        "600",
-        "600",
-        "600",
-        "600",
-        "600",
-        "600"
+        "1000",
+        "1000",
+        "1000",
+        "1000",
+        "1000",
+        "1000"
     ],
     "machine_max_speed_y": [
-        "600",
-        "600",
-        "600",
-        "600",
-        "600",
-        "600"
+        "1000",
+        "1000",
+        "1000",
+        "1000",
+        "1000",
+        "1000"
     ],
     "machine_prepare_compensation_time": "370",
     "machine_unload_filament_time": "31",
@@ -197,11 +202,6 @@
         "110",
         "110"
     ],
-    "nozzle_type": [
-        "hardened_steel",
-        "hardened_steel",
-        "hardened_steel"
-    ],
     "nozzle_flush_dataset": [
         "0",
         "0",
@@ -307,7 +307,8 @@
         "Bambu Lab H2D Pro 0.4 nozzle",
         "Bambu Lab H2C 0.4 nozzle",
         "Bambu Lab X2D 0.4 nozzle",
-        "Bambu Lab A2L 0.4 nozzle"
+        "Bambu Lab A2L 0.4 nozzle",
+        "Bambu Lab H3C 0.4 nozzle"
     ],
     "print_in_clockwise": "1"
 }

@@ -36,7 +36,7 @@ json canonical_data() {
 json target_data() {
     return json::parse(read_file(
         "compatibility/current-src/translations/targets/"
-        "bambu-studio-02.08.02.61.json"));
+        "bambu-studio-02.09.01.70.json"));
 }
 
 json material_profile(const json &target, const json &binding) {
@@ -127,7 +127,7 @@ json base_project() {
 json request(const std::string &mode) {
     json result = {
         {"slicer_id", "BambuStudio"},
-        {"application_version", "02.08.02.61"},
+        {"application_version", "02.09.01.70"},
         {"machine_uid", "bambu-lab:a1-mini"},
         {"nozzle_uid", "nozzle:0.4mm"},
         {"build_plate_uid", "plate:textured-pei"},
@@ -719,7 +719,7 @@ void test_adapter_boundaries_and_initialization() {
 
 void test_typed_positions_preserve_negative_zero_and_reject_plate_zero() {
     const std::string raw_request = R"json({
-      "slicer_id":"BambuStudio","application_version":"02.08.02.61",
+      "slicer_id":"BambuStudio","application_version":"02.09.01.70",
       "machine_uid":"bambu-lab:a1-mini","nozzle_uid":"nozzle:0.4mm",
       "build_plate_uid":"plate:textured-pei",
       "material_mode":"preserve_template",
@@ -731,7 +731,7 @@ void test_typed_positions_preserve_negative_zero_and_reject_plate_zero() {
            "typed positions must preserve integer negative zero through the composer");
 
     const std::string negative_plate_request = R"json({
-      "slicer_id":"BambuStudio","application_version":"02.08.02.61",
+      "slicer_id":"BambuStudio","application_version":"02.09.01.70",
       "machine_uid":"bambu-lab:a1-mini","nozzle_uid":"nozzle:0.4mm",
       "build_plate_uid":"plate:textured-pei",
       "material_mode":"preserve_template",
@@ -758,7 +758,7 @@ void test_missing_main_colour_is_not_filled_with_fake_tail() {
 }
 
 void test_two_targets_and_material_modes_share_composition() {
-    for (const auto *file : {"bambu-studio-02.08.02.61.json", "orca-slicer-2.4.2.json"}) {
+    for (const auto *file : {"bambu-studio-02.09.01.70.json", "orca-slicer-2.4.2.json"}) {
         const json target = json::parse(read_file(
             std::string("compatibility/current-src/translations/targets/") + file));
         for (const auto *mode : {"preserve_template", "target_native_preset"}) {
@@ -822,7 +822,7 @@ void test_orca_dual_variants_keep_every_template_slot() {
                out.at("flush_volumes_matrix") == source.at("flush_volumes_matrix"),
            "unknown or square arrays must not be collapsed");
     selection["slicer_id"] = "BambuStudio";
-    selection["application_version"] = "02.08.02.61";
+    selection["application_version"] = "02.09.01.70";
     expect(parsed_result(compose(source, selection)).at("project").at("filament_flow_ratio") ==
                source.at("filament_flow_ratio"), "Bambu grouped values must remain unchanged");
 }

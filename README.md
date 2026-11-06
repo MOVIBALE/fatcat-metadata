@@ -90,24 +90,28 @@ These are the exact versions currently bundled with the library:
 
 | Application | `slicer_id` | Version |
 | --- | --- | --- |
-| Bambu Studio | `BambuStudio` | `02.08.02.61` |
+| Bambu Studio | `BambuStudio` | `02.09.01.70` |
 | OrcaSlicer | `OrcaSlicer` | `2.4.2` |
-| QIDI Studio | `QIDIStudio` | `02.07.02.60` |
+| QIDI Studio | `QIDIStudio` | `02.07.02.73` |
 | ElegooSlicer | `ElegooSlicer` | `1.5.3.5` |
-| Anycubic Slicer Next | `AnycubicSlicerNext` | `2.0.0.3` |
-| Flash Studio | `FlashStudio` | `1.7.18` |
-| Snapmaker Orca | `SnapmakerOrca` | `2.4.0` |
-| PrusaSlicer (preview) | `PrusaSlicer` | `3.0.0-alpha12` |
+| Anycubic Slicer Next | `AnycubicSlicerNext` | `2.0.0.6` |
+| Flash Studio | `FlashStudio` | `1.7.19` |
+| Snapmaker Orca | `SnapmakerOrca` | `2.4.1` |
+| PrusaSlicer (preview) | `PrusaSlicer` | `3.0.0-alpha13` |
 
 The [target manifest](https://github.com/MOVIBALE/fatcat-metadata/blob/main/compatibility/current-src/translations/supported-targets.json)
 is the authoritative version list. Unknown targets and incompatible selections
 are rejected. A supported slicer does not imply every printer/nozzle/material/plate
 combination is available; inspect its native source catalogue.
 
-The seven stable snapshots were checked against official macOS downloads on
-2026-10-06. PrusaSlicer is an explicitly supported preview, checked on 2026-10-07;
-its new native project format is separate from PrusaSlicer 2.x. Anycubic's Linux 2.0.0.5 build
-is a different release and is not claimed by the macOS 2.0.0.3 snapshot.
+The November refresh adds Bambu H3C with its four native nozzle profiles and
+updates six application snapshots. Version checks include the applications'
+own update channels; see the [refresh record](docs/SLICER_REFRESH_20261106.md).
+Orca 2.5.0-rc remains separate from the stable 2.4.2 target. Anycubic 2.0.0.6
+was obtained through its native updater; its profiles and defaults were imported
+and the Kobra X example was sliced in the application.
+PrusaSlicer is an explicitly supported preview whose project format is separate
+from PrusaSlicer 2.x. These source changes are not yet a new PyPI release.
 
 Explicit [process settings](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/PROCESS_SETTINGS.md) use a discoverable contract:
 known equivalents are normalized, target array formats are respected, and
@@ -173,7 +177,7 @@ all printer combinations or physical print quality.
 No installed slicer is needed. Query choices before composing settings:
 
 ```bash
-fatcat choices --slicer BambuStudio --application-version 02.08.02.61 \
+fatcat choices --slicer BambuStudio --application-version 02.09.01.70 \
   --machine bambu-lab:a1-mini --nozzle nozzle:0.4mm --plate plate:textured-pei
 ```
 
@@ -185,7 +189,7 @@ import fatcat_metadata as fatcat
 result = fatcat.compose_project_settings({
     "project_source": "fatcat_native",
     "slicer_id": "BambuStudio",
-    "application_version": "02.08.02.61",
+    "application_version": "02.09.01.70",
     "machine_uid": "bambu-lab:a1-mini",
     "nozzle_uid": "nozzle:0.4mm",
     "build_plate_uid": "plate:textured-pei",

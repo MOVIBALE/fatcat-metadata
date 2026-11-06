@@ -1,11 +1,11 @@
 # PrusaSlicer 3 native projects / Prusa 3 原生工程
 
-FatCat supports the exact **3.0.0-alpha12 preview**. It composes Prusa's native
+FatCat supports the exact **3.0.0-alpha13 preview**. It composes Prusa's native
 project JSON; opening the result with **File → Open Project** loads printer,
 process and material configuration. Importing geometry into an existing project
 is a different operation and may retain that project's settings.
 
-FatCat 支持准确的 3.0.0-alpha12 预览版。用“打开工程”加载完整设置；导入几何模型
+FatCat 支持准确的 3.0.0-alpha13 预览版。用“打开工程”加载完整设置；导入几何模型
 不是完整工程验收。2.x 与其他 3.x 版本不在这份兼容声明内。
 
 ## Complete installed example / 完整示例
@@ -38,7 +38,7 @@ import fatcat_metadata as fatcat
 result = fatcat.compose_project_settings({
     "project_source": "fatcat_native",
     "slicer_id": "PrusaSlicer",
-    "application_version": "3.0.0-alpha12",
+    "application_version": "3.0.0-alpha13",
     "machine_uid": "prusa:mk4s",
     "nozzle_uid": "nozzle:0.4mm",
     "source_materials": [{
@@ -61,7 +61,7 @@ is Prusament PLA. Availability does not prove every physical printer or feature.
 
 For other nozzles, presets, sheets or materials, use Prusa's `--save config.json`
 after selecting native profiles, or read `Metadata/PrusaSlicer3_project.json`
-from a saved alpha12 project. Pass that dictionary to
+from a saved alpha13 project. Pass that dictionary to
 `compose_project_settings(source, request)` and omit `project_source`. FatCat
 accepts a native `--save` config or one native FFF project container. It retains
 unknown source fields. Native preset names and IDs remain unchanged; generator
@@ -72,7 +72,7 @@ material names belong to its own writer base-material group.
 
 ## Parameter semantics / 参数含义
 
-- Native scalar fields are validated against alpha12's exported schema.
+- Native scalar fields are validated against alpha13's exported schema.
   Typed percentages accept a number, `"35%"`, or `{ "value": 35, "is_percent": true }`
   as appropriate for the field. Conflicting aliases raise errors.
 - Reviewed aliases include `wall_loops → perimeters`,

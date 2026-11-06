@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
-  "generated_on": "2026-10-07",
+  "generated_on": "2026-11-06",
   "files": [
     {
       "kind": "slicer-profile-source",
       "name": "Bambu Studio",
-      "application_version": "02.08.02.61",
+      "application_version": "02.09.01.70",
       "repository": "https://github.com/bambulab/BambuStudio",
-      "release_tag": "v02.08.02.61",
-      "source_commit": "926a7192574bcb9b3a732e1ec59a46d79cb45466",
+      "release_tag": "v02.09.01.70",
+      "source_commit": "56a57d00a591360cf41bf21383915ee5bf357be5",
       "license_path": "LICENSE",
       "license_file": "slicer-profiles/bambu-studio/LICENSE",
       "license": "AGPL-3.0-only",
       "license_sha256": "57c8ff33c9c0cfc3ef00e650a1cc910d7ee479a8bc509f6c9209a7c2a11399d6",
       "license_bytes": 34520,
-      "license_source_url": "https://github.com/bambulab/BambuStudio/blob/926a7192574bcb9b3a732e1ec59a46d79cb45466/LICENSE"
+      "license_source_url": "https://github.com/bambulab/BambuStudio/blob/56a57d00a591360cf41bf21383915ee5bf357be5/LICENSE"
     },
     {
       "kind": "slicer-profile-source",
@@ -33,16 +33,16 @@
     {
       "kind": "slicer-profile-source",
       "name": "QIDI Studio",
-      "application_version": "02.07.02.60",
+      "application_version": "02.07.02.73",
       "repository": "https://github.com/QIDITECH/QIDIStudio",
-      "release_tag": "v2.07.02.60",
-      "source_commit": "c58fdc56629005395a672cb4e8713018a087df1b",
+      "release_tag": "v2.07.02.73",
+      "source_commit": "403b619d56147160bb883e94f95a7951245bc6d0",
       "license_path": "LICENSE",
       "license_file": "slicer-profiles/qidi-studio/LICENSE",
       "license": "AGPL-3.0-only",
       "license_sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
       "license_bytes": 34523,
-      "license_source_url": "https://github.com/QIDITECH/QIDIStudio/blob/c58fdc56629005395a672cb4e8713018a087df1b/LICENSE"
+      "license_source_url": "https://github.com/QIDITECH/QIDIStudio/blob/403b619d56147160bb883e94f95a7951245bc6d0/LICENSE"
     },
     {
       "kind": "slicer-profile-source",
@@ -61,14 +61,14 @@
     {
       "kind": "slicer-profile-source",
       "name": "Anycubic Slicer Next",
-      "application_version": "2.0.0.3",
+      "application_version": "2.0.0.6",
       "repository": "https://github.com/ANYCUBIC-3D/AnycubicSlicerNext",
       "release_tag": null,
       "source_commit": "6103ed8b511609658d00d0538cc7f0609cdb57da",
       "license_path": "LICENSE.txt",
       "license_file": "slicer-profiles/anycubic-slicer-next/LICENSE.txt",
       "license": "AGPL-3.0-only",
-      "note": "Profiles are copied from the official 2.0.0.3 macOS package. No repository tag matching this application version was found. This is the license file at the repository main commit listed here.",
+      "note": "Profiles are copied from the official 2.0.0.6 macOS package. No repository tag matching this application version was found. This is the license file at the repository main commit listed here.",
       "license_sha256": "57c8ff33c9c0cfc3ef00e650a1cc910d7ee479a8bc509f6c9209a7c2a11399d6",
       "license_bytes": 34520,
       "license_source_url": "https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/blob/6103ed8b511609658d00d0538cc7f0609cdb57da/LICENSE.txt"
@@ -76,7 +76,7 @@
     {
       "kind": "slicer-profile-source",
       "name": "Flash Studio",
-      "application_version": "1.7.18",
+      "application_version": "1.7.19",
       "repository": "https://github.com/FlashForge/Orca-Flashforge",
       "release_tag": "1.7.15",
       "source_commit": "84b7074b252af144a75fec04a0db3c21e6e65536",
@@ -86,36 +86,36 @@
       "license_sha256": "57c8ff33c9c0cfc3ef00e650a1cc910d7ee479a8bc509f6c9209a7c2a11399d6",
       "license_bytes": 34520,
       "license_source_url": "https://github.com/FlashForge/Orca-Flashforge/blob/84b7074b252af144a75fec04a0db3c21e6e65536/LICENSE.txt",
-      "note": "Profiles are copied from the official 1.7.18 macOS package. No matching public source tag was found; the license and definition baseline are the listed 1.7.15 source revision."
+      "note": "Profiles are copied from the official 1.7.19 macOS package. No matching public source tag was found; the license and definition baseline are the listed 1.7.15 source revision."
     },
     {
       "kind": "slicer-profile-source",
       "name": "Snapmaker Orca",
-      "application_version": "2.4.0",
+      "application_version": "2.4.1",
       "repository": "https://github.com/Snapmaker/OrcaSlicer",
-      "release_tag": "v2.4.0",
-      "source_commit": "b1831e5dcb464172de33783142425aafda834fbc",
+      "release_tag": "v2.4.1",
+      "source_commit": "bac6fd5c1e1c23ddf057cf6471ba4ed7ed621c4c",
       "license_path": "LICENSE.txt",
       "license_file": "slicer-profiles/snapmaker-orca/LICENSE.txt",
       "license": "AGPL-3.0-only",
       "license_sha256": "57c8ff33c9c0cfc3ef00e650a1cc910d7ee479a8bc509f6c9209a7c2a11399d6",
       "license_bytes": 34520,
-      "license_source_url": "https://github.com/Snapmaker/OrcaSlicer/blob/b1831e5dcb464172de33783142425aafda834fbc/LICENSE.txt"
+      "license_source_url": "https://github.com/Snapmaker/OrcaSlicer/blob/bac6fd5c1e1c23ddf057cf6471ba4ed7ed621c4c/LICENSE.txt"
     },
     {
       "kind": "slicer-profile-source",
       "name": "PrusaSlicer",
-      "application_version": "3.0.0-alpha12",
+      "application_version": "3.0.0-alpha13",
       "repository": "https://github.com/prusa3d/PrusaSlicer",
-      "release_tag": "version_3.0.0-alpha12",
-      "source_commit": "30ef59195e0f3ee6f270b185bb5f9fb5f349f81f",
+      "release_tag": "version_3.0.0-alpha13",
+      "source_commit": "ff3d6677cfccfc7fbad72acc63f01c9abec6f5d9",
       "license_path": "LICENSE",
       "license_file": "slicer-profiles/prusaslicer/LICENSE",
       "license": "AGPL-3.0-only",
       "license_sha256": "282751b8c98ee9e445346eb57a992c9ecbe25ed8dd554df046777313e19b10f9",
       "license_bytes": 35181,
-      "license_source_url": "https://github.com/prusa3d/PrusaSlicer/blob/30ef59195e0f3ee6f270b185bb5f9fb5f349f81f/LICENSE",
-      "note": "Native CLI resolved preset data and schema from the exact alpha12 app; no upstream implementation code or binaries included."
+      "license_source_url": "https://github.com/prusa3d/PrusaSlicer/blob/ff3d6677cfccfc7fbad72acc63f01c9abec6f5d9/LICENSE",
+      "note": "Native CLI resolved preset data and schema from the exact alpha13 app; no upstream implementation code or binaries included."
     },
     {
       "kind": "build-dependency",

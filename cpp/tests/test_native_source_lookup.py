@@ -25,7 +25,7 @@ class NativeSourceLookupTests(unittest.TestCase):
         self.sources = self.root / "fatcat_metadata_data/native_project_sources"
 
     def request(self, machine="p2s", **overrides):
-        return dict(slicer_id="BambuStudio", application_version="02.08.02.61",
+        return dict(slicer_id="BambuStudio", application_version="02.09.01.70",
                     machine_uid="bambu-lab:" + machine, nozzle_uid="nozzle:0.4mm", **overrides)
 
     def test_unrelated_broken_profiles_do_not_block_exact_lookup(self):
@@ -67,12 +67,12 @@ class NativeSourceLookupTests(unittest.TestCase):
         for path in targets.glob("*.json"):
             if not path.name.startswith("bambu-studio-"):
                 path.write_text("{invalid", encoding="utf-8")
-        model = '<model><metadata name="Application">BambuStudio-02.08.02.61</metadata>{}</model>'
+        model = '<model><metadata name="Application">BambuStudio-02.09.01.70</metadata>{}</model>'
         for title in ("", '<metadata name="Title">Snapmaker adapter</metadata>',
                       '<metadata name="Description">OrcaSlicer-0.0.0</metadata>'):
             with self.subTest(title=title):
                 result = json.loads(fatcat.detect_template_source(model.format(title), None))
-                self.assertEqual(result, {"source_slicer": "BambuStudio", "source_version": "02.08.02.61"})
+                self.assertEqual(result, {"source_slicer": "BambuStudio", "source_version": "02.09.01.70"})
 
     def test_unavailable_abs_does_not_block_pla_but_remains_unselectable(self):
         index = json.loads((self.sources / "source-index.json").read_text(encoding="utf-8"))
@@ -104,10 +104,10 @@ class NativeSourceLookupTests(unittest.TestCase):
                 self.assertIn("native_material_unavailable", json.dumps(rejected["issues"]))
 
     def test_prusa_exact_lookup_retains_native_capacity_policy(self):
-        catalog = fatcat.list_machines("PrusaSlicer", "3.0.0-alpha12")
+        catalog = fatcat.list_machines("PrusaSlicer", "3.0.0-alpha13")
         row = catalog["sources"][0]
         selected = fatcat.native_project_source({
-            "slicer_id": "PrusaSlicer", "application_version": "3.0.0-alpha12",
+            "slicer_id": "PrusaSlicer", "application_version": "3.0.0-alpha13",
             "machine_uid": row["machine_uid"], "nozzle_uid": row["nozzle_uid"],
         })
         self.assertEqual(selected["machine_uid"], row["machine_uid"])

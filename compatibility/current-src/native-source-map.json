@@ -884,6 +884,54 @@
     },
     {
       "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h3c",
+      "nozzle_uid": "nozzle:0.2mm",
+      "machine_display_name": "Bambu Lab H3C",
+      "source_machine_profile_name": "Bambu Lab H3C 0.2 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h3c",
+      "nozzle_uid": "nozzle:0.4mm",
+      "machine_display_name": "Bambu Lab H3C",
+      "source_machine_profile_name": "Bambu Lab H3C 0.4 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h3c",
+      "nozzle_uid": "nozzle:0.6mm",
+      "machine_display_name": "Bambu Lab H3C",
+      "source_machine_profile_name": "Bambu Lab H3C 0.6 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
+      "machine_uid": "bambu-lab:h3c",
+      "nozzle_uid": "nozzle:0.8mm",
+      "machine_display_name": "Bambu Lab H3C",
+      "source_machine_profile_name": "Bambu Lab H3C 0.8 nozzle",
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:textured-pei",
+        "plate:supertack"
+      ]
+    },
+    {
+      "slicer_id": "BambuStudio",
       "machine_uid": "bambu-lab:p1p",
       "nozzle_uid": "nozzle:0.2mm",
       "machine_display_name": "Bambu Lab P1P",

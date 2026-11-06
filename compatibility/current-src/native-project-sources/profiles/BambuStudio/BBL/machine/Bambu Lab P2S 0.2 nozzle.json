@@ -31,13 +31,18 @@
         "Bambu Lab H2D Pro 0.2 nozzle",
         "Bambu Lab H2C 0.2 nozzle",
         "Bambu Lab X2D 0.2 nozzle",
-        "Bambu Lab A2L 0.2 nozzle"
+        "Bambu Lab A2L 0.2 nozzle",
+        "Bambu Lab H3C 0.2 nozzle"
     ],
     "deretraction_speed": [
         "30",
         "30"
     ],
     "hotend_cooling_rate": [
+        "2",
+        "2"
+    ],
+    "hotend_cooling_rate_on_rack": [
         "2",
         "2"
     ],
@@ -99,10 +104,6 @@
     ],
     "extruder_variant_list": [
         "Direct Drive Standard,Direct Drive High Flow"
-    ],
-    "nozzle_type": [
-        "hardened_steel",
-        "hardened_steel"
     ],
     "nozzle_volume": [
         "110",
@@ -205,16 +206,16 @@
         "20"
     ],
     "machine_max_speed_y": [
-        "600",
-        "600",
-        "600",
-        "600"
+        "1000",
+        "1000",
+        "1000",
+        "1000"
     ],
     "machine_max_speed_x": [
-        "600",
-        "600",
-        "600",
-        "600"
+        "1000",
+        "1000",
+        "1000",
+        "1000"
     ],
     "machine_max_speed_e": [
         "30",
