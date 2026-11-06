@@ -24,9 +24,9 @@ json read_json(const std::string &path) {
 
 json device(const std::string &slicer, const std::string &machine,
             const std::string &nozzle = "nozzle:0.4mm") {
-    const std::string version = slicer == "BambuStudio" ? "02.08.02.61" : "2.4.2";
+    const std::string version = slicer == "BambuStudio" ? "02.09.01.70" : "2.4.2";
     const std::string target_name = slicer == "BambuStudio"
-        ? "bambu-studio-02.08.02.61.json" : "orca-slicer-2.4.2.json";
+        ? "bambu-studio-02.09.01.70.json" : "orca-slicer-2.4.2.json";
     const auto target = read_json(
         "compatibility/current-src/translations/targets/" + target_name);
     const auto binding = std::find_if(
@@ -144,7 +144,7 @@ json selection(const json &item, std::size_t count, std::size_t default_source =
 
 json compose(const json &source, const json &request) {
     const std::string filename = request.at("slicer_id") == "BambuStudio"
-        ? "bambu-studio-02.08.02.61.json" : "orca-slicer-2.4.2.json";
+        ? "bambu-studio-02.09.01.70.json" : "orca-slicer-2.4.2.json";
     const auto output = fatcat::compose_project_settings(
         source.dump(), request.dump(),
         read_json("compatibility/current-src/translations/canonical.json").dump(),

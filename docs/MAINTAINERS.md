@@ -11,6 +11,27 @@ owns explicit scalar, colour and wipe-tower overrides. Shared project field
 contracts remain private in `project_settings_internal.h`; none of these files
 introduces an installed public API or a generator dependency.
 
+Material field roles and native preset widths belong to the private, per-call
+`MaterialContext`. Target rules are parsed once; declared roles take precedence
+over the single legacy fallback for imported fields absent from the contract.
+Resolved profile widths include recorded native schema defaults. This runtime
+knowledge is passed directly to composition, source projection and merge; it is
+never inserted into target JSON or exported project metadata.
+
+All material array readers use `MaterialLayout` slot ranges. Complete native
+identities and matching total lengths select native groups; otherwise a valid
+equal-width or explicitly allowed singleton shape is used. A mismatched native
+shape does not replace a user's valid edited uniform values. Unknown uneven
+shapes fail with the affected field instead of leaving unmapped values behind.
+Different logical materials may have different group widths; multiple sources
+for the same logical material must still supply identical values. Hardware
+first-variant policies remain explicit and separate from field classification.
+
+材料字段职责和运行时分组边界集中在内部上下文中，公共接口保持不变。原生分组、
+用户编辑后的等宽数组和明确允许的单值默认统一转换为槽位范围；无法确定范围时
+返回字段明确的错误，不猜测、不静默保留错位数组。合并允许不同材料组宽不同，
+同一逻辑材料的来源冲突仍会报错。
+
 PrusaSlicer 3's independent typed project format is implemented in the private
 `prusa_project.cpp` adapter. The public discovery/composition/import/description
 entry points dispatch by `project_format`. Its native JSON is serialized only
@@ -19,13 +40,15 @@ There are no machine-specific code paths.
 
 ## Refresh PrusaSlicer 3 separately
 
-The user-requested preview target is exactly `3.0.0-alpha12`. The YAML presets
+The user-requested preview target is exactly `3.0.0-alpha13`. Update the target
+manifest and its reviewed license-source identity together before collection.
+The collector derives release provenance from that identity. The YAML presets
 are resolved by the application, with an isolated data directory and no mesh
 generation. Run with the exact native executable:
 
 ```bash
 python3 scripts/sync_prusa_sources.py \
-  --binary '/Applications/PrusaSlicer-3.0.0-alpha12.app/Contents/MacOS/PrusaSlicer'
+  --binary '/Applications/PrusaSlicer-3.0.0-alpha13.app/Contents/MacOS/PrusaSlicer'
 ```
 
 The native query enumerates 32 default-nozzle FFF selections. `--save` exports
@@ -70,17 +93,22 @@ their actual bundle paths) before running the updater:
 
 | `slicer_id` | Required version |
 | --- | --- |
-| `BambuStudio` | `02.08.02.61` |
+| `BambuStudio` | `02.09.01.70` |
 | `OrcaSlicer` | `2.4.2` |
-| `QIDIStudio` | `02.07.02.60` |
+| `QIDIStudio` | `02.07.02.73` |
 | `ElegooSlicer` | `1.5.3.5` |
-| `AnycubicSlicerNext` | `2.0.0.3` |
-| `FlashStudio` | `1.7.18` |
-| `SnapmakerOrca` | `2.4.0` |
+| `AnycubicSlicerNext` | `2.0.0.6` |
+| `FlashStudio` | `1.7.19` |
+| `SnapmakerOrca` | `2.4.1` |
 
 Pass one app bundle for every `slicer_id` in the stable-target table above. The path must be the `.app` bundle
 root, which contains `Contents/Info.plist` and
 `Contents/Resources/profiles/`:
+
+For a partial refresh, repeat `--slicer SLICER_ID` for the selected targets and
+provide only their application roots. Unselected source records, profile files,
+references and separate format catalogues are retained. Do not relabel a target
+when its newer application package has not actually been acquired.
 
 ```bash
 python3 scripts/sync_native_project_sources.py \

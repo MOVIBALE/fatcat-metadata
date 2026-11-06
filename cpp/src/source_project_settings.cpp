@@ -12,6 +12,7 @@
 #include "fatcat/project_settings.h"
 #include "difference_index.h"
 #include "filament_projection.h"
+#include "material_context.h"
 #include "project_settings_overrides.h"
 
 namespace fatcat::detail {
@@ -107,7 +108,7 @@ void rebuild_flush_matrix_from_vector(json &project, std::size_t count,
     project["flush_volumes_matrix"] = std::move(matrix);
 }
 
-void resize_arrays(json &project, const json &source, std::size_t count) {
+void resize_arrays(json &project, const json &source, std::size_t count, const MaterialContext &fields) {
     const auto old_count = filament_count(source);
     for (auto &[key, values] : project.items()) {
         if (!values.is_array() || values.empty()) continue;
@@ -119,14 +120,21 @@ void resize_arrays(json &project, const json &source, std::size_t count) {
                 continue;
             }
             values = project_filament_matrix(values, old_count, count);
-        } else if (filament_array(key) || key == "flush_volumes_vector") {
+        } else if (fields.is_material(key) || key == "flush_volumes_vector") {
             if (values.size() == count) continue;
             const bool grouped = old_count > 0 && count <= old_count &&
                 values.size() % old_count == 0 &&
+                // Legacy source generation keeps filament variants but selects
+                // one temperature value; preserved native groups bypass this policy.
                 (key == "flush_volumes_vector" ||
                  (key.rfind("filament_", 0) == 0 && values.size() > old_count));
             if (grouped) {
-                values.erase(values.begin() + count * (values.size() / old_count), values.end());
+                const auto layout = fields.layout(source, key, old_count);
+                json resized = json::array();
+                for (std::size_t slot = 0; slot < count; ++slot) {
+                    for (const auto &value : layout.group(values, slot)) resized.push_back(value);
+                }
+                values = std::move(resized);
             } else {
                 values = repeat(default_value(values, source), count);
             }
@@ -139,7 +147,7 @@ std::set<std::string> source_difference_tokens(const json &entry) {
 }
 
 json scoped_differences(const json &project, std::string_view difference_key,
-                        std::size_t slot_offset, std::size_t trailing_count) {
+                        std::size_t slot_offset, std::size_t trailing_count, const MaterialContext &fields) {
     const auto found = project.find(std::string(difference_key));
     json entries = found == project.end() || found->is_null() ? json::array() :
         (found->is_array() ? *found : json::array({*found}));
@@ -158,7 +166,7 @@ json scoped_differences(const json &project, std::string_view difference_key,
     std::set<std::string> process, filament, printer;
     for (const auto &key : source_difference_tokens(entries.at(0))) {
         if (key == "printer_settings_id") printer.insert(key);
-        else if (filament_array(key)) filament.insert(key);
+        else if (fields.is_material(key)) filament.insert(key);
         else process.insert(key);
     }
     if (slot_offset > 0) scoped.at(0) = render_difference_tokens(process);
@@ -172,9 +180,9 @@ json scoped_differences(const json &project, std::string_view difference_key,
 
 void record_differences(json &project, const std::set<std::string> &extra,
                         bool scoped, std::string_view difference_key,
-                        std::size_t slot_offset, std::size_t trailing_count) {
+                        std::size_t slot_offset, std::size_t trailing_count, const MaterialContext &fields) {
     const auto found = project.find(std::string(difference_key));
-    json entries = scoped ? scoped_differences(project, difference_key, slot_offset, trailing_count) :
+    json entries = scoped ? scoped_differences(project, difference_key, slot_offset, trailing_count, fields) :
         found == project.end() || found->is_null() ? json::array() :
         (found->is_array() ? *found : json::array({*found}));
     if (entries.empty() && extra.empty()) {
@@ -184,7 +192,7 @@ void record_differences(json &project, const std::set<std::string> &extra,
     if (entries.empty()) entries.push_back("");
     auto tokens = source_difference_tokens(entries.at(0));
     for (const auto &key : extra) {
-        if (scoped && filament_array(key) &&
+        if (scoped && fields.is_material(key) &&
             entries.size() == slot_offset + filament_count(project) + trailing_count) {
             for (std::size_t i = 0; i < filament_count(project); ++i) {
                 auto material_tokens = source_difference_tokens(entries.at(slot_offset + i));
@@ -264,14 +272,14 @@ void remap_material_difference_sources(
     json &project, const json &source,
     const std::vector<MaterialSelection> &selected,
     std::string_view difference_key, std::size_t slot_offset,
-    std::size_t trailing_count) {
+    std::size_t trailing_count, const MaterialContext &fields) {
     const auto source_differences = scoped_differences(
-        source, difference_key, slot_offset, trailing_count);
+        source, difference_key, slot_offset, trailing_count, fields);
     auto output_differences = scoped_differences(
-        project, difference_key, slot_offset, trailing_count);
+        project, difference_key, slot_offset, trailing_count, fields);
     const auto output_count = filament_count(project);
-    const auto copied_material_field = [](const std::string &key) {
-        return filament_array(key) && key != "filament_colour" &&
+    const auto copied_material_field = [&fields](const std::string &key) {
+        return fields.is_material(key) && key != "filament_colour" &&
                key != "filament_multi_colour";
     };
     for (std::size_t output_index = 0;
@@ -346,13 +354,13 @@ void apply_materials(json &project, const json &source,
                      const std::vector<MaterialSelection> &selected,
                      bool complete_native_defaults, bool scoped_markers,
                      std::string_view difference_key, std::size_t slot_offset,
-                     std::size_t trailing_count) {
+                     std::size_t trailing_count, const MaterialContext &fields) {
     if (!complete_native_defaults &&
         std::none_of(selected.begin(), selected.end(), [](const auto &item) { return item.apply_override; })) return;
     const auto old_count = filament_count(source);
     const auto output_count = filament_count(project);
     const auto source_differences = scoped_markers
-        ? scoped_differences(project, difference_key, slot_offset, trailing_count)
+        ? scoped_differences(project, difference_key, slot_offset, trailing_count, fields)
         : json::array();
     json differences = source_differences;
     const bool generated_petg = std::any_of(selected.begin(), selected.end(), [](const auto &item) {
@@ -368,39 +376,38 @@ void apply_materials(json &project, const json &source,
             project["nozzle_temperature_range_high"] = repeat("240", output_count);
         }
     }
+    json shape = project;
     for (auto &[key, values] : project.items()) {
         if (key == "filament_colour" || key == "filament_multi_colour" ||
-            !filament_array(key) || !values.is_array()) continue;
+            !fields.is_material(key) || !values.is_array()) continue;
         if (values.size() < selected.size()) values = repeat(values.empty() ? json("") : values.at(0), selected.size());
-        const auto width = output_count > 0 && values.size() % output_count == 0
-            ? std::max<std::size_t>(1, values.size() / output_count) : std::size_t(1);
-        for (std::size_t i = 0; i < selected.size(); ++i) {
-            const auto &material = selected.at(i);
-            if (!material.apply_override) continue;
-            for (std::size_t variant = 0; variant < width; ++variant) {
-                const auto output_index = i * width + variant;
-                if (output_index >= values.size()) continue;
-                json value;
-                if (material.source_index && source.contains(key)) {
-                    const auto &original = source.at(key);
-                    const auto source_width = old_count > 0 && original.size() % old_count == 0
-                        ? std::max<std::size_t>(1, original.size() / old_count) : std::size_t(1);
-                    const auto source_index = *material.source_index * source_width + std::min(variant, source_width - 1);
-                    if (source_index < original.size()) value = original.at(source_index);
-                }
-                if (value.is_null() && material.petg && material.allow_petg_fallback) {
-                    value = petg_value(key, values.at(output_index), material);
-                }
-                if (!value.is_null()) {
-                    if (scoped_markers && values.at(output_index) != value) {
-                        auto tokens = source_difference_tokens(differences.at(slot_offset + i));
-                        tokens.insert(key);
-                        differences.at(slot_offset + i) = render_difference_tokens(tokens);
+        shape[key] = values;
+        const auto layout = fields.layout(shape, key, output_count, true);
+        const auto source_layout = source.contains(key) && !source.at(key).empty()
+            ? std::make_optional(fields.layout(source, key, old_count, true)) : std::nullopt;
+        json result = json::array();
+        for (std::size_t i = 0; i < output_count; ++i) {
+            const auto original = layout.group(values, i);
+            auto group = original;
+            if (i < selected.size() && selected.at(i).apply_override) {
+                const auto &material = selected.at(i);
+                if (material.source_index && source_layout) {
+                    group = source_layout->group(source.at(key), *material.source_index);
+                } else if (material.petg && material.allow_petg_fallback) {
+                    for (auto &value : group) {
+                        auto replacement = petg_value(key, value, material);
+                        if (!replacement.is_null()) value = std::move(replacement);
                     }
-                    values.at(output_index) = std::move(value);
+                }
+                if (scoped_markers && group != original) {
+                    auto tokens = source_difference_tokens(differences.at(slot_offset + i));
+                    tokens.insert(key);
+                    differences.at(slot_offset + i) = render_difference_tokens(tokens);
                 }
             }
+            for (const auto &value : group) result.push_back(value);
         }
+        values = std::move(result);
     }
     if (scoped_markers) project[std::string(difference_key)] = std::move(differences);
     const auto first_petg = std::find_if(selected.begin(), selected.end(), [](const auto &item) { return item.petg; });
@@ -411,16 +418,19 @@ void apply_materials(json &project, const json &source,
     }
 }
 
-void collapse_orca_arrays(json &project, const json &source, std::size_t count) {
+void collapse_orca_arrays(json &project, const json &source, std::size_t count,
+                          const MaterialContext &fields) {
     if (count == 0 || count > filament_count(source)) return;
     const std::set<std::string> grouped = {"flush_volumes_vector", "long_retractions_when_ec",
         "retraction_distances_when_ec", "volumetric_speed_coefficients"};
     for (auto &[key, value] : project.items()) {
         if (!value.is_array() || value.size() <= count || value.size() % count != 0 ||
+            (!fields.is_material(key) && grouped.count(key) == 0) ||
             (key.rfind("filament_", 0) != 0 && grouped.count(key) == 0)) continue;
-        const auto width = value.size() / count;
+        // This is the legacy Orca first-variant output policy, not field-role inference.
+        const auto layout = fields.layout(project, key, count);
         json collapsed = json::array();
-        for (std::size_t i = 0; i < count; ++i) append_filament_group(collapsed, value, i, width, 1);
+        for (std::size_t i = 0; i < count; ++i) collapsed.push_back(value.at(layout.slots.at(i).begin));
         value = std::move(collapsed);
     }
 }
@@ -443,11 +453,12 @@ void flash_routing(json &project, std::size_t count) {
 }
 
 void preserve_selected_slots(json &project, const json &source, const json &request,
-                             std::size_t count, std::string_view difference_key = "different_settings_to_system",
-                             std::size_t difference_offset = 1,
-                             std::size_t difference_trailing = 1,
-                             bool strict_difference_shape = false,
-                             bool singleton_difference_allowed = true) {
+                             std::size_t count, std::string_view difference_key,
+                             std::size_t difference_offset,
+                             std::size_t difference_trailing,
+                             bool strict_difference_shape,
+                             bool singleton_difference_allowed,
+                             const MaterialContext &fields) {
     const auto old_count = filament_count(source);
     std::vector<std::size_t> slots;
     const auto selected = request.find("filament_source_slots");
@@ -519,18 +530,15 @@ void preserve_selected_slots(json &project, const json &source, const json &requ
         } else if (key == "flush_volumes_matrix") {
             if (!compact || old_count == 0 || values.size() % (old_count * old_count) != 0) continue;
             values = project_filament_matrix(values, old_count, slots);
-        } else if (filament_array(key) || key == "flush_volumes_vector") {
-            if (old_count == 0 || values.size() % old_count != 0) continue;
-            const auto width = values.size() / old_count;
-            json result = compact ? json::array() : values;
-            for (std::size_t i = 0; i < slots.size(); ++i) {
-                if (compact) {
-                    append_filament_group(result, values, slots[i], width, width);
-                    continue;
-                }
-                for (std::size_t variant = 0; variant < width; ++variant) {
-                    result.at(i * width + variant) = values.at(slots[i] * width + variant);
-                }
+        } else if (fields.is_material(key) || key == "flush_volumes_vector") {
+            const auto layout = fields.layout(source, key, old_count, true);
+            auto output_slots = slots;
+            if (!compact) {
+                for (std::size_t i = slots.size(); i < old_count; ++i) output_slots.push_back(i);
+            }
+            json result = json::array();
+            for (const auto slot : output_slots) {
+                for (const auto &value : layout.group(values, slot)) result.push_back(value);
             }
             values = std::move(result);
         }
@@ -674,6 +682,12 @@ void apply_source_tower_defaults(json &project, const json &target) {
 }
 
 json compose_source_project(const json &base, const json &request, const json &target) {
+    const MaterialContext fields(target.at("package_dialect").at("filament_snapshot"));
+    return compose_source_project(base, request, target, fields);
+}
+
+json compose_source_project(const json &base, const json &request, const json &target,
+                            const MaterialContext &fields) {
     json project = prepare_source_identity(base, request);
     const auto slicer = target.at("target_contract").at("slicer_id").get<std::string>();
     const auto &filament_snapshot = target.at("package_dialect").at("filament_snapshot");
@@ -690,7 +704,7 @@ json compose_source_project(const json &base, const json &request, const json &t
     }
     if (complete_native_defaults) {
         project[difference_key] = scoped_differences(
-            project, difference_key, difference_offset, difference_trailing);
+            project, difference_key, difference_offset, difference_trailing, fields);
     }
     const bool preserve_materials = request.value("preserve_source_material_settings", false);
     const bool merging = request.contains("merge_sources");
@@ -712,13 +726,13 @@ json compose_source_project(const json &base, const json &request, const json &t
         if (preserve_materials || scoped_markers) {
             preserve_selected_slots(project, source, selection_request, count,
                 difference_key, difference_offset, difference_trailing,
-                scoped_markers, true);
+                scoped_markers, true, fields);
         }
-        else if (compact) resize_arrays(project, source, count);
+        else if (compact) resize_arrays(project, source, count, fields);
         if (scoped_markers && !preserve_materials) {
             remap_material_difference_sources(
                 project, source, selected_materials, difference_key,
-                difference_offset, difference_trailing);
+                difference_offset, difference_trailing, fields);
         }
         json colors = json::array();
         for (const auto &material : materials) colors.push_back(material.at("colour"));
@@ -736,8 +750,8 @@ json compose_source_project(const json &base, const json &request, const json &t
         }
         if (!preserve_materials) {
             apply_materials(project, source, selected_materials, complete_native_defaults,
-                scoped_markers, difference_key, difference_offset, difference_trailing);
-            if (slicer == "OrcaSlicer") collapse_orca_arrays(project, source, count);
+                scoped_markers, difference_key, difference_offset, difference_trailing, fields);
+            if (slicer == "OrcaSlicer") collapse_orca_arrays(project, source, count, fields);
             if (slicer == "FlashStudio") flash_routing(project, count);
             if (slicer == "QIDIStudio" && project.contains("default_filament_profile")) {
                 const auto &defaults = project.at("default_filament_profile");
@@ -782,7 +796,7 @@ json compose_source_project(const json &base, const json &request, const json &t
     apply_scalar_overrides(project, request, target, process_changes);
     overrides.insert(process_changes.begin(), process_changes.end());
     record_differences(project, overrides, scoped_markers, difference_key,
-                       difference_offset, difference_trailing);
+                       difference_offset, difference_trailing, fields);
     return project;
 }
 
@@ -811,6 +825,7 @@ bool has_native_material_parameters(const json &binding, const json &target,
 }
 
 json native_source_request(const json &project, const json &request, const json &target) {
+    const MaterialContext fields(target.at("package_dialect").at("filament_snapshot"));
     if (request.value("preserve_source_material_settings", false) || request.contains("merge_sources")) return nullptr;
     const json *machine = nullptr;
     for (const auto &binding : target.at("machine_bindings")) {
@@ -867,7 +882,7 @@ json native_source_request(const json &project, const json &request, const json 
         }
         for (const auto &[key, value] : project.items()) {
             if (value.is_array() && !value.empty() &&
-                (filament_array(key) || key == "flush_volumes_matrix" || key == "flush_volumes_vector") &&
+                (fields.is_material(key) || key == "flush_volumes_matrix" || key == "flush_volumes_vector") &&
                 covered.count(key) == 0) {
                 // A mixed legacy source may carry slot arrays absent from the
                 // native snapshot plan. Preserve its complete source policy.
@@ -902,6 +917,11 @@ json native_source_request(const json &project, const json &request, const json 
 }
 
 json prepare_source_merge_project(const json &project, const json &filament_snapshot) {
+    return prepare_source_merge_project(project, filament_snapshot, MaterialContext(filament_snapshot));
+}
+
+json prepare_source_merge_project(const json &project, const json &filament_snapshot,
+                                  const MaterialContext &fields) {
     json result = project;
     const auto count = project.at("filament_settings_id").size();
     const auto difference_key = filament_snapshot.at("difference_list_key").get<std::string>();
@@ -911,12 +931,16 @@ json prepare_source_merge_project(const json &project, const json &filament_snap
     if (filament_count(project) > count) {
         preserve_selected_slots(result, project, {{"filament_slot_mode", "compact"}}, count,
             difference_key, difference_offset, difference_trailing,
-            scoped_markers, true);
+            scoped_markers, true, fields);
     }
     return result;
 }
 
 json source_merge_dialect(const json &dialect, const json &project) {
+    return source_merge_dialect(dialect, project, MaterialContext(dialect.at("filament_snapshot")));
+}
+
+json source_merge_dialect(const json &dialect, const json &project, const MaterialContext &fields) {
     json result = dialect;
     auto &snapshot = result["filament_snapshot"];
     auto &rules = snapshot["array_rules"];
@@ -925,9 +949,13 @@ json source_merge_dialect(const json &dialect, const json &project) {
     for (const auto &[key, values] : project.items()) {
         if (!values.is_array() || values.empty() || count == 0) continue;
         const bool matrix = key == "flush_volumes_matrix";
-        if (!matrix && !filament_array(key) && key != "flush_volumes_vector") continue;
+        if (!matrix && !fields.is_material(key) && key != "flush_volumes_vector") continue;
         const auto divisor = matrix ? count * count : count;
-        if (values.size() % divisor != 0 && values.size() != 1) continue;
+        if (matrix) {
+            if (values.size() % divisor != 0) continue;
+        } else {
+            fields.layout(project, key, count, values.size() == 1);
+        }
         rules.push_back({{"keys", json::array({key})}, {"selection", matrix ? "matrix" : key == "filament_self_index" ? "slot_index" : "default_or_group"},
                          {"group_size", std::max<std::size_t>(1, values.size() / divisor)}, {"broadcast_singleton", !matrix && values.size() == 1},
                          {"material_source_override", true}});

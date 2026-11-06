@@ -129,6 +129,27 @@ def _cube_material(request: dict[str, Any], project: dict[str, Any]) -> tuple[st
     return project['filament_settings_id'][0], project['filament_colour'][0]
 
 
+def _complete_cube_metadata(
+    model: dict[str, Any],
+    settings: dict[str, Any],
+    placement: tuple[float, float, float],
+) -> None:
+    """Supply generator-owned values required by the selected target."""
+    defaults = settings["metadata_defaults"]
+    project = settings["project_settings"]
+    if "slice_uuid_seed_prefix" in defaults:
+        model["slice_uuid"] = str(uuid.uuid4())
+    if defaults["plate_summary"]:
+        model["component_inputs"]["plate_summary"] = {
+            "bbox_all": [placement[0], placement[1], placement[0] + 20, placement[1] + 20],
+            "filament_colors": project["filament_colour"],
+            "nozzle_diameter": project["nozzle_diameter"],
+            "layer_height": project["layer_height"],
+            "name": model["plate"]["plater_name"],
+            "bed_type": defaults["plate_value"],
+        }
+
+
 def _create_builder(
     placement: tuple[float, float, float],
     material: tuple[str, str],
@@ -219,6 +240,7 @@ def main() -> None:
     model_request["parts"] = [
         _model_part_request(object_id)
     ]
+    _complete_cube_metadata(model_request, project_result, placement)
 
     description = fatcat_metadata.compose_model_metadata(final_project, model_request)
     fatcat_metadata_neroued.apply_root_model_metadata(

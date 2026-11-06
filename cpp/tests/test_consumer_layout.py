@@ -95,7 +95,7 @@ class ConsumerLayoutTests(unittest.TestCase):
                         verify.verify_cube_material(archive, request)
 
     def test_selected_native_targets_center_cube_without_changing_settings(self):
-        for slicer, version, machine in [("BambuStudio", "02.08.02.61", "bambu-lab:a1-mini"),
+        for slicer, version, machine in [("BambuStudio", "02.09.01.70", "bambu-lab:a1-mini"),
                                          ("OrcaSlicer", "2.4.2", "snapmaker:u1")]:
             with self.subTest(slicer=slicer):
                 result = json.loads(fatcat.compose_project_settings(json.dumps({

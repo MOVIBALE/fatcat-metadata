@@ -12,9 +12,75 @@ ROOT = Path(__file__).resolve().parents[2]
 _spec = importlib.util.spec_from_file_location('native_source_refresh', ROOT / 'scripts/sync_native_project_sources.py')
 refresh = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(refresh)
+_prusa_spec = importlib.util.spec_from_file_location('prusa_source_refresh', ROOT / 'scripts/sync_prusa_sources.py')
+prusa_refresh = importlib.util.module_from_spec(_prusa_spec)
+_prusa_spec.loader.exec_module(prusa_refresh)
 
 
 class RetainedSourceRefreshTests(unittest.TestCase):
+    def test_prusa_catalog_provenance_matches_the_reviewed_release(self):
+        catalog = json.loads((ROOT / 'compatibility/current-src/native-project-sources/prusa-3/catalog.json').read_text(encoding='utf-8'))
+        provenance = prusa_refresh.source_provenance()
+        for key, value in provenance.items():
+            self.assertEqual(catalog['source'][key], value)
+        with patch.object(prusa_refresh, 'VERSION', 'unreviewed-version'):
+            with self.assertRaisesRegex(ValueError, 'provenance differs'):
+                prusa_refresh.source_provenance()
+
+    def test_native_profile_bom_and_duplicate_fields_match_slicer_parser(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "process").mkdir()
+            raw = '\ufeff{"name":"Native", "layer_height":"0.12", "layer_height":"0.20"}'
+            path = root / "process/Native.json"
+            path.write_text(raw, encoding="utf-8")
+            catalog = refresh.ProfileCatalog(root)
+            self.assertEqual(catalog.find_named("process", "Native", ""), "process/Native.json")
+            self.assertEqual(catalog.resolve("process", "process/Native.json", {})["layer_height"], "0.20")
+            self.assertEqual(path.read_text(encoding="utf-8"), raw)
+
+    def test_sdk_manifest_still_rejects_duplicate_fields(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "manifest.json"
+            path.write_text('{"schema_version":1,"schema_version":2}', encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "duplicate JSON field"):
+                refresh._load_json(path)
+
+    def test_partial_refresh_preserves_other_targets_and_format_catalogs(self):
+        previous = {
+            "schema_version": 1,
+            "sources": [
+                {"slicer_id": "BambuStudio", "machine_uid": "old", "nozzle_uid": "0.4"},
+                {"slicer_id": "OrcaSlicer", "machine_uid": "u1", "nozzle_uid": "0.4",
+                 "compatibility_project": {"path": "compatibility-projects/u1.json"}},
+            ],
+            "profile_files": ["profiles/BambuStudio/old.json", "profiles/OrcaSlicer/u1.json"],
+            "references": {"profiles/BambuStudio/old.json": {"inherits": "old-parent"},
+                           "profiles/OrcaSlicer/u1.json": {"inherits": "u1-parent"}},
+            "compatibility_project_files": ["compatibility-projects/u1.json"],
+            "format_catalogs": {"PrusaSlicer": {"catalog": "prusa-3/catalog.json"}},
+        }
+        staged = {"schema_version": 1,
+                  "sources": [{"slicer_id": "BambuStudio", "machine_uid": "h3c", "nozzle_uid": "0.4"}],
+                  "profile_files": ["profiles/BambuStudio/h3c.json"],
+                  "references": {}, "compatibility_project_files": []}
+        original = copy.deepcopy(previous)
+        result = refresh._merge_source_indexes(previous, staged, {"BambuStudio"})
+        self.assertEqual(previous, original)
+        self.assertEqual(result["sources"], staged["sources"] + previous["sources"][1:])
+        self.assertEqual(result["profile_files"],
+                         ["profiles/BambuStudio/h3c.json", "profiles/OrcaSlicer/u1.json"])
+        self.assertEqual(result["references"],
+                         {"profiles/OrcaSlicer/u1.json": {"inherits": "u1-parent"}})
+        self.assertEqual(result["format_catalogs"], previous["format_catalogs"])
+        self.assertEqual(result["compatibility_project_files"], previous["compatibility_project_files"])
+
+    def test_partial_refresh_requires_exact_requested_roots(self):
+        with self.assertRaisesRegex(ValueError, "no app root"):
+            refresh.sync({}, slicers={"BambuStudio"}, dry_run=True)
+        with self.assertRaisesRegex(ValueError, "unknown slicer"):
+            refresh.sync({}, slicers={"Typo"}, dry_run=True)
+
     def test_refresh_marks_inherited_incompatible_material_unavailable(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -114,6 +114,7 @@ add_library(fatcat_metadata_core STATIC
     src/metadata_components.cpp
     src/project_settings.cpp
     src/project_settings_merge.cpp
+    src/material_context.cpp
     src/project_settings_overrides.cpp
     src/native_project_source.cpp
     src/native_material_selection.cpp
@@ -231,6 +232,10 @@ if(FATCAT_BUILD_TESTS)
         FATCAT_TEST_REPOSITORY_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/.."
     )
     add_test(NAME fatcat_native_material_settings_test COMMAND fatcat_native_material_settings_test)
+
+    add_executable(fatcat_material_context_test tests/material_context_test.cpp)
+    target_link_libraries(fatcat_material_context_test PRIVATE fatcat_metadata_core)
+    add_test(NAME fatcat_material_context_test COMMAND fatcat_material_context_test)
 
     add_executable(fatcat_metadata_components_test
         tests/metadata_components_test.cpp

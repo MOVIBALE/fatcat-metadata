@@ -30,10 +30,13 @@ def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return result
 
 
-def _load_json(path: Path) -> dict[str, Any]:
+def _load_json(path: Path, *, native_profile: bool = False) -> dict[str, Any]:
+    # Native slicers use nlohmann/json: UTF-8 BOMs are accepted and later
+    # duplicate fields win. Match that interpretation without rewriting the
+    # upstream bytes. FatCat manifests retain their strict duplicate checks.
     value = json.loads(
-        path.read_text(encoding="utf-8"),
-        object_pairs_hook=_reject_duplicate_pairs,
+        path.read_text(encoding="utf-8-sig" if native_profile else "utf-8"),
+        object_pairs_hook=None if native_profile else _reject_duplicate_pairs,
         parse_constant=lambda token: (_ for _ in ()).throw(
             ValueError(f"non-finite JSON number: {token}")
         ),
@@ -99,7 +102,7 @@ class ProfileCatalog:
             if category is None:
                 continue
             try:
-                document = _load_json(path)
+                document = _load_json(path, native_profile=True)
             except (OSError, ValueError, json.JSONDecodeError):
                 continue
             self.documents[relative] = document
@@ -570,12 +573,44 @@ def _write_tree(stage: Path, rows: list[dict[str, Any]], roots: dict[str, Path],
     return reports
 
 
-def sync(application_roots: dict[str, Path], *, dry_run: bool = False) -> int:
+def _merge_source_indexes(previous: dict[str, Any], staged: dict[str, Any],
+                          slicers: set[str]) -> dict[str, Any]:
+    """Replace selected native catalogues while retaining independent sources."""
+    prefixes = tuple(f"profiles/{slicer}/" for slicer in sorted(slicers))
+    sources = [entry for entry in previous.get("sources", [])
+               if entry["slicer_id"] not in slicers] + staged["sources"]
+    return {
+        **previous,
+        **staged,
+        "sources": sorted(sources, key=lambda entry: (
+            entry["slicer_id"], entry["machine_uid"], entry["nozzle_uid"])),
+        "profile_files": sorted({path for path in previous.get("profile_files", [])
+                                 if not path.startswith(prefixes)} | set(staged["profile_files"])),
+        "references": {
+            **{path: edges for path, edges in previous.get("references", {}).items()
+               if not path.startswith(prefixes)},
+            **staged["references"],
+        },
+        "compatibility_project_files": sorted({
+            entry["compatibility_project"]["path"] for entry in sources
+            if "compatibility_project" in entry
+        }),
+    }
+
+
+def sync(application_roots: dict[str, Path], *, dry_run: bool = False,
+         slicers: set[str] | None = None) -> int:
     source_map = _load_json(SOURCE_MAP_PATH)
     rows = source_map.get("machine_profiles")
     if source_map.get("schema_version") != 1 or not isinstance(rows, list):
         raise ValueError("native source map has an unsupported schema")
     required = sorted({row.get("slicer_id") for row in rows if isinstance(row, dict)})
+    if slicers is not None:
+        unknown = slicers - set(required)
+        if unknown:
+            raise ValueError(f"unknown slicer selection: {', '.join(sorted(unknown))}")
+        required = sorted(slicers)
+        rows = [row for row in rows if row["slicer_id"] in slicers]
     missing_roots = sorted(set(required) - application_roots.keys())
     unexpected_roots = sorted(application_roots.keys() - set(required))
     if missing_roots or unexpected_roots:
@@ -621,15 +656,10 @@ def sync(application_roots: dict[str, Path], *, dry_run: bool = False) -> int:
         old_files: set[str] = set()
         old_index = OUTPUT_DIR / "source-index.json"
         if old_index.is_file():
-            try:
-                previous_index = _load_json(old_index)
-                old_files = set(previous_index.get("profile_files", []))
-                if previous_index.get("format_catalogs"):
-                    staged_index["format_catalogs"] = previous_index["format_catalogs"]
-                    (stage / "source-index.json").write_text(
-                        json.dumps(staged_index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            except (OSError, ValueError, json.JSONDecodeError):
-                old_files = set()
+            previous_index = _load_json(old_index)
+            old_files = set(previous_index.get("profile_files", []))
+            staged_index = _merge_source_indexes(previous_index, staged_index, set(required))
+            (stage / "source-index.json").write_text(_render_json(staged_index), encoding="utf-8")
 
         # Reconcile only files named by our previous generated index.
         new_files = set(staged_index["profile_files"])
@@ -667,6 +697,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true",
                         help="validate and preview in a temporary directory without changing repository files")
+    parser.add_argument("--slicer", action="append", metavar="SLICER_ID",
+                        help="refresh only this target, preserving others; repeat for multiple targets")
     parser.add_argument(
         "--application-root",
         action="append",
@@ -676,7 +708,8 @@ def main() -> int:
     )
     args = parser.parse_args()
     try:
-        return sync(_application_roots(args.application_root), dry_run=args.dry_run)
+        return sync(_application_roots(args.application_root), dry_run=args.dry_run,
+                    slicers=set(args.slicer) if args.slicer else None)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"native source sync failed: {error}", file=sys.stderr)
         return 2

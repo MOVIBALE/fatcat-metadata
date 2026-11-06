@@ -28,7 +28,7 @@ def main() -> None:
     # 1. Describe the target and material; FatCat resolves native profile JSON.
     request = {
         "project_source": "fatcat_native",
-        "slicer_id": "BambuStudio", "application_version": "02.08.02.61",
+        "slicer_id": "BambuStudio", "application_version": "02.09.01.70",
         "machine_uid": "bambu-lab:a1-mini", "nozzle_uid": "nozzle:0.4mm",
         "build_plate_uid": "plate:textured-pei",
         "source_materials": [

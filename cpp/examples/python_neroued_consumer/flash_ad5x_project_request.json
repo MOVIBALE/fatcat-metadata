@@ -1,0 +1,16 @@
+{
+  "project_source": "fatcat_native",
+  "slicer_id": "FlashStudio",
+  "application_version": "1.7.19",
+  "machine_uid": "flashforge:ad5x",
+  "nozzle_uid": "nozzle:0.4mm",
+  "build_plate_uid": "plate:textured-pei",
+  "source_materials": [
+    {"name": "Blue PLA", "material_type": "PLA", "colour": "#2288CC"}
+  ],
+  "process_settings": {
+    "layer_height": "0.2",
+    "wall_loops": "3",
+    "outer_wall_speed": "47"
+  }
+}

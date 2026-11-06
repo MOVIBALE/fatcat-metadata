@@ -33,9 +33,9 @@ wheel 安装的 `fatcat` 启动同一原生命令。Python 的命令目录未加
 ## Discover choices / 查询候选
 
 ```bash
-fatcat catalog --slicer BambuStudio --application-version 02.08.02.61
-fatcat fields --slicer BambuStudio --application-version 02.08.02.61
-fatcat choices --slicer BambuStudio --application-version 02.08.02.61 \
+fatcat catalog --slicer BambuStudio --application-version 02.09.01.70
+fatcat fields --slicer BambuStudio --application-version 02.09.01.70
+fatcat choices --slicer BambuStudio --application-version 02.09.01.70 \
   --machine bambu-lab:a1-mini --nozzle nozzle:0.4mm --plate plate:textured-pei
 ```
 
@@ -73,7 +73,7 @@ Save the following UTF-8 JSON as `selection.json`. Preset names returned by
 {
   "project_source": "fatcat_native",
   "slicer_id": "BambuStudio",
-  "application_version": "02.08.02.61",
+  "application_version": "02.09.01.70",
   "machine_uid": "bambu-lab:a1-mini",
   "nozzle_uid": "nozzle:0.4mm",
   "build_plate_uid": "plate:textured-pei",
@@ -124,7 +124,7 @@ python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 
 The example supplies a 20 mm red PLA cube, centers it on the selected A1 mini
 bed, creates actual writer IDs, obtains FatCat's metadata and writes once with
-Neroued. Open the resulting file in Bambu Studio 02.08.02.61 to inspect those
+Neroued. Open the resulting file in Bambu Studio 02.09.01.70 to inspect those
 choices. A successful file write alone does not prove GUI acceptance or slicing.
 The example generator owns its geometry; it is outside the metadata core.
 
@@ -132,7 +132,7 @@ The example generator owns its geometry; it is outside the metadata core.
 取得 FatCat 元数据后由 Neroued 写包一次。可在指定版本 Bambu Studio 中打开检查。
 文件写出成功不等于 GUI 打开或切片通过。几何属于独立示例生成器，不属于元数据核心。
 
-The installed example was opened and sliced in Bambu Studio 02.08.02.61 on
+The installed example was opened and sliced in Bambu Studio 02.09.01.70 on
 macOS: A1 mini, 0.4 mm nozzle, textured PEI, red PLA, 0.2 mm layers, 100 layers
 and 20 mm height. This is one representative example, not a seven-slicer or
 physical-printing acceptance claim. The UI's time and cost are estimates.

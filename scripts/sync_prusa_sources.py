@@ -16,9 +16,25 @@ import tempfile
 import uuid
 
 
-VERSION = "3.0.0-alpha12"
 ROOT = Path(__file__).resolve().parents[1]
+TARGET = next(entry for entry in json.loads(
+    (ROOT / "compatibility/current-src/translations/supported-targets.json").read_text(encoding="utf-8")
+)["targets"] if entry["slicer_id"] == "PrusaSlicer")
+VERSION = TARGET["application_version"]
 SCALAR_TYPES = {"Bool", "Int", "Float", "String", "Enum", "FloatOrPercentage", "Percentage", "OptInt"}
+
+
+def source_provenance() -> dict[str, str]:
+    """Use the reviewed release identity rather than a stale embedded commit.
+
+    使用已审核的发布来源，避免版本升级后仍记录旧提交。
+    """
+    manifest = json.loads((ROOT / "licenses/third-party/manifest.json").read_text(encoding="utf-8"))
+    source = next(entry for entry in manifest["files"]
+                  if entry["kind"] == "slicer-profile-source" and entry["name"] == "PrusaSlicer")
+    if source["application_version"] != VERSION:
+        raise ValueError("Prusa source license provenance differs from target version")
+    return {key: source[key] for key in ("release_tag", "source_commit", "repository")}
 
 
 def refresh_contract(schema: dict) -> None:
@@ -26,10 +42,16 @@ def refresh_contract(schema: dict) -> None:
 
     按原生 schema 同步公开覆盖字段；名称等价映射单独人工审核。
     """
-    path = ROOT / f"compatibility/current-src/translations/targets/prusa-slicer-{VERSION}.json"
+    path = ROOT / "compatibility/current-src/translations/targets" / TARGET["filename"]
     target = json.loads(path.read_text(encoding="utf-8"))
     if target["target_contract"] != {"slicer_id": "PrusaSlicer", "application_version": VERSION}:
         raise ValueError("Prusa target identity differs from native source version")
+    target["process_settings_contract"]["source"].update(source_provenance())
+    dialect = target["package_dialect"]
+    dialect["source_identity"]["value"] = "PrusaSlicer-" + VERSION
+    for metadata in dialect["root_metadata"]:
+        if metadata["name"] == "Application":
+            metadata["value"] = "PrusaSlicer-" + VERSION
     for group, key in (("print", "process_settings_contract"), ("filament", "material_settings_contract")):
         target[key]["fields"] = {
             item["name"]: {k: v for k, v in item.items() if k not in {"name", "value", "location"}}
@@ -88,6 +110,7 @@ def collect(binary: Path, output: Path) -> None:
 
     导出应用列出的默认喷嘴 FFF 配置；不宣称覆盖未列出的喷嘴组合。
     """
+    provenance = source_provenance()
     output.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="fatcat-prusa-sources-") as temporary:
         temp = Path(temporary)
@@ -161,9 +184,7 @@ def collect(binary: Path, output: Path) -> None:
         catalog = {
             "schema_version": 1, "slicer_id": "PrusaSlicer", "application_version": VERSION,
             "source": {
-                "release_tag": "version_" + VERSION,
-                "source_commit": "30ef59195e0f3ee6f270b185bb5f9fb5f349f81f",
-                "repository": "https://github.com/prusa3d/PrusaSlicer",
+                **provenance,
                 "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
                 "acquisition": "query-printer-models / query-print-tool-filament-profiles / save / export-config-schema",
                 "scope": "Native CLI default-nozzle FFF selections, 0.20 mm, Prusament PLA; other tuning via explicit native config",

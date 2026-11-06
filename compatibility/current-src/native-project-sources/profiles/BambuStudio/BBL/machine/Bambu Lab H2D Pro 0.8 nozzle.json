@@ -37,6 +37,12 @@
         "2",
         "2"
     ],
+    "hotend_cooling_rate_on_rack": [
+        "2",
+        "2",
+        "2",
+        "2"
+    ],
     "hotend_heating_rate": [
         "3.6",
         "3.6",
@@ -212,12 +218,6 @@
         "2",
         "1",
         "2"
-    ],
-    "nozzle_type": [
-        "hardened_steel",
-        "hardened_steel",
-        "hardened_steel",
-        "hardened_steel"
     ],
     "nozzle_volume": [
         "130",

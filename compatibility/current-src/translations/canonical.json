@@ -1080,6 +1080,29 @@
       "supported_nozzle_uids": [
         "nozzle:0.4mm"
       ]
+    },
+    {
+      "build_volume_mm": {
+        "x": "330",
+        "y": "320",
+        "z": "325"
+      },
+      "display_name": "Bambu Lab H3C",
+      "machine_uid": "bambu-lab:h3c",
+      "manufacturer": "Bambu Lab",
+      "model": "H3C",
+      "physical_tool_count": 1,
+      "supported_build_plate_uids": [
+        "plate:engineering",
+        "plate:supertack",
+        "plate:textured-pei"
+      ],
+      "supported_nozzle_uids": [
+        "nozzle:0.2mm",
+        "nozzle:0.4mm",
+        "nozzle:0.6mm",
+        "nozzle:0.8mm"
+      ]
     }
   ],
   "materials": [

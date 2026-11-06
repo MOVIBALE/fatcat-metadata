@@ -569,11 +569,12 @@ std::string import_template_metadata(
         tinyxml2::XMLDocument document;
         const auto *root = detail::read_source_xml(document, source_model_xml);
         const auto identity = detail::read_source_identity(root, nullptr, selected);
+        const auto version = selected.at("target_contract").at("application_version").get<std::string>();
         if (identity.at("source_slicer") != "PrusaSlicer" ||
-            identity.at("source_version") != "3.0.0-alpha12" ||
-            !identity.at("matches_selected_target_identity").get<bool>()) invalid("Prusa template requires exact 3.0.0-alpha12 project identity");
+            identity.at("source_version") != version ||
+            !identity.at("matches_selected_target_identity").get<bool>()) invalid("Prusa template requires exact " + version + " project identity");
         return json{{"settings", native}, {"source_slicer", "PrusaSlicer"},
-            {"source_version", "3.0.0-alpha12"}, {"selected_slicer", "PrusaSlicer"},
+            {"source_version", version}, {"selected_slicer", "PrusaSlicer"},
             {"matches_selected_target_identity", true},
             {"printer_model", effective.at("printer_model")},
             {"nozzle_diameter", effective.at("nozzle_diameter")},

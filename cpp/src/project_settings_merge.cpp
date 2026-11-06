@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "fatcat/source_project_settings.h"
+#include "filament_projection.h"
+#include "material_context.h"
 #include "project_settings_internal.h"
 
 namespace fatcat::detail {
@@ -432,11 +434,17 @@ json merged_transition_matrix(const MergeProjectInputs &inputs, const std::strin
 json merged_material_values(const MergeProjectInputs &inputs, const std::string &key,
                             const json &rule, std::size_t group_size, bool variable_group,
                             std::vector<std::set<std::string>> &colour_overrides,
-                            const json &defaults = json()) {
+                            const json &defaults, const MaterialContext &materials) {
     const std::size_t output_count = inputs.logical_by_id.size();
-    std::optional<std::size_t> output_width;
     std::vector<std::vector<json>> merged_values(output_count);
     std::vector<std::string> chosen_sources(output_count);
+    std::vector<std::optional<MaterialLayout>> layouts;
+    for (const auto &source : inputs.sources) {
+        layouts.push_back(source.project.contains(key)
+            ? std::make_optional(materials.layout(source.project, key, source.slot_count,
+                rule.value("broadcast_singleton", false), group_size, variable_group))
+            : std::nullopt);
+    }
     for (std::size_t output_index = 0; output_index < output_count; ++output_index) {
         const auto output_id = inputs.id_by_output_index.at(output_index);
         for (std::size_t source_index = 0;
@@ -451,22 +459,8 @@ json merged_material_values(const MergeProjectInputs &inputs, const std::string 
                         std::to_string(output_id));
             }
             const json &array = source.project.at(key);
-            const bool broadcast_singleton =
-                rule.value("broadcast_singleton", false) &&
-                array.is_array() && array.size() == 1;
-            const auto width = broadcast_singleton ? 1 : merge_group_width(
-                source.project, key, source.slot_count, group_size, false,
-                variable_group,
-                source.source_id);
-            if (output_width && *output_width != width) {
-                invalid("merged source slot field " + key +
-                        " has different variant counts");
-            }
-            output_width = width;
-            std::vector<json> candidate;
-            for (std::size_t variant = 0; variant < width; ++variant) {
-                json value = array.at(
-                    broadcast_singleton ? 0 : mapped->second * width + variant);
+            auto candidate = layouts.at(source_index)->group(array, mapped->second).get<std::vector<json>>();
+            for (auto &value : candidate) {
                 // A source may store a real multi-colour description here.
                 // Only a mirror of its plain preview colour follows a new
                 // global preview colour; independent source values survive.
@@ -477,7 +471,6 @@ json merged_material_values(const MergeProjectInputs &inputs, const std::string 
                     if (value != colour) colour_overrides[output_index].insert(key);
                     value = colour;
                 }
-                candidate.push_back(std::move(value));
             }
             if (!merged_values[output_index].empty() &&
                 merged_values[output_index] != candidate) {
@@ -491,15 +484,9 @@ json merged_material_values(const MergeProjectInputs &inputs, const std::string 
             }
         }
         if (merged_values[output_index].empty() && defaults.contains(key)) {
-            const auto width = merge_group_width(defaults, key, output_count,
-                group_size, false, variable_group, "native transition defaults");
-            if (output_width && *output_width != width) {
-                invalid("native transition default width differs from source");
-            }
-            output_width = width;
-            for (std::size_t variant = 0; variant < width; ++variant) {
-                merged_values[output_index].push_back(defaults.at(key).at(output_index * width + variant));
-            }
+            const auto layout = materials.layout(defaults, key, output_count,
+                rule.value("broadcast_singleton", false), group_size, variable_group);
+            merged_values[output_index] = layout.group(defaults.at(key), output_index).get<std::vector<json>>();
         }
         if (merged_values[output_index].empty()) {
             invalid("no source supplies " + key + " for merged global slot " +
@@ -532,7 +519,7 @@ bool source_matrices_cover_all_pairs(const MergeProjectInputs &inputs) {
 }
 
 json merge_transition_defaults(const json &request, const json &machine,
-                               const json &dialect, const MergeProjectInputs &inputs) {
+                               const json &dialect, const MergeProjectInputs &inputs, const MaterialContext &materials) {
     json defaults;
     if (request.contains("merge_default_project")) {
         defaults = merge_required_object(request, "merge_default_project", "request");
@@ -550,7 +537,7 @@ json merge_transition_defaults(const json &request, const json &machine,
         std::vector<std::set<std::string>> colour_overrides(count);
         defaults["flush_volumes_vector"] = merged_material_values(
             inputs, "flush_volumes_vector", rule, rule.at("group_size").get<std::size_t>(),
-            true, colour_overrides, defaults);
+            true, colour_overrides, defaults, materials);
         break;
     }
     if (derive_matrix) {
@@ -598,7 +585,7 @@ void merge_inheritance_groups(json &project, const MergeProjectInputs &inputs) {
 
 MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
                                                const json &dialect,
-                                               const json &defaults = json()) {
+                                               const json &defaults, const MaterialContext &materials) {
     const std::size_t output_count = inputs.logical_by_id.size();
     json project = inputs.sources.front().project;
     std::vector<std::set<std::string>> colour_overrides(output_count);
@@ -655,7 +642,7 @@ MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
             project[key] = merged_material_values(
                 inputs, key, rule, group_size,
                 material_group && selection == "default_or_group", colour_overrides,
-                key == "flush_volumes_vector" ? defaults : json());
+                key == "flush_volumes_vector" ? defaults : json(), materials);
         }
     }
 
@@ -770,23 +757,23 @@ MergedProjectResult compose_merged_slot_arrays(const MergeProjectInputs &inputs,
 
 MergedProjectSettings merge_project_settings(
     json project, const json &request, const json &dialect,
-    const json &machine, const json &plate) {
+    const json &machine, const json &plate, const MaterialContext &materials) {
     const auto &snapshot = required_member(dialect, "filament_snapshot", "package dialect");
-    project = prepare_source_merge_project(project, snapshot);
+    project = prepare_source_merge_project(project, snapshot, materials);
     json merge_request = request;
     for (auto &source : merge_request.at("merge_sources")) {
         if (source.contains("project_settings")) {
             source["project_settings"] = prepare_source_merge_project(
-                source.at("project_settings"), snapshot);
+                source.at("project_settings"), snapshot, materials);
         }
     }
     json shape_project = project;
     complete_native_flush_defaults(shape_project, dialect, project.at("filament_settings_id").size());
-    const json merge_dialect = source_merge_dialect(dialect, shape_project);
+    const json merge_dialect = source_merge_dialect(dialect, shape_project, materials);
     const auto inputs = collect_merge_project_inputs(
         project, merge_request, merge_dialect, machine, plate);
-    const json defaults = merge_transition_defaults(request, machine, merge_dialect, inputs);
-    auto merged = compose_merged_slot_arrays(inputs, merge_dialect, defaults);
+    const json defaults = merge_transition_defaults(request, machine, merge_dialect, inputs, materials);
+    auto merged = compose_merged_slot_arrays(inputs, merge_dialect, defaults, materials);
     return {std::move(merged.project), std::move(merged.logical_slots),
             source_slot_mappings(inputs), merged.slot_count};
 }

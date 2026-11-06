@@ -97,3 +97,7 @@ jobs:
       - run: python cpp/examples/python_neroued_consumer/verify_3mf.py "$RUNNER_TEMP/fatcat-minimal-example.3mf"
       - run: python cpp/examples/python_neroued_consumer/write_example.py --production --output "$RUNNER_TEMP/fatcat-production-example.3mf"
       - run: python cpp/examples/python_neroued_consumer/verify_3mf.py "$RUNNER_TEMP/fatcat-production-example.3mf"
+      - name: Generate and verify the Flash Studio consumer
+        run: |
+          python cpp/examples/python_neroued_consumer/write_example.py --project-request-json cpp/examples/python_neroued_consumer/flash_ad5x_project_request.json --output "$RUNNER_TEMP/fatcat-flash-example.3mf"
+          python cpp/examples/python_neroued_consumer/verify_3mf.py "$RUNNER_TEMP/fatcat-flash-example.3mf" cpp/examples/python_neroued_consumer/flash_ad5x_project_request.json

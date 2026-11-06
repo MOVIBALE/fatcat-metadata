@@ -6,7 +6,7 @@
     "filament_id": "GFA01",
     "instantiation": "false",
     "filament_cost": [
-        "19.99"
+        "15.99"
     ],
     "filament_density": [
         "1.32"
@@ -22,6 +22,9 @@
     ],
     "filament_vendor": [
         "Bambu Lab"
+    ],
+    "fins_extrude_safe_temp": [
+        "57"
     ],
     "impact_strength_z": [
         "6.6"

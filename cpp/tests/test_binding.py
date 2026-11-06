@@ -51,7 +51,7 @@ class WipeTowerBindingTests(unittest.TestCase):
             raise AssertionError("canonical translation data was not packaged")
         if not (
             module_root
-            / "fatcat_metadata_data/translations/targets/bambu-studio-02.08.02.61.json"
+            / "fatcat_metadata_data/translations/targets/bambu-studio-02.09.01.70.json"
         ).is_file():
             raise AssertionError("Bambu target translation data was not packaged")
         if not (
@@ -103,7 +103,7 @@ class WipeTowerBindingTests(unittest.TestCase):
         }
         request = {
             "slicer_id": "BambuStudio",
-            "application_version": "02.08.02.61",
+            "application_version": "02.09.01.70",
             "machine_uid": "bambu-lab:a1-mini",
             "nozzle_uid": "nozzle:0.4mm",
             "build_plate_uid": "plate:textured-pei",
@@ -140,7 +140,7 @@ class WipeTowerBindingTests(unittest.TestCase):
         }
         request = {
             "slicer_id": "BambuStudio",
-            "application_version": "02.08.02.61",
+            "application_version": "02.09.01.70",
             "machine_uid": "bambu-lab:a1-mini",
             "nozzle_uid": "nozzle:0.4mm",
             "build_plate_uid": "plate:textured-pei",
@@ -183,12 +183,12 @@ class WipeTowerBindingTests(unittest.TestCase):
             "outer_wall_speed": "47",
         }
         source_model_xml = (
-            '<model><metadata name="Application" value="BambuStudio-02.08.02.61"/>'
+            '<model><metadata name="Application" value="BambuStudio-02.09.01.70"/>'
             '<metadata name="BambuStudio:3mfVersion" value="1"/></model>'
         )
         slice_info_xml = (
             '<config><header><header_item key="X-BBL-Client-Version" '
-            'value="02.08.02.61"/></header></config>'
+            'value="02.09.01.70"/></header></config>'
         )
         model_settings_with_plate = (
             '<config><plate><metadata key="bed_type" '
@@ -197,7 +197,7 @@ class WipeTowerBindingTests(unittest.TestCase):
         model_settings_without_plate = "<config><plate/></config>"
         request = {
             "slicer_id": "BambuStudio",
-            "application_version": "02.08.02.61",
+            "application_version": "02.09.01.70",
         }
         parts = json.loads(fatcat_metadata.template_import_parts(json.dumps(request)))
         self.assertEqual(parts["project_settings"], "Metadata/project_settings.config")
@@ -211,7 +211,7 @@ class WipeTowerBindingTests(unittest.TestCase):
             )
         )
         self.assertEqual(imported_without_sidecar["source_slicer"], "BambuStudio")
-        self.assertEqual(imported_without_sidecar["source_version"], "02.08.02.61")
+        self.assertEqual(imported_without_sidecar["source_version"], "02.09.01.70")
         self.assertTrue(imported_without_sidecar["matches_selected_target_identity"])
         self.assertEqual(imported_without_sidecar["settings"], project)
         self.assertEqual(imported_without_sidecar["settings"]["outer_wall_speed"], "47")
@@ -262,7 +262,7 @@ class WipeTowerBindingTests(unittest.TestCase):
         }
         request = {
             "slicer_id": "BambuStudio",
-            "application_version": "02.08.02.61",
+            "application_version": "02.09.01.70",
             "assembly_id": 7,
             "instance_id": "9",
             "identify_id": "1",
@@ -353,7 +353,7 @@ class WipeTowerBindingTests(unittest.TestCase):
             [item.attrib for item in slice_root.findall("./header/header_item")],
             [
                 {"key": "X-BBL-Client-Type", "value": "slicer"},
-                {"key": "X-BBL-Client-Version", "value": "02.08.02.61"},
+                {"key": "X-BBL-Client-Version", "value": "02.09.01.70"},
             ],
         )
 
@@ -367,7 +367,7 @@ class WipeTowerBindingTests(unittest.TestCase):
             },
             {
                 "slicer_id": "BambuStudio",
-                "application_version": "02.08.02.61",
+                "application_version": "02.09.01.70",
                 "assembly_id": 7,
                 "instance_id": "9",
                 "identify_id": "1",

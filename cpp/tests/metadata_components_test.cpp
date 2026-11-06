@@ -49,7 +49,7 @@ std::string read_file(const std::string &relative_path) {
 json target_data() {
     return json::parse(read_file(
         "compatibility/current-src/translations/targets/"
-        "bambu-studio-02.08.02.61.json"));
+        "bambu-studio-02.09.01.70.json"));
 }
 
 json project_data() {
@@ -69,7 +69,7 @@ json project_data() {
 json metadata_request() {
     return {
         {"slicer_id", "BambuStudio"},
-        {"application_version", "02.08.02.61"},
+        {"application_version", "02.09.01.70"},
         {"assembly_id", 7},
         {"instance_id", "9"},
         {"identify_id", "1"},

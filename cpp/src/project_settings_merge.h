@@ -5,6 +5,8 @@
 
 namespace fatcat::detail {
 
+class MaterialContext;
+
 // Only the completed merge crosses this boundary; source indices stay private.
 struct MergedProjectSettings {
     nlohmann::json project;
@@ -16,6 +18,6 @@ struct MergedProjectSettings {
 MergedProjectSettings merge_project_settings(
     nlohmann::json project, const nlohmann::json &request,
     const nlohmann::json &dialect, const nlohmann::json &machine,
-    const nlohmann::json &plate);
+    const nlohmann::json &plate, const MaterialContext &materials);
 
 }  // namespace fatcat::detail

@@ -21,12 +21,13 @@ and FlashStudio 0.25 mm materials. OrcaSlicer 2.4.2 U1 0.6 mm still has no match
 PLA source. Updating the native snapshots and reviewing compatibility records
 is described in [MAINTAINERS.md](MAINTAINERS.md).
 
-PrusaSlicer 3.0.0-alpha12 is a preview target with a separate typed project
+PrusaSlicer 3.0.0-alpha13 is a preview target with a separate typed project
 format. Its sources come from native CLI preset resolution, not generated mesh
 projects or renamed Orca profiles. The catalogue covers the application's 32
 default-nozzle FFF selections, each with a native 0.20 mm process and Prusament
 PLA. Arbitrary nozzles and materials require an explicit native configuration.
 The SDK preserves native tool count, feeder slot capacity and typed values.
 Native hardware/data availability is separate from GUI acceptance: only MK4S,
-MK4S MMU3 and XL 5T representative outputs have been opened and sliced.
+MK4S MMU3 and XL 5T representative outputs were opened and sliced in the earlier alpha12 acceptance.
+Current-version checks are recorded separately in [the November refresh](SLICER_REFRESH_20261106.md).
 See [PRUSA.md](PRUSA.md) for unsupported operations and exact import semantics.
