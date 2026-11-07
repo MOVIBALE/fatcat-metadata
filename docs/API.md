@@ -85,7 +85,10 @@ project = composed["project_settings"]
 
 `slicer_id` and `application_version` select an exact supported target. Native
 composition requires the machine/nozzle identity and the real ordered palette.
-An omitted plate uses the native source default. Explicit process/material
+An omitted plate uses the native source default. If the machine has a single
+supported plate and the source omits its plate setting, that fixed plate takes
+precedence over the slicer's general fallback. For Flash Studio's Guider 3 Ultra
+this selects High Temp Plate (`plate:smooth-pei`). Explicit process/material
 preset names can be selected with `native_print_profile_name` and
 `native_filament_profile_names`. Unknown or incompatible selections raise
 `ValueError`; they do not select a similar printer or invent material settings.

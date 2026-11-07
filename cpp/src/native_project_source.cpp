@@ -779,6 +779,11 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     if (compatibility) merge_profile_settings(plate_project, process);
     merge_profile_settings(plate_project, machine, true);
     if (!compatibility) merge_profile_settings(plate_project, process);
+    const auto plates = offered_build_plates(canonical, target, machine_uid);
+    if (!input_request.contains("build_plate_uid") && !plate_project.contains("curr_bed_type") &&
+        plates.size() == 1) {
+        plate_project["curr_bed_type"] = plates.front().at("name");
+    }
     const auto defaults = target.find("native_project_defaults");
     if (!plate_project.contains("curr_bed_type") && defaults != target.end() &&
             defaults->contains("curr_bed_type")) {
@@ -790,7 +795,6 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     std::vector<json> material_profiles;
     material_names.reserve(materials.size());
     material_profiles.reserve(materials.size());
-    const auto plates = offered_build_plates(canonical, target, machine_uid);
     auto choices = material_choices(source, target, plates, plate, catalog,
                                     source_machine_profile_name);
     auto selection = detail::resolve_native_material_selection(

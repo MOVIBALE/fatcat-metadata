@@ -1542,7 +1542,9 @@
       "nozzle_uid": "nozzle:0.4mm",
       "machine_display_name": "Flashforge Guider 3 Ultra",
       "source_machine_profile_name": "Flashforge Guider 3 Ultra 0.4 Nozzle",
-      "supported_build_plate_uids": []
+      "supported_build_plate_uids": [
+        "plate:smooth-pei"
+      ]
     },
     {
       "slicer_id": "FlashStudio",
