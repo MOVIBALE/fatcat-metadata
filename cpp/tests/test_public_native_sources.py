@@ -32,6 +32,28 @@ TARGET_FILES = {
 
 
 class PublicNativeSourceTests(unittest.TestCase):
+    def test_guider_fixed_plate_is_used_by_preflight_and_composition(self):
+        request = {
+            "project_source": "fatcat_native", "slicer_id": "FlashStudio",
+            "application_version": "1.7.19", "machine_uid": "flashforge:guider-3-ultra",
+            "nozzle_uid": NOZZLE_UID,
+            "source_materials": [{"name": "PLA", "material_type": "PLA", "colour": "#FFFFFF"}],
+        }
+        fixed = "plate:smooth-pei"
+        options = fatcat.list_project_options(request)
+        self.assertEqual([p["build_plate_uid"] for p in options["build_plates"]], [fixed])
+        plan = fatcat.resolve_project_materials(request)
+        self.assertTrue(plan["ready"], plan["issues"])
+        self.assertEqual(plan["build_plate_uid"], fixed)
+        result = fatcat.compose_project_settings(request)
+        self.assertEqual(result["project_settings"]["curr_bed_type"], "High Temp Plate")
+        self.assertEqual(result["metadata_defaults"]["sidecar_bed_value"], "hot_plate")
+        self.assertEqual(result["project_settings"]["filament_settings_id"], ["Flashforge Generic PLA @G3U"])
+        incompatible = {**request, "build_plate_uid": "plate:textured-pei"}
+        self.assertFalse(fatcat.resolve_project_materials(incompatible)["ready"])
+        with self.assertRaises(ValueError):
+            fatcat.compose_project_settings(incompatible)
+
     @classmethod
     def setUpClass(cls):
         cls.package_root = Path(fatcat.__file__).resolve().parent

@@ -1,11 +1,32 @@
 """H3C's tool changer and material variants use separate native axes."""
 
+import json
+import math
 import unittest
 
 import fatcat_metadata as fatcat
 
 
 class H3CNativeSourceTests(unittest.TestCase):
+    def test_layout_uses_nozzle_change_volumes_only_with_hotend_tool_changes(self):
+        for machine, uses_hotend in (("h3c", True), ("p1s", False)):
+            with self.subTest(machine=machine):
+                request = self.request()
+                request["machine_uid"] = f"bambu-lab:{machine}"
+                request["source_materials"] = request["source_materials"][:2]
+                project = fatcat.compose_project_settings(request)["project_settings"]
+                self.assertEqual(project.get("handle_hotend_as_extruder", "0"),
+                                 "1" if uses_hotend else "0")
+                project.update(filament_prime_volume=["30", "48"],
+                               filament_prime_volume_nc=["60", "75"],
+                               filament_change_length=["2", "4"],
+                               filament_change_length_nc=["5", "10"])
+                layout = json.loads(fatcat.read_project_layout(json.dumps(project), json.dumps(request)))
+                self.assertEqual(layout["purge_volume"], 75 if uses_hotend else 48)
+                area = math.pi * 1.75**2 / 4
+                self.assertAlmostEqual(layout["filament_change_volume"], 4 * area)
+                self.assertAlmostEqual(layout["nozzle_change_volume"], 10 * area if uses_hotend else 0)
+
     def mixed_sources(self):
         projects, palette = [], []
         for kind in ("PLA Basic", "TPU for AMS"):

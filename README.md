@@ -38,6 +38,9 @@ print quality. A separate 3MF is composed for each target.
 
 ## Project status
 
+The **0.1.5** source supports manual Bambu Studio print-head assignments on
+single and merged plates. See [the model metadata API](docs/API.md).
+
 Version **0.1.4** refreshes six native slicer snapshots, adds Bambu H3C, and
 preserves native material parameter groups through slot reorder and merge.
 

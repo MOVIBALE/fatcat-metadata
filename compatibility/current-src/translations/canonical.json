@@ -969,7 +969,9 @@
       "manufacturer": "Flashforge",
       "model": "Guider 3 Ultra",
       "physical_tool_count": 2,
-      "supported_build_plate_uids": [],
+      "supported_build_plate_uids": [
+        "plate:smooth-pei"
+      ],
       "supported_nozzle_uids": [
         "nozzle:0.4mm"
       ]

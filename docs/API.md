@@ -85,7 +85,10 @@ project = composed["project_settings"]
 
 `slicer_id` and `application_version` select an exact supported target. Native
 composition requires the machine/nozzle identity and the real ordered palette.
-An omitted plate uses the native source default. Explicit process/material
+An omitted plate uses the native source default. If the machine has a single
+supported plate and the source omits its plate setting, that fixed plate takes
+precedence over the slicer's general fallback. For Flash Studio's Guider 3 Ultra
+this selects High Temp Plate (`plate:smooth-pei`). Explicit process/material
 preset names can be selected with `native_print_profile_name` and
 `native_filament_profile_names`. Unknown or incompatible selections raise
 `ValueError`; they do not select a similar printer or invent material settings.
@@ -230,6 +233,21 @@ can be empty. For merged models, supply `objects` instead of the single-model
 fields; each object's `model_index` follows the final one-based build order,
 with source XML, part/slot mappings and actual placement.
 
+For Bambu Studio, set `plate.filament_maps` to assign a physical print head
+to every final material slot, including unused slots. Each entry is an integer
+from 1 through the number of entries in the final project's `nozzle_diameter`.
+For an X2D with red, yellow, blue, black and white slots in that order,
+`[1, 1, 1, 2, 1]` assigns black to head 2. The SDK writes `Manual` and
+`1 1 1 2 1` to the plate in `Metadata/model_settings.config`. On a merge,
+the array follows the final output slot order and overrides the first source
+plate's routing. Omit the array to retain the target's usual plate settings.
+
+Bambu Studio 支持用 `plate.filament_maps` 指定每个最终材料槽对应的物理喷头。
+按输出槽位顺序填写整数，包含未使用的槽位。喷头编号从 1 开始，上限为工程
+`nozzle_diameter` 数组的长度。以红、黄、蓝、黑、白五槽的 X2D 为例，
+`[1, 1, 1, 2, 1]` 表示黑料用 2 号喷头，其余用 1 号。合并时传入该数组会覆盖
+首个来源打印盘上的映射。省略该字段沿用原有打印盘设置。
+
 The [minimal example](../cpp/examples/python_neroued_consumer/minimal.py)
 shows the three integration steps without the complete CLI's options. The
 [complete independent generator](../cpp/examples/python_neroued_consumer/)
@@ -250,6 +268,16 @@ Read-only `metadata_target`, `native_project_source_catalog` and
 template import, slot extraction, layout reading and `patch_wipe_tower` are
 advanced JSON/XML operations; their existing signatures are listed in the
 installed stub and public headers.
+
+`read_project_layout` reports tower volumes in mm³. For Bambu projects that
+enable `handle_hotend_as_extruder`, `purge_volume` also covers the largest
+`filament_prime_volume_nc`. The separate `nozzle_change_volume` converts the
+largest `filament_change_length_nc` to volume using the filament diameter,
+and is zero when hotend tool changes are disabled.
+
+`read_project_layout` 以 mm³ 返回冲刷塔布局所需的体积。拓竹工程开启
+`handle_hotend_as_extruder` 后，`purge_volume` 也会考虑各材料中最大的换嘴冲刷量。
+`nozzle_change_volume` 将最大换嘴进料长度按料丝直径换算为体积，关闭该模式时为 0。
 
 For build provenance, read `__version__`, `__source_revision__` and
 `__source_dirty__` from the installed extension. The revision records the build

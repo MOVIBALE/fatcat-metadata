@@ -229,7 +229,9 @@
       ],
       "printable_height": "600",
       "printer_variant": "0.4",
-      "supported_build_plate_uids": [],
+      "supported_build_plate_uids": [
+        "plate:smooth-pei"
+      ],
       "default_print_profile": "0.20mm Standard @Flashforge G3U 0.4 Nozzle"
     },
     {

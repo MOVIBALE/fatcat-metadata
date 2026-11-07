@@ -580,11 +580,19 @@ json project_layout(json project, const json &target) {
     } else if (const auto flush = largest(value("flush_volumes_vector")); flush > 0.0) {
         purge_volume = flush;
     }
-    const auto change_length = largest(value("filament_change_length"));
+    const auto hotend_mode = lowercase(trim(scalar_text(value("handle_hotend_as_extruder"))));
+    const bool hotend_tool_changes = slicer == "BambuStudio" &&
+                                    (hotend_mode == "1" || hotend_mode == "true");
+    if (hotend_tool_changes) {
+        purge_volume = std::max(purge_volume, largest(value("filament_prime_volume_nc")));
+    }
     auto filament_diameter = largest(value("filament_diameter"), 1.75);
     if (filament_diameter <= 0.0) {
         filament_diameter = 1.75;
     }
+    const auto change_volume = [&](const char *length_key) {
+        return largest(value(length_key)) * std::acos(-1.0) * filament_diameter * filament_diameter / 4.0;
+    };
     const auto brim_type = lowercase(trim(scalar_text(value("brim_type"))));
     const auto no_model_brim = brim_type == "no_brim" || brim_type == "none" || brim_type == "0";
     const auto tower_brim = number(value("prime_tower_brim_width"));
@@ -654,7 +662,8 @@ json project_layout(json project, const json &target) {
         {"tower_brim_width", tower_brim},
         {"tower_brim_auto", tower_brim < 0.0},
         {"purge_volume", purge_volume},
-        {"filament_change_volume", change_length * std::acos(-1.0) * filament_diameter * filament_diameter / 4.0},
+        {"filament_change_volume", change_volume("filament_change_length")},
+        {"nozzle_change_volume", hotend_tool_changes ? change_volume("filament_change_length_nc") : 0.0},
         {"tower_infill_spacing_ratio", std::max(0.01, infill_ratio)},
         {"tower_cyclic_toolchanges", placement_geometry.value("cyclic_toolchanges", false)},
         {"uses_rib_wall", uses_rib},

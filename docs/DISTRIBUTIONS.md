@@ -96,12 +96,12 @@ out or executing project code. The official publishing action also supplies
 gh workflow run distributions.yml --repo MOVIBALE/fatcat-metadata --ref main -f publish=true
 ```
 
-The package and CMake version is **0.1.4**. The first release was 0.1.0;
+The source package and CMake version is **0.1.5**. The first release was 0.1.0;
 published files are immutable. Update both versions for a later release instead
 of replacing an existing version with another commit. A source install still needs C++17, CMake and build-time
 access to the pinned nlohmann/json and TinyXML2 downloads.
 
-发行包与 CMake 版本均为 **0.1.4**，首次发行为 0.1.0。已发布文件不可同名替换；
+当前源码包与 CMake 版本均为 **0.1.5**，首次发行为 0.1.0。已发布文件不可同名替换；
 后续发行需同步更新项目与 CMake 版本。
 源码安装仍需 C++17、CMake，并在构建时下载固定版本的 nlohmann/json 和 TinyXML2。
 
