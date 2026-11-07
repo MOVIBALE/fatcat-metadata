@@ -162,6 +162,7 @@ class _Plate(TypedDict):
     locked: bool
     bed_type: NotRequired[str]
     filament_map_mode: NotRequired[str]
+    filament_maps: NotRequired[list[int]]
 
 
 class _OutputOptions(TypedDict, total=False):

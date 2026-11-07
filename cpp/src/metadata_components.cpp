@@ -783,12 +783,41 @@ std::pair<bool, std::vector<ModelInput>> parse_model_inputs(
     return {multi_model, std::move(models)};
 }
 
+// Bambu serializes one nozzle diameter per physical head, including equal diameters.
+std::string manual_plate_maps(const json &request, const json &project,
+                              const std::string &slicer_id) {
+    const auto plate = request.find("plate");
+    if (plate == request.end() || !plate->contains("filament_maps")) return {};
+    if (slicer_id != "BambuStudio") {
+        invalid("request.plate.filament_maps is supported only by BambuStudio");
+    }
+    const auto &maps = required_array(*plate, "filament_maps", "request.plate");
+    const auto &slots = required_array(project, "filament_settings_id", "project settings");
+    const auto &nozzles = required_array(project, "nozzle_diameter", "project settings");
+    if (maps.size() != slots.size()) {
+        invalid("request.plate.filament_maps must match the final material slot count " +
+                std::to_string(slots.size()));
+    }
+    std::string result;
+    for (const auto &head : maps) {
+        if (!head.is_number_unsigned() || head.get<std::uint64_t>() == 0 ||
+            head.get<std::uint64_t>() > nozzles.size()) {
+            invalid("request.plate.filament_maps must contain integer head IDs from 1 to " +
+                    std::to_string(nozzles.size()));
+        }
+        if (!result.empty()) result.push_back(' ');
+        result += id_text(head.get<std::uint64_t>());
+    }
+    return result;
+}
+
 std::string build_model_settings(const json &request,
                                  const std::vector<PartInput> &parts,
                                  const std::string &bed_type,
                                  std::string_view bed_type_field,
                                  const json &resources,
                                  const json &component_plan,
+                                 const std::string &manual_maps,
                                  bool qidi_studio) {
     const auto assembly_id = required_id(request, "assembly_id", "request");
     const auto source_file = required_text(request, "source_file", "request");
@@ -857,28 +886,26 @@ std::string build_model_settings(const json &request,
                  "request.plate.locked");
     add_metadata(document, plate_element, "bed_type", bed_type,
                  bed_type_field);
-    if (component_plan.contains("filament_map_mode")) {
-        add_metadata(document, plate_element, "filament_map_mode",
-                     required_text(component_plan, "filament_map_mode",
-                                   "target metadata components"),
-                     "target metadata components.filament_map_mode");
-    }
-    if (component_plan.value("filament_maps", std::string()) == "constant_one") {
-        const auto count = required_id(request, "active_material_count", "request");
-        std::string maps;
-        for (std::uint64_t index = 0; index < count; ++index) {
-            if (index != 0) maps += ' ';
-            maps += '1';
+    if (!manual_maps.empty()) {
+        add_metadata(document, plate_element, "filament_map_mode", "Manual");
+        add_metadata(document, plate_element, "filament_maps", manual_maps);
+    } else {
+        if (component_plan.contains("filament_map_mode")) {
+            add_metadata(document, plate_element, "filament_map_mode",
+                         required_text(component_plan, "filament_map_mode",
+                                       "target metadata components"),
+                         "target metadata components.filament_map_mode");
         }
-        add_metadata(document, plate_element, "filament_maps", maps);
-    } else if (component_plan.value("filament_maps", std::string()) == "sequential") {
-        const auto count = required_id(request, "active_material_count", "request");
-        std::string maps;
-        for (std::uint64_t index = 0; index < count; ++index) {
-            if (index != 0) maps += ' ';
-            maps += std::to_string(index + 1);
+        const auto strategy = component_plan.value("filament_maps", std::string());
+        if (strategy == "constant_one" || strategy == "sequential") {
+            const auto count = required_id(request, "active_material_count", "request");
+            std::string maps;
+            for (std::uint64_t index = 0; index < count; ++index) {
+                if (index != 0) maps += ' ';
+                maps += strategy == "constant_one" ? "1" : std::to_string(index + 1);
+            }
+            add_metadata(document, plate_element, "filament_maps", maps);
         }
-        add_metadata(document, plate_element, "filament_maps", maps);
     }
     if (component_plan.value("filament_volume_maps", std::string()) == "constant_zero") {
         const auto count = required_id(request, "active_material_count", "request");
@@ -954,6 +981,7 @@ std::string build_merged_model_settings(const std::vector<ModelInput> &models,
                                        const std::string &bed_type,
                                        const json &resources,
                                        std::size_t slot_count,
+                                       const std::string &manual_maps,
                                        bool emit_lumina_merged_slots_json) {
     tinyxml2::XMLDocument document;
     document.InsertEndChild(
@@ -1071,6 +1099,10 @@ std::string build_merged_model_settings(const std::vector<ModelInput> &models,
                 instance = next;
             }
             set_metadata(document, output_plate, "bed_type", bed_type);
+            if (!manual_maps.empty()) {
+                set_metadata(document, output_plate, "filament_map_mode", "Manual");
+                set_metadata(document, output_plate, "filament_maps", manual_maps);
+            }
             for (const char *field : {"thumbnail_file", "thumbnail_no_light_file",
                                       "top_file", "pick_file"}) {
                 if (resources.contains(field)) {
@@ -1645,13 +1677,14 @@ std::string compose_model_metadata(std::string_view project_json,
     const json project = detail::parse_json_object<MetadataComponentsError>(project_json, "project settings");
     const json request = detail::parse_json_object<MetadataComponentsError>(request_json, "metadata request");
     const json target = detail::parse_json_object<MetadataComponentsError>(target_json, "target data");
+    const json &contract = required_object(target, "target_contract", "target data");
+    const auto slicer_id = required_text(contract, "slicer_id", "target contract");
+    const auto manual_maps = manual_plate_maps(request, project, slicer_id);
     if (detail::prusa::is_target(target)) return detail::prusa::describe(project, request, target).dump();
     const json &slot_values = required_array(project, "filament_settings_id",
                                              "project settings");
     const std::size_t slot_count = slot_values.size();
     const json &dialect = required_object(target, "package_dialect", "target data");
-    const json &contract = required_object(target, "target_contract", "target data");
-    const auto slicer_id = required_text(contract, "slicer_id", "target contract");
     const auto version = required_text(contract, "application_version", "target contract");
     if (!detail::supports_target(slicer_id, version)) {
         invalid("unsupported metadata target slicer/version: " + slicer_id + "/" + version);
@@ -1707,11 +1740,11 @@ std::string compose_model_metadata(std::string_view project_json,
     const std::string model_xml = multi_model
                                       ? build_merged_model_settings(
                                             models, bed_type, model_resources, slot_count,
-                                            emit_lumina_merged_slots_json)
+                                            manual_maps, emit_lumina_merged_slots_json)
                                       : build_model_settings(
                                             request, models.front().parts, bed_type,
                                             bed_type_field, model_resources, component_plan,
-                                            slicer_id == "QIDIStudio");
+                                            manual_maps, slicer_id == "QIDIStudio");
     const std::string slice_xml = build_slice_info(dialect, request, component_plan);
 
     const std::string settings_media_type = required_text(

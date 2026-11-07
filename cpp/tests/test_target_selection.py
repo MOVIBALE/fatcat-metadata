@@ -109,6 +109,75 @@ def model_request(slicer, version):
 
 
 class TargetSelectionTests(unittest.TestCase):
+    def test_manual_plate_heads_follow_final_slots_in_single_and_merged_models(self):
+        slicer, version = TARGETS[0]
+        final = fatcat.compose_project_settings({
+            "project_source": "fatcat_native", "slicer_id": slicer, "application_version": version,
+            "machine_uid": "bambu-lab:x2d", "nozzle_uid": "nozzle:0.4mm",
+            "build_plate_uid": "plate:textured-pei", "filament_slot_mode": "compact",
+            "source_materials": [{"name": "PLA", "colour": colour} for colour in
+                                 ("#FF0000", "#FFFF00", "#0000FF", "#000000", "#FFFFFF")],
+        })["project_settings"]
+        request = model_request(slicer, version)
+
+        def contents(request):
+            return {p["role"]: p["content"] for p in
+                    fatcat.compose_model_metadata(final, request)["parts"] if "content" in p}
+
+        single = contents(request)
+        for merged in (False, True):
+            with self.subTest(merged=merged):
+                if merged:
+                    # The imported first plate already has a different manual map.
+                    source_xml = ET.fromstring(single["model_settings"])
+                    source_plate = source_xml.find("plate")
+                    source_plate.find("metadata[@key='filament_map_mode']").set("value", "Manual")
+                    ET.SubElement(source_plate, "metadata", key="filament_maps", value="2 1 1 1 1")
+                    request = {key: request[key] for key in
+                               ("slicer_id", "application_version", "plate", "component_inputs")}
+                    request["objects"] = [{
+                        "model_index": 1, "assembly_id": 8, "source_assembly_id": 7,
+                        "instance_id": "0", "identify_id": "1", "face_count": 20,
+                        "parts": [{"part_id": 12, "source_part_id": 11}],
+                        "source_slot_output_indexes": [4, 3, 2, 1, 0],
+                        "source_model_settings_xml": ET.tostring(source_xml, encoding="unicode"),
+                        "source_root_metadata": {"Application": f"BambuStudio-{version}"},
+                        "transform": [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                        "offset_mm": [0, 0, 0],
+                    }]
+                default = contents(request)
+                manual = contents({**request, "plate": {**request["plate"],
+                                                        "filament_maps": [1, 1, 1, 2, 1]}})
+                before = ET.fromstring(default.pop("model_settings"))
+                after = ET.fromstring(manual.pop("model_settings"))
+                self.assertEqual(manual, default)
+                for node, mode, maps in ((before, "Manual" if merged else "Auto For Flush",
+                                          ["2 1 1 1 1"] if merged else []),
+                                         (after, "Manual", ["1 1 1 2 1"])):
+                    self.assertEqual([e.get("value") for e in node.findall(
+                        "./plate/metadata[@key='filament_map_mode']")], [mode])
+                    self.assertEqual([e.get("value") for e in node.findall(
+                        "./plate/metadata[@key='filament_maps']")], maps)
+                self.assertEqual([e.attrib for e in before.findall(".//object//metadata")],
+                                 [e.attrib for e in after.findall(".//object//metadata")])
+
+    def test_manual_plate_heads_reject_invalid_maps_and_unsupported_targets(self):
+        request = model_request(*TARGETS[0])
+        final = project()  # One physical nozzle, four final material slots.
+        for maps in (None, "1 1 1 1", [], [1, 1], [1]*5, [0]*4, [-1]*4, [2]*4,
+                     ["1"]*4, [True]*4, [1.0]*4):
+            with self.subTest(maps=maps), self.assertRaisesRegex(ValueError, "filament_maps"):
+                fatcat.compose_model_metadata(final, {**request, "plate": {**request["plate"],
+                                                                          "filament_maps": maps}})
+        request["plate"]["filament_maps"] = [1]*4
+        with self.assertRaisesRegex(ValueError, "nozzle_diameter"):
+            fatcat.compose_model_metadata({k: v for k, v in final.items() if k != "nozzle_diameter"},
+                                          request)
+        for slicer, version in (TARGETS[1], ("PrusaSlicer", "3.0.0-alpha13")):
+            with self.subTest(slicer=slicer), self.assertRaisesRegex(ValueError, "filament_maps"):
+                fatcat.compose_model_metadata(final, {**request, "slicer_id": slicer,
+                                                      "application_version": version})
+
     def test_native_material_uses_each_packaged_target_without_clearing_unmanaged_tuning(self):
         for slicer, version in TARGETS:
             with self.subTest(target=slicer):
