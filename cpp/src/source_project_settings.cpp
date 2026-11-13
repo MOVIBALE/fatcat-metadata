@@ -84,6 +84,24 @@ json source_slot_colour(const json &colours, std::size_t index) {
                          colours.value(std::to_string(index), json("#C8C8C8")));
 }
 
+void complete_truncated_flush_pairs(json &project, const json &dialect) {
+    const auto defaults = dialect.find("flush_volume_defaults");
+    if (defaults == dialect.end() || defaults->at("load_unload_volumes").size() != 2) return;
+    const auto count = filament_count(project);
+    auto values = project.find("flush_volumes_vector");
+    if (values == project.end() || !values->is_array() ||
+        values->size() <= count || values->size() >= count * 2) return;
+
+    // Native PresetBundle grows load/unload pairs from the first source pair.
+    // Repair a truncated pair vector before grouping or reordering slots, while
+    // retaining existing values and the independently tuned flush matrix.
+    // One-value-per-slot legacy layouts remain valid; other shapes still fail.
+    const json first_pair = json::array({values->at(0), values->at(1)});
+    while (values->size() < count * 2) {
+        values->push_back(first_pair.at(values->size() % 2));
+    }
+}
+
 void rebuild_flush_matrix_from_vector(json &project, std::size_t count,
                                      std::size_t nozzle_count = 1) {
     const auto values = project.find("flush_volumes_vector");
@@ -689,6 +707,7 @@ json compose_source_project(const json &base, const json &request, const json &t
 json compose_source_project(const json &base, const json &request, const json &target,
                             const MaterialContext &fields) {
     json project = prepare_source_identity(base, request);
+    complete_truncated_flush_pairs(project, target.at("package_dialect"));
     const auto slicer = target.at("target_contract").at("slicer_id").get<std::string>();
     const auto &filament_snapshot = target.at("package_dialect").at("filament_snapshot");
     const auto difference_key = filament_snapshot.at("difference_list_key").get<std::string>();
