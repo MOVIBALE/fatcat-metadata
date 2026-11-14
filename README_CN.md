@@ -31,7 +31,10 @@ Snapmaker 的导入提示，以及 QIDI、Anycubic 的板型显示差异也如�
 
 ## 项目状态
 
-**0.1.5** 源码支持在 Bambu Studio 的单模型和合并打印盘上手动分配喷头。
+**0.1.6** 在投影耗材槽位前补齐导入模板末尾缺失的冲刷参数对。
+已有参数和自定义冲刷矩阵保留，缺失的尾项使用来源模板第一对参数作为默认值。
+
+**0.1.5** 支持在 Bambu Studio 的单模型和合并打印盘上手动分配喷头。
 用法见[模型元数据接口](docs/API.md)。
 
 **0.1.4** 更新六个切片软件的原生配置，新增 Bambu H3C，并在槽位重排与合并时
@@ -125,7 +128,7 @@ Apple 芯片 Mac，以及 glibc 2.28 以上的 Linux x86_64。Pip 自动选择�
 原生命令。下方选项避免在不支持的平台上意外触发源码编译；安装匹配的 wheel 不需要 C++ 编译器。
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.4
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.6
 fatcat --version
 fatcat catalog
 ```
@@ -144,8 +147,8 @@ Prusa 3 则直接采用应用导出的 schema，支持 222 个单值工艺字段
 显式工艺覆盖范围。“SDK 尚未支持”与“原生标准枚举词不接受”分别说明；清单外字段仍为待确认。
 这不代表所有切片软件专属功能都能相互转换。
 
-需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.4`，它额外安装
-Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.4/#files)
+需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.6`，它额外安装
+Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.6/#files)
 手动下载。此版不提供 Alpine/musl、Intel Mac、Windows ARM 或自由线程 Python 的
 预编译 wheel；源码构建需要相应工具链。构建与发布方式见[发行说明](docs/DISTRIBUTIONS.md)。
 

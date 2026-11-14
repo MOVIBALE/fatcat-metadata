@@ -38,7 +38,11 @@ print quality. A separate 3MF is composed for each target.
 
 ## Project status
 
-The **0.1.5** source supports manual Bambu Studio print-head assignments on
+Version **0.1.6** repairs truncated trailing flush pairs in imported templates
+before projecting material slots. It preserves supplied values and custom flush
+matrices. Missing tail values use the first source pair as defaults.
+
+Version **0.1.5** supports manual Bambu Studio print-head assignments on
 single and merged plates. See [the model metadata API](docs/API.md).
 
 Version **0.1.4** refreshes six native slicer snapshots, adds Bambu H3C, and
@@ -160,14 +164,14 @@ and native command. The option below prevents an unexpected source build on
 unsupported platforms; installing a matching wheel requires no C++ compiler.
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.4
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.6
 fatcat --version
 fatcat catalog
 ```
 
-For the complete 3MF examples, install `fatcat-metadata[examples]==0.1.4` instead.
+For the complete 3MF examples, install `fatcat-metadata[examples]==0.1.6` instead.
 The optional extra adds Neroued; the metadata core remains usable on its own.
-Downloads are also available on the [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.4/#files).
+Downloads are also available on the [PyPI files page](https://pypi.org/project/fatcat-metadata/0.1.6/#files).
 Alpine/musl, Intel Macs, Windows ARM and free-threaded Python have no prebuilt
 wheel in this release. Building from source requires a compatible toolchain.
 Read the [distribution guide](https://github.com/MOVIBALE/fatcat-metadata/blob/main/docs/DISTRIBUTIONS.md) for build and publishing details.
