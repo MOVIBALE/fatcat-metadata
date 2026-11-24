@@ -1,92 +1,44 @@
 # FatCat Metadata
 
 [![CI](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MOVIBALE/fatcat-metadata/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/fatcat-metadata)](https://pypi.org/project/fatcat-metadata/)
 [![License: AGPL-3.0-only](https://img.shields.io/badge/license-AGPL--3.0--only-blue.svg)](LICENSE)
 ![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)
 ![Python 3.12–3.14](https://img.shields.io/badge/Python-3.12%E2%80%933.14-blue.svg)
 
-**为模型生成器提供原生切片软件配置与 3MF 元数据。**
+[English](README.md) · [简体中文](README_CN.md) · [快速入门](docs/FIRST_USE.md) · [API 指南](docs/API.md) · [切片演示](docs/SHOWCASE.md) · [兼容说明](docs/COMPATIBILITY.md) · [Issues](https://github.com/MOVIBALE/fatcat-metadata/issues)
 
-FatCat Metadata 是一个 C++17 库，同时提供 Python 接口。它负责选择原生打印机、
-工艺和材料预设，合成最终工程配置，并生成 3MF 写包工具需要的元数据描述。
-任何模型生成器都可以独立接入，无需依赖 Lumina 或其他应用。
+**面向 3D 模型生成器的独立 C++17 与 Python 切片参数合成及 3MF 元数据库。**
 
-[English](README.md) · [简体中文](README_CN.md) · [API 指南](docs/API.md) · [示例](cpp/examples/python_neroued_consumer/) · [反馈问题](https://github.com/MOVIBALE/fatcat-metadata/issues)
+FatCat Metadata 基于随库内置的上游切片软件配置快照，解析机型、喷嘴、工艺和耗材继承关系，合并自定义工程参数与多耗材槽位，并生成 3MF 写包工具所需的目标切片器元数据结构。支持在 Python（`3.12`–`3.14`）或 C++17 项目中直接独立接入。
 
-**首次使用：**[安装、命令行查询与完整 3MF 示例](docs/FIRST_USE.md)。
-适用于新生成器接入、保留用户工程调校及合并材料槽位，均调用同一核心。
+## 同一份自定义工艺，输出到七款切片软件
 
-## 同一套工艺，放进七个切片软件
-
-使用同一个 20 mm 立方体和同一份工艺 JSON，分别导出八组工程：OrcaSlicer 的
-Bambu A1 mini/P1S、Bambu Studio 的 P1S，以及另外五款原生切片软件。
-随包示例自定义层高、线宽、壁数、顶部/底部层数、螺旋体填充及 Brim。
-下方每组都真实打开并执行了切片；动图串联真实 GUI 截图、放大局部并压缩等待时间。
+使用同一个 20 mm 测试方块与同一份工艺 JSON，分别导出覆盖七款切片软件的八组工程 —— OrcaSlicer（Bambu A1 mini 与 P1S）、Bambu Studio（P1S）、QIDI Studio、ElegooSlicer、Anycubic Slicer Next、Flash Studio 与 Snapmaker Orca —— 统一修改层高、线宽、壁数、顶底壳层数、螺旋体填充和 Brim 参数：
 
 ![自定义工艺元数据在七款原生切片软件中打开与切片](docs/images/custom-process-slicers.gif)
 
-[复现命令与实际观察结果](docs/SHOWCASE.md)。八组代表工程均切片成功；Bambu、
-Snapmaker 的导入提示，以及 QIDI、Anycubic 的板型显示差异也如实记录。
-结果仅覆盖所列组合，不代表所有机型或实体打印质量。每个目标分别生成 3MF。
+复现全部八组导出的命令及各切片软件打开结果见 [docs/SHOWCASE.md](docs/SHOWCASE.md)。
 
-## 项目状态
-
-**0.1.6** 在投影耗材槽位前补齐导入模板末尾缺失的冲刷参数对。
-已有参数和自定义冲刷矩阵保留，缺失的尾项使用来源模板第一对参数作为默认值。
-
-**0.1.5** 支持在 Bambu Studio 的单模型和合并打印盘上手动分配喷头。
-用法见[模型元数据接口](docs/API.md)。
-
-**0.1.4** 更新六个切片软件的原生配置，新增 Bambu H3C，并在槽位重排与合并时
-完整保留原生材料参数组。
-
-**0.1.3** 修复 Windows 原生数据的长路径读取，并新增
-`native_project_source` 精确机型/喷嘴查询，避免加载无关机型配置。
-可选写包集成使用官方 Neroued 0.4.2，包含 Production 布局和 Windows 中文/长路径修复。
-
-**0.1.2** 补齐所选原生耗材继承的 ID，包括 Bambu A2L 启动 G-code 引用的
-耗材 ID 数组。材料预检与最终组装共用预设选择和打印板兼容规则。
-见[材料选择接口](docs/API.md#material-selection-before-composition)。
-可用下方命令安装匹配的预编译 wheel。源码用户应固定准确提交；已发布版本不会被
-后续开发代码同名替换。
-
-| 语言 | 当前提供的接口 |
-| --- | --- |
-| C++17 | 独立静态库、公开头文件和可安装的 CMake SDK，不需要 Python。 |
-| Python 3.12–3.14 | 调用同一份 C++ 核心的编译扩展，提供字典/JSON 接口及编辑器类型提示。 |
-| 其他语言 | 尚未提供 C ABI 或对应语言封装，需要增加与 C++ 核心对接的接口。 |
-
-## 提供的能力
-
-- 按准确的切片软件版本、打印机、喷嘴、材料和打印板选择原生预设。
-- 从随库安装的原始 JSON 快照中解析预设继承和包含关系。
-- 合成原生工程配置、用户提供的工程配置，以及多个来源的材料槽位。
-- 保留来源材料身份、温度、流量、未知工程字段及真实来源信息。
-- 生成各切片软件需要的元数据部件、内容类型、关系和根模型描述。
-- 提供可选的 Neroued 适配，以及独立 Python/C++ 示例。
-
-## 如何接入生成器
+## 在模型生成器中的位置
 
 ```mermaid
 flowchart LR
-    G[你的生成器] -->|目标、材料和模型事实| F[FatCat Metadata]
-    G -->|网格、对象 ID 和摆放| W[3MF 写包工具]
-    F -->|最终配置和元数据描述| W
-    W --> P[3MF 工程]
+    G["你的模型生成器"] -->|"目标切片器、耗材与模型参数"| F["FatCat Metadata"]
+    G -->|"三维网格、对象 ID 与盘面摆放"| W["3MF 写包工具"]
+    F -->|"合成后的工程配置与元数据清单"| W
+    W --> P["3MF 工程文件"]
 ```
 
-生成器负责几何、材料选择与摆放；FatCat 负责预设选择和元数据合成；
-写包工具负责组装并写出文件。元数据使用写包工具真实创建的对象 ID 和材料索引，
-图片等二进制资源由调用方提供。
+- **你的模型生成器**负责生成几何网格、分配材质索引并安排打印盘面位置。
+- **FatCat Metadata** 负责匹配原生预设、展开继承链、合并工艺覆盖与耗材槽位，并给出各切片器所需的元数据部件、内容类型、关系表与根模型属性描述。
+- **3MF 写包工具**负责打包写出最终的 `.3mf` 文件（Python 环境可选配内置的 `neroued-3mf==0.4.2` 适配器，也可对接任意自定义 Python 或 C++ 写包实现）。
 
-Neroued 是可选集成，FatCat 核心不依赖它运行。其他写包工具也可以采用返回的
-元数据描述。FatCat 本身不执行切片，也不发送打印任务。
+## 支持的切片软件版本
 
-## 支持的切片软件快照
+库内已打包对应版本的离线原生 JSON 配置快照，查询目录和合成工程无需本机安装切片软件：
 
-当前随库安装的是以下准确版本：
-
-| 应用 | `slicer_id` | 版本 |
+| 切片软件 | `slicer_id` | 内置快照版本 |
 | --- | --- | --- |
 | Bambu Studio | `BambuStudio` | `02.09.01.70` |
 | OrcaSlicer | `OrcaSlicer` | `2.4.2` |
@@ -97,75 +49,66 @@ Neroued 是可选集成，FatCat 核心不依赖它运行。其他写包工具�
 | Snapmaker Orca | `SnapmakerOrca` | `2.4.1` |
 | PrusaSlicer（预览版） | `PrusaSlicer` | `3.0.0-alpha13` |
 
-[目标清单](compatibility/current-src/translations/supported-targets.json)是版本范围的权威来源。
-未知目标和不兼容的选择会明确拒绝。支持某款软件不代表其所有机型、喷嘴、材料和打印板
-组合都可用；具体选择应查询该软件的原生来源目录。
+- **机型与板型目录：** 查看 [`supported-targets.json`](compatibility/current-src/translations/supported-targets.json) 与 [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) 了解具体支持的机型、喷嘴、耗材与打印板组合。
+- **跨切片器工艺字段：** 标准化工艺参数表见 [docs/PROCESS_SETTINGS.md](docs/PROCESS_SETTINGS.md)，也可通过命令行 `fatcat fields --slicer <slicer_id>` 或 `fatcat_metadata.list_native_fields()` 查询。
+- **PrusaSlicer 3 预览版：** 支持为 MK4S、CORE One、MINI、MMU3 与 XL 多喷头等 32 组硬件配置生成 `Metadata/PrusaSlicer3_project.json`，详见 [docs/PRUSA.md](docs/PRUSA.md)。
 
-少数组合采用明确记录的历史配置。例如 OrcaSlicer 2.4.2 的 U1 0.4 mm 使用保留的
-2.2.4 工艺和纹理板材料，返回结果会标明实际版本。详见[兼容说明](docs/COMPATIBILITY.md)。
+## 安装
 
-### PrusaSlicer 3 预览版
+### Python（PyPI）
 
-FatCat 使用 Prusa 原生配置接口收集数据，生成其独立的项目 JSON 格式。
-目录包含 32 个默认喷嘴 FFF 硬件组合，包括 MK4S、CORE One、MINI、MMU 和 XL。
-MMU 的换料槽与 XL 的独立工具分别保留原生结构；不会按颜色数量虚构喷头。
-
-```bash
-fatcat catalog --slicer PrusaSlicer
-python -m fatcat_metadata_examples.prusa --machine prusa:mk4s --output prusa.3mf
-```
-
-完整示例需要可选的 Neroued 写包库。MK4S、MK4S＋MMU3、XL 五头三个样本已经
-在 alpha12 界面中真实打开并切片，包含改过的工艺、温度、流量和四色分层。
-这不代表目录中的每个组合或实体打印都已验收。详见 [Prusa 使用指南](docs/PRUSA.md)。
-
-## Python 快速上手
-
-### 从 PyPI 安装
-
-使用 64 位 CPython 3.12、3.13 或 3.14，支持 Windows AMD64、macOS 14 以上的
-Apple 芯片 Mac，以及 glibc 2.28 以上的 Linux x86_64。Pip 自动选择已编译扩展和
-原生命令。下方选项避免在不支持的平台上意外触发源码编译；安装匹配的 wheel 不需要 C++ 编译器。
+已为 Windows x64、macOS 14+（Apple Silicon）以及 Linux x86-64（glibc 2.28+）上的 64 位 CPython `3.12`、`3.13`、`3.14` 发布预编译 wheel：
 
 ```bash
 python -m pip install --only-binary=:all: fatcat-metadata==0.1.6
-fatcat --version
-fatcat catalog
 ```
 
-11 月更新新增 H3C 的四种原生喷嘴配置，并更新六个切片器目标。
-版本核对包含软件自身的更新通道，详见[本次记录](docs/SLICER_REFRESH_20261106.md)。
-Orca 2.5.0-rc 是候选版，稳定目标仍为 2.4.2。Anycubic 2.0.0.6 已通过软件自身
-更新器取得，已导入原生配置和默认值，并完成 Kobra X 示例的实际切片。
-Prusa 3.0.0-alpha13 是明确支持的预览版；它的工程格式独立于 Prusa 2.x。
-本轮更新包含在 0.1.4 发行中。
-
-[工艺参数契约](docs/PROCESS_SETTINGS.md)可查询原有七个目标的 38 个字段及其范围、枚举与别名。
-Prusa 3 则直接采用应用导出的 schema，支持 222 个单值工艺字段与 65 个材料字段。
-已知等价项自动转换，速度使用目标的原生单值或数组格式；未知或不支持的输入明确报错。
-通过 `fatcat fields --slicer BambuStudio` 或 Python `list_native_fields` 可查原生证据与
-显式工艺覆盖范围。“SDK 尚未支持”与“原生标准枚举词不接受”分别说明；清单外字段仍为待确认。
-这不代表所有切片软件专属功能都能相互转换。
-
-需要完整 3MF 示例时，改为安装 `fatcat-metadata[examples]==0.1.6`，它额外安装
-Neroued 写包库；元数据核心可独立使用。也可从 [PyPI 文件页](https://pypi.org/project/fatcat-metadata/0.1.6/#files)
-手动下载。此版不提供 Alpine/musl、Intel Mac、Windows ARM 或自由线程 Python 的
-预编译 wheel；源码构建需要相应工具链。构建与发布方式见[发行说明](docs/DISTRIBUTIONS.md)。
-
-[随包立方体示例](docs/FIRST_USE.md)已在指定版本 Bambu Studio 中真实打开和切片：
-
-![安装后的示例、A1 mini 配置与真实切片预览](docs/images/first-use-preview.png)
-
-截图展示一个示例的配置和切片走线，不代表所有机型组合或实体打印质量全部验收。
-
-无需安装切片软件。可先查询参数候选，再合成工程：
+如需一并安装可选的 `neroued-3mf` 写包库以运行完整 3MF 生成示例：
 
 ```bash
+python -m pip install "fatcat-metadata[examples]==0.1.6"
+```
+
+在其他平台从源码编译安装（需要 C++17 编译器、CMake 3.18+ 与 Python 3.12–3.14）：
+
+```bash
+git clone https://github.com/MOVIBALE/fatcat-metadata.git
+cd fatcat-metadata
+python -m pip install .
+```
+
+### 独立 C++17 SDK
+
+无需 Python 即可单独编译并安装 C++17 静态库与 `fatcat` 命令行工具：
+
+```bash
+cmake -S cpp -B build-sdk -DCMAKE_BUILD_TYPE=Release \
+  -DFATCAT_BUILD_PYTHON=OFF -DFATCAT_BUILD_TESTS=OFF -DFATCAT_INSTALL_CPP=ON
+cmake --build build-sdk --config Release --parallel
+cmake --install build-sdk --config Release --prefix /absolute/path/to/fatcat-sdk
+```
+
+在下游 CMake 工程中设置 `CMAKE_PREFIX_PATH` 指向安装目录（并在调用合成接口时传入 `FatCatMetadata_DATA_DIR`）：
+
+```cmake
+find_package(FatCatMetadata 0.1.0 CONFIG REQUIRED)
+target_link_libraries(my_generator PRIVATE FatCatMetadata::Core)
+```
+
+C++ 编译参数与下游接入示例详见 [cpp/README.md](cpp/README.md) 与 [cpp/examples/out_of_tree_consumer/](cpp/examples/out_of_tree_consumer/)。
+
+## 快速上手
+
+### 1. 使用命令行查询机型、打印板与可选耗材
+
+```bash
+fatcat --version
+fatcat catalog
 fatcat choices --slicer BambuStudio --application-version 02.09.01.70 \
   --machine bambu-lab:a1-mini --nozzle nozzle:0.4mm --plate plate:textured-pei
 ```
 
-### 合成原生工程配置
+### 2. 在 Python 中合成工程配置
 
 ```python
 import fatcat_metadata as fatcat
@@ -181,129 +124,54 @@ result = fatcat.compose_project_settings({
         {"name": "Bambu PLA Basic", "material_type": "PLA Basic", "colour": "#E63946"}
     ],
 })
+
 project = result["project_settings"]
 ```
 
-将最终配置字典和真实模型信息传给 `compose_model_metadata(project, model_request)`，
-即可获得供写包工具使用的描述。使用用户工程时，调用
-`compose_project_settings(source_project, request)`。原有 JSON 字符串调用方式继续支持。
-两类请求的完整说明见 [API 指南](docs/API.md)。
+接着将 `project` 与真实模型的对象 ID、耗材槽位映射传给 `fatcat.compose_model_metadata(project, model_request)` 即可拿到写包所需的元数据描述（基于用户导入模板合成时可调用 `compose_project_settings(source_project, request)`）。
 
-### 写出完整的示例 3MF
+### 3. 一键生成可直接切片的 `.3mf` 示例
 
-安装可选写包工具，然后运行随 wheel 提供的示例，不需要克隆源码：
+安装 `fatcat-metadata[examples]` 后，可直接运行随包附带的最小示例：
 
 ```bash
-python -m pip install 'neroued-3mf==0.4.2'
 python -m fatcat_metadata_examples.minimal --output fatcat-cube.3mf
 ```
 
-[最小示例](cpp/examples/python_neroued_consumer/minimal.py)展示配置合成、真实几何和对象 ID
-创建、元数据应用及一次写包，采用 Neroued 的公开核心装配方式。
-[完整指南](cpp/examples/python_neroued_consumer/README.md)包含用户来源、U1 兼容案例，
-以及可选外部 production 模型布局对写包工具的要求。
+<p align="center">
+  <img src="docs/images/first-use-preview.png" width="820" alt="生成的 fatcat-cube.3mf 在 Bambu Studio 中以 A1 mini 配置打开并切片">
+</p>
 
-### 从源码构建
+分步操作说明见 [docs/FIRST_USE.md](docs/FIRST_USE.md)，请求与返回字段参考见 [docs/API.md](docs/API.md)。
 
-源码构建需要 C++17 编译工具链、CMake 3.18+ 和 Python 3.12–3.14。
-系统没有合适的 JSON/XML 依赖时，会获取固定版本源码。
-正式接入时，请先切换到已审核的完整提交 SHA，便于复现。
+## 文档与仓库目录
 
-```bash
-git clone https://github.com/MOVIBALE/fatcat-metadata.git
-cd fatcat-metadata
-python -m pip install .
-```
-
-未提供匹配产物或下载已过期时，可使用源码构建。
-
-可查看实际安装的版本与准确构建来源：
-
-```python
-import fatcat_metadata as fatcat
-
-print(fatcat.__version__)
-print(fatcat.__source_revision__)
-print(fatcat.__source_dirty__)
-```
-
-源码版本记录实际构建目录的提交，PR CI 可能使用合成的合并提交；
-没有 Git 信息的源码包默认返回 `"unknown"` 和 `None`；打包工作流可传入构建来源。
-具体规则见[发行文件准备](docs/DISTRIBUTIONS.md)。
-这些字段描述库的构建，与所选原生预设的来源信息相互独立。
-
-## 独立 C++ SDK
-
-C++ 核心可以在没有 Python 的情况下构建和安装。
-请将以下安装前缀替换为本机的绝对路径：
-
-```bash
-cmake -S cpp -B build-sdk -DCMAKE_BUILD_TYPE=Release \
-  -DFATCAT_BUILD_PYTHON=OFF -DFATCAT_BUILD_TESTS=OFF -DFATCAT_INSTALL_CPP=ON
-cmake --build build-sdk --config Release --parallel
-cmake --install build-sdk --config Release --prefix /absolute/path/to/fatcat-sdk
-```
-
-在自己的 CMake 项目中通过 `CMAKE_PREFIX_PATH` 指定 SDK 位置，
-为已定义的 `my_generator` 目标查找和链接库：
-
-```cmake
-find_package(FatCatMetadata 0.1.0 CONFIG REQUIRED)
-target_link_libraries(my_generator PRIVATE FatCatMetadata::Core)
-```
-
-向公开合成接口传入安装后的 `FatCatMetadata_DATA_DIR`，内部配置路径由库负责解析。
-构建 SDK 时采用的系统 JSON/XML 包，在消费者环境中也需要可用。
-Python wheel 不包含这套 C++ 开发 SDK。
-完整步骤见 [C++ 指南](cpp/README.md)和[外部 CMake 消费者](cpp/examples/out_of_tree_consumer/)。
-
-## 配置数据与验证范围
-
-原生配置是从表中所列软件版本收集的 JSON 快照。日常调用读取随库安装的数据，
-不会实时查询本机切片软件或联网下载预设。上游文件保留原始内容与继承关系；
-库维护的目标转换规则和来源索引与这些原始预设分别保存。
-
-CI 覆盖 Windows、Linux、macOS 的 C++ Debug/Release、Python wheel 安装、
-配置合成、独立消费者及生成包结构。真实 GUI 打开、切片和实体打印行为需要单独验收。
-[验证范围](docs/VALIDATION.md)说明各类检查分别能够证明什么。
-
-## 文档与目录
-
-| 指南 | 内容 |
+| 文档 | 说明 |
 | --- | --- |
-| [API](docs/API.md) | 配置/元数据请求、字典与 JSON 调用、构建追溯。 |
-| [首次使用](docs/FIRST_USE.md) | 安装后的命令、参数查询和完整立方体示例。 |
-| [发行准备](docs/DISTRIBUTIONS.md) | 固定版本、来源和哈希清单；不自动发布。 |
-| [Python 示例](cpp/examples/python_neroued_consumer/README.md) | 完整独立生成器及可选写包集成。 |
-| [C++ SDK](cpp/README.md) | 源码构建、安装和下游 CMake 接入。 |
-| [兼容说明](docs/COMPATIBILITY.md) | 历史来源记录及不可用组合。 |
-| [维护指南](docs/MAINTAINERS.md) | 更新配置快照、目标绑定和来源记录。 |
-| [验证范围](docs/VALIDATION.md) | 自动检查与独立 GUI 验收。 |
+| [快速入门（`docs/FIRST_USE.md`）](docs/FIRST_USE.md) | 命令行查询、最小方块生成器与完整 3MF 导出流程 |
+| [API 指南（`docs/API.md`）](docs/API.md) | 工程配置合成、模型元数据、耗材预检与构建来源查询接口 |
+| [切片演示（`docs/SHOWCASE.md`）](docs/SHOWCASE.md) | 七款切片软件自定义工艺导出与复现记录 |
+| [工艺参数（`docs/PROCESS_SETTINGS.md`）](docs/PROCESS_SETTINGS.md) | 支持的跨切片器工艺字段、类型与别名映射 |
+| [兼容说明（`docs/COMPATIBILITY.md`）](docs/COMPATIBILITY.md) | 配置快照范围与少量历史版本回退说明 |
+| [PrusaSlicer 3（`docs/PRUSA.md`）](docs/PRUSA.md) | PrusaSlicer 3.0 预览版硬件目录与多喷头/MMU 示例 |
+| [C++ SDK（`cpp/README.md`）](cpp/README.md) | CMake 构建选项、原生测试与外部 C++ 工程接入 |
+| [Python 接入示例](cpp/examples/python_neroued_consumer/README.md) | 独立 Python 生成器与 Neroued 3MF 写包示例 |
+| [发行说明（`docs/DISTRIBUTIONS.md`）](docs/DISTRIBUTIONS.md) | Wheel 与 C++ SDK 打包、构建溯源字段与发布流程 |
+| [验证范围（`docs/VALIDATION.md`）](docs/VALIDATION.md) 与 [维护指南（`docs/MAINTAINERS.md`）](docs/MAINTAINERS.md) | CI 检查覆盖面及上游切片器快照同步流程 |
 
 ```text
-cpp/            C++ 核心、公开头文件、Python 绑定和示例
-python/         可选 Neroued 适配和 Python 类型签名
-compatibility/  原生配置快照、来源索引和目标转换规则
-scripts/        来源更新与安装包检查工具
-docs/           API、兼容、维护和验证指南
-licenses/       第三方许可证文本及来源清单
+cpp/            C++17 核心库、公开头文件、命令行工具、pybind11 绑定与示例
+python/         Python 包入口、类型桩与可选 Neroued 写包适配
+compatibility/  内置切片软件配置快照、来源索引与目标转换规则
+scripts/        配置快照更新与安装包检查脚本
+docs/           使用指南、API 文档、兼容说明与演示图片
+licenses/       第三方配置文件许可证文本与来源清单
 ```
 
 ## 参与贡献
 
-通过 [Issues](https://github.com/MOVIBALE/fatcat-metadata/issues)反馈问题或提出功能建议，
-通过面向 `main` 的 PR 提交修改。反馈时请提供库的源码版本、操作系统、准确的切片软件版本、
-打印机/喷嘴/材料/打印板选择和最小输入。分享复现材料前，请移除私有几何和客户数据。
-
-修改应保持公开接口兼容，新辅助函数应有实际消费者，并说明行为变化。
-配置更新需要准确的上游来源和许可记录，请遵循[维护指南](docs/MAINTAINERS.md)。
-现有构建与检查命令在 [C++ 指南](cpp/README.md)和 [CI 工作流](.github/workflows/ci.yml)中。
-GUI 验收应单独记录实际应用版本和结果。
+欢迎通过 [GitHub Issues](https://github.com/MOVIBALE/fatcat-metadata/issues) 反馈问题或向 `main` 分支提交 Pull Request。提交问题时请附上 `fatcat --version` 输出、操作系统、目标 `slicer_id` 及版本号、机型/喷嘴/耗材/打印板 ID 和最小复现输入。更新内置切片软件配置快照请参考 [docs/MAINTAINERS.md](docs/MAINTAINERS.md)。
 
 ## 许可证
 
-FatCat 原创代码采用 **AGPL-3.0-only**，详见 [LICENSE](LICENSE)。
-第三方配置数据和依赖保留各自的许可证，来源和声明记录在 [NOTICE.md](NOTICE.md)与
-[第三方清单](licenses/third-party/manifest.json)中。
-[COPYRIGHT.md](COPYRIGHT.md)说明原创代码的版权归属和另行授权条款。
-Neroued 是独立项目，适用其自身条款。
+FatCat Metadata 原创代码采用 **AGPL-3.0-only** 许可证，详见 [LICENSE](LICENSE) 与 [COPYRIGHT.md](COPYRIGHT.md)。随库打包的上游切片软件预设与第三方依赖保留各自许可，来源与声明记录在 [NOTICE.md](NOTICE.md) 和 [`licenses/third-party/manifest.json`](licenses/third-party/manifest.json) 中。
