@@ -12,8 +12,6 @@ bool native_type_matches_request(const std::string &requested_type,
                                  const std::string &native_type,
                                  const std::string &profile_name,
                                  const std::string &material_name);
-bool material_compatible_with_machine(const nlohmann::json &profile,
-                                     const std::string &machine_name);
 bool material_supports_plate(const nlohmann::json &profile,
                              const nlohmann::json &plate);
 

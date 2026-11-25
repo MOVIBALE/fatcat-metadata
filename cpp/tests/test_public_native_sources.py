@@ -170,7 +170,9 @@ class PublicNativeSourceTests(unittest.TestCase):
                 )
 
                 process_options = source["print_profile_options"]
-                process_name = source["default_print_profile_name"]
+                # The index keeps upstream preferences; the public catalogue
+                # resolves an effective default compatible with this machine.
+                process_name = catalog_row["default_print_profile_name"]
                 process = next(item for item in process_options if item["name"] == process_name)
                 self.assertTrue((self.source_root / process["path"]).is_file())
                 plate_binding = next(
@@ -261,6 +263,10 @@ class PublicNativeSourceTests(unittest.TestCase):
                     'hot_plate_temp', 'hot_plate_temp_initial_layer',
                     'nozzle_temperature', 'nozzle_temperature_initial_layer', 'filament_flow_ratio'):
             self.assertEqual(project[key], retained[key][:1], key)
+        request['native_print_profile_name'] = source['compatibility_project']['source_profile_name']
+        explicit = fatcat.compose_project_settings(request)
+        self.assertEqual(explicit['project_settings'], project)
+        self.assertTrue(fatcat.resolve_project_materials(request)['ready'])
         request['native_print_profile_name'] = 'Invented native default'
         with self.assertRaisesRegex(ValueError, 'recorded compatibility'):
             fatcat.compose_project_settings(json.dumps(request))

@@ -58,9 +58,9 @@ Bundled offline JSON profile snapshots run without requiring a local slicer inst
 Prebuilt wheels cover 64-bit CPython `3.12`–`3.14` on Windows x64, macOS 14+ (Apple Silicon), and Linux x86-64 (glibc 2.28+):
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.6
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.7
 # Or with the optional neroued-3mf writer for runnable 3MF examples:
-python -m pip install "fatcat-metadata[examples]==0.1.6"
+python -m pip install "fatcat-metadata[examples]==0.1.7"
 ```
 
 To build from source on other platforms (requires a C++17 compiler, CMake 3.18+, and Python 3.12–3.14):

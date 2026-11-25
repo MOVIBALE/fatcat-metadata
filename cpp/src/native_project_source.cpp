@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <map>
@@ -18,6 +19,7 @@
 #include "filament_projection.h"
 #include "filesystem_path.h"
 #include "native_material_selection.h"
+#include "native_preset_compatibility.h"
 #include "prusa_project.h"
 #include "supported_targets.h"
 #include "material_context.h"
@@ -138,6 +140,28 @@ public:
 
     const json &index() const { return index_; }
 
+    const json &field_definitions(const json &source) {
+        const auto identity = source.at("slicer_id").get<std::string>() + ":" +
+                              source.at("application_version").get<std::string>();
+        const auto found = fields_.find(identity);
+        if (found != fields_.end()) return found->second;
+        const auto root = data_root_.parent_path();
+        const auto targets = read_json(safe_path(root, "translations/supported-targets.json"),
+                                       "supported targets");
+        for (const auto &target : targets.at("targets")) {
+            if (target.at("slicer_id") != source.at("slicer_id") ||
+                target.at("application_version") != source.at("application_version")) continue;
+            const auto inventory = read_json(safe_path(root, "translations/native-fields/" +
+                required_string(target, "filename", "target")), "native field inventory");
+            if (inventory.at("slicer_id") != source.at("slicer_id") ||
+                inventory.at("application_version") != source.at("application_version")) {
+                invalid("native field inventory identity differs from selected source");
+            }
+            return fields_.emplace(identity, inventory.at("fields")).first->second;
+        }
+        invalid("native field inventory is unavailable for selected source");
+    }
+
     const json &read(const std::string &profile_path) {
         const auto found = profiles_.find(profile_path);
         if (found != profiles_.end()) return found->second;
@@ -156,6 +180,7 @@ private:
     std::filesystem::path data_root_;
     json index_;
     std::map<std::string, json> profiles_;
+    std::map<std::string, json> fields_;
 
     json resolve(const std::string &profile_path,
                  std::vector<std::string> &ancestry) {
@@ -205,6 +230,9 @@ private:
     }
 };
 
+json process_choices(const json &source, NativeProfileCatalog &catalog);
+std::string default_process_name(const json &source, const json &choices);
+
 json public_source_record(const json &source, NativeProfileCatalog &catalog) {
     const auto machine_path = required_string(
         source, "machine_profile_path", "native source");
@@ -219,8 +247,7 @@ json public_source_record(const json &source, NativeProfileCatalog &catalog) {
         {"source_machine_profile_name", required_string(
             source, "source_machine_profile_name", "native source")},
         {"availability", source.value("availability", json::object())},
-        {"default_print_profile_name", source.value(
-            "default_print_profile_name", std::string())},
+        {"default_print_profile_name", default_process_name(source, process_choices(source, catalog))},
         {"hardware_settings", std::move(hardware)},
         {"compatibility_project", source.value("compatibility_project", json())},
     };
@@ -556,7 +583,7 @@ const json &find_profile_option(const json &options, const std::string &name,
     return *match;
 }
 
-using detail::material_compatible_with_machine;
+using detail::preset_compatible_with_printer;
 using detail::material_supports_plate;
 using detail::native_profile_material_type;
 using detail::native_type_matches_request;
@@ -601,17 +628,33 @@ json retained_material_choices(const json &project, const json &target,
 }
 
 
-std::string source_process_name(const json &request, const json &source) {
+std::string source_process_name(const json &request, const json &source,
+                                NativeProfileCatalog &catalog) {
+    const auto choices = process_choices(source, catalog);
     const auto requested = request.find("native_print_profile_name");
     if (requested != request.end()) {
         if (!requested->is_string() || requested->get<std::string>().empty()) {
             invalid("native_print_profile_name must be non-empty text");
         }
-        return requested->get<std::string>();
+        if (source.at("availability").value("process", std::string()) != "available" &&
+            source.contains("compatibility_project")) {
+            // Retained projects have their own exact provenance check below;
+            // their recorded process is not an indexed native preset file.
+            return requested->get<std::string>();
+        }
+        for (const auto &choice : choices) {
+            if (choice.at("name") != *requested) continue;
+            if (!choice.at("available").get<bool>()) {
+                invalid("native process '" + requested->get<std::string>() + "': " +
+                        choice.at("unavailable_reason").get<std::string>());
+            }
+            return requested->get<std::string>();
+        }
+        invalid("native process source has no exact native profile named '" +
+                requested->get<std::string>() + "'");
     }
-    const auto default_name = source.find("default_print_profile_name");
-    if (default_name == source.end() || !default_name->is_string() ||
-        default_name->get<std::string>().empty()) {
+    const auto default_name = default_process_name(source, choices);
+    if (default_name.empty()) {
         if (source.contains("compatibility_project")) {
             return required_string(source.at("compatibility_project"),
                                    "source_profile_name", "compatibility source");
@@ -619,7 +662,7 @@ std::string source_process_name(const json &request, const json &source) {
         invalid("built-in source has no unique native default process; select exact "
                 "native_print_profile_name from print_profile_options");
     }
-    return default_name->get<std::string>();
+    return default_name;
 }
 
 void require_target_machine_binding(const json &canonical, const json &target,
@@ -738,7 +781,7 @@ json compose_builtin_project(const json &input_request, const json &canonical,
     if (materials.empty()) invalid("source_materials must contain at least one selected material");
     const bool per_material_selection = std::any_of(materials.begin(), materials.end(),
         [](const json &material) { return material.contains("native_filament_profile_name"); });
-    const std::string process_name = source_process_name(input_request, source);
+    const std::string process_name = source_process_name(input_request, source, catalog);
     const bool compatibility = availability.value("process", std::string()) != "available" &&
                                source.contains("compatibility_project");
     bool retained_materials = compatibility &&
@@ -973,6 +1016,8 @@ bool contains_plate(const json &plates, const json &uid) {
 }
 
 json process_choices(const json &source, NativeProfileCatalog &catalog) {
+    const auto machine = catalog.resolve(required_string(source, "machine_profile_path", "native source"));
+    const auto name = required_string(source, "source_machine_profile_name", "native source");
     json choices = json::array();
     for (const auto &option : profile_options(source, "print_profile_options", "native source")) {
         json choice = {{"name", option.at("name")}, {"available", option.contains("path")}};
@@ -980,6 +1025,16 @@ json process_choices(const json &source, NativeProfileCatalog &catalog) {
             try {
                 const auto profile = catalog.resolve(required_string(option, "path", "native process"));
                 if (profile.contains("layer_height")) choice["layer_height"] = profile.at("layer_height");
+                const auto profile_name = option.at("name").get<std::string>();
+                auto alias = profile.value("alias", profile_name.substr(0, profile_name.find('@')));
+                const auto last = alias.find_last_not_of(" \t");
+                alias = last == std::string::npos ? "" : alias.substr(0, last + 1);
+                choice["alias"] = alias;
+                choice["available"] = preset_compatible_with_printer(
+                    profile, machine, name, catalog.field_definitions(source));
+                if (!choice["available"].get<bool>()) {
+                    choice["unavailable_reason"] = "native process profile is not compatible with '" + name + "'";
+                }
             } catch (const ProjectSettingsError &error) {
                 choice["available"] = false;
                 choice["unavailable_reason"] = error.what();
@@ -992,9 +1047,47 @@ json process_choices(const json &source, NativeProfileCatalog &catalog) {
     return choices;
 }
 
+std::optional<double> native_layer_height(const json &value) {
+    const auto numeric = value.is_string()
+        ? json::parse(value.get<std::string>(), nullptr, false) : value;
+    if (!numeric.is_number()) return std::nullopt;
+    const double height = numeric.get<double>();
+    return std::isfinite(height) ? std::optional<double>(height) : std::nullopt;
+}
+
+std::string default_process_name(const json &source, const json &choices) {
+    const auto preferred = source.value("default_print_profile_name", std::string());
+    const json *previous = nullptr;
+    for (const auto &choice : choices) {
+        if (choice.at("name") != preferred) continue;
+        if (choice.at("available").get<bool>()) return preferred;
+        previous = &choice;
+    }
+    // Match the native preference order after compatibility filtering: preset
+    // alias, layer height, then the first compatible name in lexical order.
+    // The incompatible preferred preset contributes identity only, never data.
+    const auto alias = previous ? previous->value("alias", std::string()) : std::string();
+    const auto height = native_layer_height(previous ? previous->value("layer_height", json()) : json());
+    std::string selected;
+    int best = -1;
+    for (const auto &choice : choices) {
+        if (!choice.at("available").get<bool>()) continue;
+        const auto name = choice.at("name").get<std::string>();
+        const auto candidate_height = native_layer_height(choice.value("layer_height", json()));
+        const int rank = (!alias.empty() && choice.value("alias", std::string()) == alias ? 2 : 0) +
+            (height && candidate_height && std::abs(*height - *candidate_height) < 0.0005 ? 1 : 0);
+        if (rank > best || (rank == best && name < selected)) {
+            selected = name;
+            best = rank;
+        }
+    }
+    return selected;
+}
+
 json material_choices(const json &source, const json &target, const json &plates,
                       const json &selected_plate, NativeProfileCatalog &catalog,
                       const std::string &machine_name) {
+    const auto machine = catalog.resolve(required_string(source, "machine_profile_path", "native source"));
     json choices = json::array();
     for (const auto &option : profile_options(source, "filament_profile_options", "native source")) {
         const auto name = required_string(option, "name", "native material");
@@ -1011,7 +1104,8 @@ json material_choices(const json &source, const json &target, const json &plates
         try {
             profile = catalog.resolve(required_string(option, "path", "native material"));
             type = native_profile_material_type(profile, name);
-            machine_compatible = material_compatible_with_machine(profile, machine_name);
+            machine_compatible = preset_compatible_with_printer(
+                profile, machine, machine_name, catalog.field_definitions(source));
         } catch (const ProjectSettingsError &error) {
             choice["unavailable_reason"] = error.what();
             choice["source_unavailable"] = true;
@@ -1147,7 +1241,14 @@ std::string native_project_options(std::string_view request_json,
             selected_plate = detail::resolve_source_plate(json::object(), request, target);
         }
         auto processes = process_choices(source, catalog);
+        const auto default_process = default_process_name(source, processes);
         auto materials = material_choices(source, target, plates, selected_plate, catalog, machine_name);
+        json default_materials = json::array();
+        for (const auto &name : source.value("default_filament_profile_names", json::array())) {
+            if (std::any_of(materials.begin(), materials.end(), [&](const json &choice) {
+                    return choice.at("name") == name && choice.value("machine_compatible", false);
+                })) default_materials.push_back(name);
+        }
         json result = {{"schema_version", 1}, {"slicer_id", slicer},
             {"application_version", version}, {"machine_uid", machine_uid},
             {"nozzle_uid", nozzle_uid}, {"source_machine_profile_name", machine_name},
@@ -1155,8 +1256,8 @@ std::string native_project_options(std::string_view request_json,
             {"process_settings_contract", target.at("process_settings_contract")},
             {"build_plates", std::move(plates)},
             {"print_profiles", std::move(processes)}, {"filament_profiles", std::move(materials)},
-            {"default_print_profile_name", source.value("default_print_profile_name", std::string())},
-            {"default_filament_profile_names", source.value("default_filament_profile_names", json::array())}};
+            {"default_print_profile_name", default_process},
+            {"default_filament_profile_names", std::move(default_materials)}};
         if (source.contains("compatibility_project")) {
             const auto &record = source.at("compatibility_project");
             result["compatibility_source"] = {
