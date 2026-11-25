@@ -66,6 +66,33 @@ bool MaterialContext::copies_material(std::string_view key) const {
     return rule == rules_.end() ? legacy_material_field(key) : rule->second.material_source_override;
 }
 
+void MaterialContext::complete_defaults(nlohmann::json &project) const {
+    const auto identities = project.find("filament_settings_id");
+    if (identities == project.end() || !identities->is_array() || identities->empty()) return;
+    const auto count = identities->size();
+    for (const auto &[key, fallback] : defaults_.items()) {
+        if (!copies_material(key) || !fallback.is_array() || fallback.empty()) continue;
+        auto value = project.find(key);
+        if (value == project.end() || (value->is_array() && value->empty())) {
+            auto values = nlohmann::json::array();
+            for (std::size_t slot = 0; slot < count; ++slot) {
+                for (const auto &entry : fallback) values.push_back(entry);
+            }
+            project[key] = std::move(values);
+        } else {
+            const auto rule = rules_.find(key);
+            // Native get_at() broadcasts a scalar default. Materialize it for
+            // consumers that index the vector directly (e.g. tower planning).
+            // Variant groups and explicit per-slot edits keep their own shape.
+            if (rule != rules_.end() && rule->second.selection == "default" &&
+                rule->second.group_size == 1 && fallback.size() == 1 &&
+                value->is_array() && value->size() == 1) {
+                *value = nlohmann::json::array_t(count, value->front());
+            }
+        }
+    }
+}
+
 void MaterialContext::record_profile(const nlohmann::json &profile, const std::string &name) {
     auto resolved = defaults_.is_object() ? defaults_ : nlohmann::json::object();
     for (const auto &[key, value] : profile.items()) {

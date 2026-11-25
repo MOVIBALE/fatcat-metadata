@@ -850,8 +850,12 @@ void test_variant_shape_and_plate_support_are_machine_specific() {
     expected["wipe_tower_wall_type"] = "rib";
     expected["wipe_tower_rib_width"] = "8";
     expected["wipe_tower_extra_rib_length"] = "0";
+    expected["filament_extruder_variant"] = json::array({
+        "Direct Drive Standard", "Direct Drive Standard",
+        "Direct Drive Standard", "Direct Drive Standard"});
+    expected["first_x_layer_fan_speed"] = json::array({"0", "0", "0", "0"});
     expect(parsed_result(compose(source, selection, canonical_data(), target)).at("project") == expected,
-           "native dual variants must preserve source values and complete absent tower defaults");
+           "native dual variants must preserve source values and complete absent native defaults");
     target["machine_bindings"][0]["supported_build_plate_uids"] = json::array();
     expect_error([&] { compose(source, selection, canonical_data(), target); }, "build plate");
 }

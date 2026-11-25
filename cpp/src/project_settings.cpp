@@ -1072,6 +1072,7 @@ std::string detail::compose_project_with_context(json project, json request,
     if (detail::prusa::is_target(target)) return detail::prusa::compose(project, request, target).dump();
     validate_request_keys(request, target);
     detail::resolve_process_overrides(request, target);
+    materials.complete_defaults(project);
     if (request.value("hardware_mode", "target_binding") == "auto" &&
         project.contains("printer_settings_id")) {
         project["print_compatible_printers"] = json::array({project.at("printer_settings_id")});
