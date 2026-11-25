@@ -41,6 +41,7 @@ public:
     explicit MaterialContext(const nlohmann::json &snapshot);
     bool is_material(std::string_view key) const;
     bool copies_material(std::string_view key) const;
+    void complete_defaults(nlohmann::json &project) const;
     const std::map<std::string, MaterialFieldRule, std::less<>> &rules() const { return rules_; }
     void record_profile(const nlohmann::json &profile, const std::string &name);
     MaterialLayout layout(const nlohmann::json &project, const std::string &key,

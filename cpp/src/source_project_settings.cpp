@@ -707,6 +707,7 @@ json compose_source_project(const json &base, const json &request, const json &t
 json compose_source_project(const json &base, const json &request, const json &target,
                             const MaterialContext &fields) {
     json project = prepare_source_identity(base, request);
+    fields.complete_defaults(project);
     complete_truncated_flush_pairs(project, target.at("package_dialect"));
     const auto slicer = target.at("target_contract").at("slicer_id").get<std::string>();
     const auto &filament_snapshot = target.at("package_dialect").at("filament_snapshot");
@@ -943,12 +944,14 @@ json prepare_source_merge_project(const json &project, const json &filament_snap
                                   const MaterialContext &fields) {
     json result = project;
     const auto count = project.at("filament_settings_id").size();
+    fields.complete_defaults(result);
     const auto difference_key = filament_snapshot.at("difference_list_key").get<std::string>();
     const auto difference_offset = filament_snapshot.at("filament_slot_offset").get<std::size_t>();
     const auto difference_trailing = filament_snapshot.at("trailing_entry_count").get<std::size_t>();
     const bool scoped_markers = filament_snapshot.value("scoped_difference_entries", false);
     if (filament_count(project) > count) {
-        preserve_selected_slots(result, project, {{"filament_slot_mode", "compact"}}, count,
+        const json source = result;
+        preserve_selected_slots(result, source, {{"filament_slot_mode", "compact"}}, count,
             difference_key, difference_offset, difference_trailing,
             scoped_markers, true, fields);
     }
