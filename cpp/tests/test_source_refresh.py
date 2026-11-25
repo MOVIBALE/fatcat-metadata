@@ -18,6 +18,27 @@ _prusa_spec.loader.exec_module(prusa_refresh)
 
 
 class RetainedSourceRefreshTests(unittest.TestCase):
+    def test_refresh_discovers_compatible_process_after_incompatible_inherited_default(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            profiles = {
+                "machine/Parent.json": {"name": "Parent", "default_print_profile": "Standard @Parent"},
+                "machine/Child.json": {"name": "Child", "inherits": "Parent"},
+                "process/Standard @Parent.json": {"name": "Standard @Parent", "compatible_printers": ["Parent"]},
+                "process/Standard @Child.json": {"name": "Standard @Child", "instantiation": "true", "compatible_printers": ["Child"], "ooze_prevention": "1"},
+            }
+            for name, profile in profiles.items():
+                path = root / name
+                path.parent.mkdir(exist_ok=True)
+                path.write_text(json.dumps(profile), encoding="utf-8")
+            entry = refresh._source_entry(refresh.ProfileCatalog(root),
+                {"source_machine_profile_name": "Child", "machine_uid": "test:child", "nozzle_uid": "nozzle:0.4mm"},
+                {"target_contract": {"application_version": "1.0"}}, set(), {})
+            options = {option["name"]: option for option in entry["print_profile_options"]}
+            self.assertIn("Standard @Child", options)
+            self.assertIn("unavailable_reason", options["Standard @Parent"])
+            self.assertNotIn("unavailable_reason", options["Standard @Child"])
+
     def test_prusa_catalog_provenance_matches_the_reviewed_release(self):
         catalog = json.loads((ROOT / 'compatibility/current-src/native-project-sources/prusa-3/catalog.json').read_text(encoding='utf-8'))
         provenance = prusa_refresh.source_provenance()

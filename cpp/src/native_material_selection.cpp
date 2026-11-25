@@ -151,13 +151,6 @@ bool native_type_matches_request(const std::string &requested_type,
     return normalized_text(material_name) == normalized_text(profile_name);
 }
 
-bool material_compatible_with_machine(const json &profile, const std::string &machine_name) {
-    const auto printers = profile.find("compatible_printers");
-    if (printers == profile.end()) return true;
-    if (!printers->is_array()) invalid("native compatible_printers must be an array");
-    return printers->empty() || std::find(printers->begin(), printers->end(), machine_name) != printers->end();
-}
-
 bool material_supports_plate(const json &profile, const json &plate) {
     const auto temp = profile.find(plate.value("sidecar_value", std::string()) + "_temp");
     if (temp == profile.end() || !temp->is_array() || temp->empty()) return true;

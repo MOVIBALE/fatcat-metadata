@@ -93,6 +93,28 @@ preset names can be selected with `native_print_profile_name` and
 `native_filament_profile_names`. Unknown or incompatible selections raise
 `ValueError`; they do not select a similar printer or invent material settings.
 
+For built-in process and filament presets, a non-empty native
+`compatible_printers` list must contain the exact system printer preset name
+(including its nozzle variant). If that list is absent or empty,
+`compatible_printers_condition` is evaluated against the resolved machine
+settings using the packaged native field types. The list takes precedence,
+matching the native slicer. An inherited machine parent is not an alternative
+system-printer identity. Unknown condition syntax or missing variables makes
+that candidate unavailable, with a reason; it never grants compatibility.
+Conditions requiring unresolved relative percentages or enum-array numeric
+codes are also unavailable rather than interpreted as plain strings.
+
+An inherited default process is a preference, not proof of compatibility. When
+it is incompatible, FatCat selects from compatible instantiated native presets,
+preferring its alias and layer height, then lexical preset order. Explicitly
+requested incompatible presets are rejected. Options, preflight and export use
+the same compatibility policy. The source index retains the original native
+default names for provenance; public choices report the effective default.
+Caller process overrides are applied after selecting the native base, so
+multi-tool heating, standby and tower settings survive product-specific layer
+height or infill changes. PrusaSlicer 3 uses its native queried configurations
+instead of the Bambu/Orca JSON inheritance path.
+
 ### Material selection before composition
 
 In 0.1.1, `resolve_project_materials(selection)` returns `ready`, the ordered

@@ -155,24 +155,26 @@ class ProfileCatalog:
         path = self.find_named(category, name, scope)
         return self.documents[path].get("name", name) if path is not None else name
 
-    def compatible_filament_names(self, machine_name: str, scope: str) -> list[str]:
-        """Discover instantiated materials by inherited native compatibility.
+    def candidate_profile_names(self, category: str, machine_name: str, scope: str) -> list[str]:
+        """Index instantiated presets by inherited native printer lists.
 
-        根据原生继承后的兼容关系列出可用材料，独立于机型的默认材料。
+        按原生兼容名单收集工艺和耗材候选；条件表达式由 SDK 统一判断。
         """
         names: list[str] = []
         for path, document in self.documents.items():
-            if _profile_category(path) != "filament" or self._scope(path, "filament") != scope:
+            if _profile_category(path) != category or self._scope(path, category) != scope:
                 continue
             name = document.get("name")
             if not isinstance(name, str) or not name:
                 continue
             try:
-                profile = self.resolve("filament", path, {})
+                profile = self.resolve(category, path, {})
             except ValueError:
                 continue
+            printers = profile.get("compatible_printers", [])
             if (str(profile.get("instantiation", "")).lower() == "true"
-                    and machine_name in _names(profile.get("compatible_printers"))):
+                    and isinstance(printers, list)
+                    and (not printers or machine_name in printers)):
                 names.append(name)
         return list(dict.fromkeys(names))
 
@@ -299,7 +301,7 @@ def _profile_option(catalog: ProfileCatalog, category: str, name: str,
         if machine_name is not None and printers and machine_name not in printers:
             source_paths.add(path)
             return {'name': name, 'path': path, 'unavailable_reason':
-                    f"native filament profile is not compatible with '{machine_name}'"}
+                    f"native {category} profile is not compatible with '{machine_name}'"}
     except ValueError as error:
         return {"name": name, "unavailable_reason": str(error)}
     source_paths.add(path)
@@ -349,16 +351,20 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
                              for name in machine_material_names]
     target_processes = [catalog.canonical_name("process", name, scope) for name in target_processes]
     target_materials = [catalog.canonical_name("filament", name, scope) for name in target_materials]
-    process_names = list(dict.fromkeys((*machine_process_names, *target_processes)))
+    machine_name = row["source_machine_profile_name"]
+    process_names = list(dict.fromkeys((
+        *machine_process_names, *target_processes,
+        *catalog.candidate_profile_names("process", machine_name, scope),
+    )))
     material_names = list(dict.fromkeys((
         *machine_material_names,
         *target_materials,
-        *catalog.compatible_filament_names(row["source_machine_profile_name"], scope),
+        *catalog.candidate_profile_names("filament", machine_name, scope),
     )))
 
     process_options = [
         _profile_option(catalog, "process", name, ProfileCatalog._scope(machine_path, "machine"),
-                        source_paths, links)
+                        source_paths, links, machine_name)
         for name in dict.fromkeys(process_names)
     ]
     material_options = [
@@ -368,7 +374,8 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
     ]
     entry["print_profile_options"] = process_options
     entry["filament_profile_options"] = material_options
-    available_processes = [option["name"] for option in process_options if "path" in option]
+    available_processes = [option["name"] for option in process_options
+                           if "path" in option and "unavailable_reason" not in option]
     available_materials = [option["name"] for option in material_options
                            if "path" in option and 'unavailable_reason' not in option]
     default_process = (
@@ -382,7 +389,10 @@ def _source_entry(catalog: ProfileCatalog, row: dict[str, Any], target: dict[str
         # Preserve the native order: slicers use these names as preferred
         # defaults by material slot, with the first name as the fallback.
         entry["default_filament_profile_names"] = machine_material_names
-    if default_process in available_processes:
+    # Preserve the upstream preference as provenance, including an inherited
+    # incompatible name. Runtime selection filters candidates with the same
+    # compatibility policy used by options, preflight and composition.
+    if any(option["name"] == default_process and "path" in option for option in process_options):
         entry["default_print_profile_name"] = default_process
     missing = []
     if not available_processes:

@@ -58,9 +58,9 @@ Python 环境可选配内置的 `neroued-3mf==0.4.2` 写包适配（`fatcat-meta
 已为 Windows x64、macOS 14+（Apple Silicon）和 Linux x86-64（glibc 2.28+）上的 64 位 CPython `3.12`–`3.14` 发布预编译 wheel：
 
 ```bash
-python -m pip install --only-binary=:all: fatcat-metadata==0.1.6
+python -m pip install --only-binary=:all: fatcat-metadata==0.1.7
 # 或连同可选的 neroued-3mf 写包库一并安装以运行完整示例：
-python -m pip install "fatcat-metadata[examples]==0.1.6"
+python -m pip install "fatcat-metadata[examples]==0.1.7"
 ```
 
 在其他平台从源码编译安装（需要 C++17 编译器、CMake 3.18+ 与 Python 3.12–3.14）：

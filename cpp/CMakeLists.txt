@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(fatcat_3mf_metadata_cpp VERSION 0.1.6 LANGUAGES CXX)
+project(fatcat_3mf_metadata_cpp VERSION 0.1.7 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -118,6 +118,7 @@ add_library(fatcat_metadata_core STATIC
     src/project_settings_overrides.cpp
     src/native_project_source.cpp
     src/native_material_selection.cpp
+    src/native_preset_compatibility.cpp
     src/prusa_project.cpp
     src/source_project_settings.cpp
     src/source_material_slots.cpp
